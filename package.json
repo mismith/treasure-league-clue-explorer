@@ -1,0 +1,27 @@
+{
+  "name": "treasure-league-clue-explorer",
+  "version": "0.1.0",
+  "description": "Visually organize, link, and solve clues for Treasure League",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch:css": "postcss --use postcss-cssnext --output style.css style.pcss --watch",
+    "serve": "browser-sync start --server --files '**/*.css,**/*.js,**/*.ts,**/*.html' --no-ghost-mode --no-notify --no-ui",
+    "start": "npm run watch:css & npm run serve"
+  },
+  "homepage": "https://mismith.github.io/treasure-league-clue-explorer",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mismith/treasure-league-clue-explorer"
+  },
+  "bugs": {
+    "url": "https://github.com/mismith/treasure-league-clue-explorer/issues"
+  },
+  "author": "Murray Smith <murray@mismith.info> (http://mismith.info)",
+  "license": "MIT",
+  "devDependencies": {
+    "browser-sync": "^2.11.1",
+    "postcss-cli": "^2.5.0",
+    "postcss-cssnext": "^2.4.0"
+  }
+}
