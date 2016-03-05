@@ -96,7 +96,118 @@ textarea {
 	resize: vertical;
 }
 
-.invisible-cover {
+ul.flex-column {
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	-webkit-flex-direction: column;
+	    -ms-flex-direction: column;
+	        flex-direction: column;
+	padding: 0
+}
+
+ul.flex-column > * {
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	-webkit-flex-direction: column;
+	    -ms-flex-direction: column;
+	        flex-direction: column;
+	margin-top: 1px;
+}
+
+ul.flex-column > * > header {
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-flex-wrap: nowrap;
+	    -ms-flex-wrap: nowrap;
+	        flex-wrap: nowrap;
+}
+
+ul.flex-column > * > header a,
+			ul.flex-column > * > header span,
+			ul.flex-column > * > header input {
+	-webkit-flex-shrink: 1;
+	    -ms-flex-negative: 1;
+	        flex-shrink: 1;
+	-webkit-box-flex: 1;
+	-webkit-flex-grow: 1;
+	    -ms-flex-positive: 1;
+	        flex-grow: 1;
+}
+
+ul.flex-column > * > ul {
+	padding: 10px;
+}
+
+ul.flex-column > * > ul > li {
+	padding: 3px 0;
+}
+
+ul.flex-column > * > ul > li > header {
+	-webkit-box-align: center;
+	-webkit-align-items: center;
+	    -ms-flex-align: center;
+	            -ms-grid-row-align: center;
+	        align-items: center;
+}
+
+ul.flex-column > * > ul > li > header .avatar {
+	margin-right: 10px;
+}
+
+.btn {
+	-webkit-appearance: none;
+	   -moz-appearance: none;
+	        appearance: none;
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-align: center;
+	-webkit-align-items: center;
+	    -ms-flex-align: center;
+	        align-items: center;
+	background-color: #000000;
+	background-color: rgba(0,0,0,.5);
+	color: inherit;
+	text-decoration: none;
+	padding: 10px;
+	border: 0;
+	margin: 0;
+	opacity: .75;
+	cursor: pointer;
+	-webkit-transition: all 300ms;
+	transition: all 300ms
+}
+
+.btn small {
+	margin-left: 5px;
+}
+
+.btn + .btn {
+	margin-left: 1px;
+}
+
+.btn:hover,
+	.btn.active {
+	color: rgb(59, 153, 252);
+}
+
+.file-upload {
+	position: relative;
+	overflow: hidden
+}
+
+.file-upload [type=file] {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -130,14 +241,12 @@ textarea {
 	transition: all 300ms
 }
 
-.clue > figure {
-	padding: 0;
-	margin: 0;
-	cursor: pointer;
-}
-
-.clue > figure img {
-	max-width: 100%;
+.clue .btn {
+	-webkit-box-pack: center;
+	-webkit-justify-content: center;
+	    -ms-flex-pack: center;
+	        justify-content: center;
+	font-size: 24px;
 }
 
 .clue > aside {
@@ -155,6 +264,13 @@ textarea {
 	    -ms-flex-positive: 1;
 	        flex-grow: 1;
 	position: relative;
+}
+
+.clue > aside > figure {}
+
+.clue > aside > figure img {
+	max-width: 500px;
+	vertical-align: middle;
 }
 
 .clue > aside > *:not(figure) {
@@ -260,7 +376,7 @@ textarea {
 	margin: 3px;
 }
 
-.clue > aside > *:not(figure).conversation > footer a {
+.clue > aside > *:not(figure).conversation > footer .btn {
 	position: relative;
 	-webkit-box-flex: 0;
 	-webkit-flex-grow: 0;
@@ -355,50 +471,13 @@ textarea {
 	display: flex;
 }
 
-.clue header a, .clue footer a {
+.clue header .btn, .clue footer .btn {
 	min-width: 48px;
 	min-height: 48px;
-	display: -webkit-box;
-	display: -webkit-flex;
-	display: -ms-flexbox;
-	display: flex;
-	-webkit-box-pack: center;
-	-webkit-justify-content: center;
-	    -ms-flex-pack: center;
-	        justify-content: center;
-	-webkit-box-align: center;
-	-webkit-align-items: center;
-	    -ms-flex-align: center;
-	        align-items: center;
 	-webkit-box-flex: 1;
 	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
 	        flex-grow: 1;
-	background-color: #000000;
-	background-color: rgba(0,0,0,.5);
-	color: inherit;
-	font-size: 24px;
-	text-decoration: none;
-	padding: 10px;
-	opacity: .75;
-	cursor: pointer;
-	-webkit-transition: all 300ms;
-	transition: all 300ms;
-}
-
-.clue header a small, .clue footer a small {
-	margin-left: 5px;
-}
-
-.clue header a:hover,
-			.clue header a.active,
-			.clue footer a:hover,
-			.clue footer a.active {
-	color: rgb(59, 153, 252);
-}
-
-.clue header * + a, .clue footer * + a {
-	margin-left: 1px;
 }
 
 .clue > header {

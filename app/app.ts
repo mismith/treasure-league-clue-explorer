@@ -156,14 +156,14 @@ class MessagesComponent {
 @Component({
 	selector '[messagesRef]',
 	template: `
-<div [messages]="messagesRef | value | array" [users]="users" [user]="user" (update)="update($event.message.$id, $event.message.content)" (delete)="delete($event.message.$id, $event.event.shiftKey)">
+<div [messages]="messagesRef | value | array" [users]="users" [user]="me" (update)="update($event.message.$id, $event.message.content)" (delete)="delete($event.message.$id, $event.event.shiftKey)">
 </div>
 <footer>
 	<div>
 		<textarea [(ngModel)]="typing" (keypress)="isEnter($event) ? send() : null"></textarea>
 	</div>
-	<a [class.active]="attachments.length"><i class="fa fa-photo"></i><input type="file" (change)="attachments = []; firebaseFileUploader.process($event.target.files, attachments);" accept="image/*" multiple class="invisible-cover" /></a>
-	<a (click)="send()"><i class="fa fa-send"></i></a>
+	<button class="btn file-upload" [class.active]="attachments.length"><i class="fa fa-photo"></i><input type="file" (change)="attachments = []; firebaseFileUploader.process($event.target.files, attachments);" accept="image/*" multiple /></button>
+	<button (click)="send()" class="btn"><i class="fa fa-send"></i></button>
 </footer>`,
 	pipes: [
 		FirebaseValuePipe,
@@ -176,7 +176,7 @@ class MessagesComponent {
 class MessagerComponent {
 	@Input() messagesRef: Firebase;
 	@Input() users: object;
-	@Input() user: object;
+	@Input() me: object;
 
 	private typing: string = '';
 	private firebaseFileUploader = new FirebaseFileUploader();
@@ -189,7 +189,7 @@ class MessagerComponent {
 		if (this.typing || this.attachments.length) {
 			this.messagesRef.push({
 				created: new Date().toISOString(),
-				creator: this.user.uid,
+				creator: this.me.uid,
 				content: this.typing,
 				attachments: this.attachments,
 			});
@@ -202,7 +202,7 @@ class MessagerComponent {
 		if (content !== undefined) {
 			this.messagesRef.child(messageId).update({
 				updated: new Date().toISOString(),
-				updator: this.user.uid,
+				updator: this.me.uid,
 				content: content,
 			});
 		}
@@ -214,106 +214,167 @@ class MessagerComponent {
 
 
 @Component({
-	selector: 'body',
+	selector: '[huntId]',
 	template: `
+<section>
+	<article *ngFor="#clue of data('clues') | value:true" (mouseenter)="play(clue)" (mouseleave)="stop(clue)" (touchstart)="play(clue)" (touchend)="stop(clue)" [id]="clue.$id" class="clue {{ active(clue) }}">
+		<header>
+			<a [href]="'#' + clue.$id" [innerHTML]="clue.num || '#'" class="btn"></a>
+			<button (click)="active(clue, 'editing')" class="btn" [class.active]="active(clue) === 'editing'"><i class="fa fa-edit"></i></button>
+		</header>
 		<aside>
-			<header>
-				<h1><a href="http://treasureleague.com/" target="_blank">Treasure League</a> <span style="white-space: nowrap;">Clue Explorer</span></h1>
-				<button (click)="me ? firebase.ref().unauth() : firebase.ref().authWithOAuthPopup('facebook')" [innerHTML]="me ? 'Logout' : 'Login with Facebook'"></button>
-			</header>
-			<section *ngIf="me">
-				<header>
-					<h2>My Hunts</h2>
-					<ul>
-						<li *ngFor="#hunt of usersHuntsIds | value:firebase.ref('hunts') | array">
-							<header>
-								<a (click)="huntId = hunt.$id" [innerHTML]="hunt.name"></a>
-								<button (click)="deleteHunt(hunt.$id, $event.shiftKey)">&times;</button>
-							</header>
-							<ul [hidden]="hunt.$id !== huntId">
-								<li *ngFor="#user of firebase.ref('hunts:users', hunt.$id) | value:firebase.ref('users') | array">
-									<figure [avatar]="user" [size]="20"></figure>
-									<span [innerHTML]="user.name"></span>
-								</li>
-							</ul>
-						</li>
-						<li>
-							<input [(ngModel)]="newHuntName" placeholder="Hunt name" />
-							<button (click)="createHunt()">Create</button>
-						</li>
-					</ul>
-				</header>
-			</section>
+			<figure>
+				<img [src]="clue.image.src" />
+			</figure>
+			<div class="information">
+				<div class="fieldset">
+					<input [(ngModel)]="clue.num" placeholder="Number" />
+					<textarea [(ngModel)]="clue.notes" placeholder="Explanation"></textarea>
+					<textarea [(ngModel)]="clue.solution" placeholder="Solution"></textarea>
+				</div>
+				<footer>
+					<button (click)="deleteClue(clue, $event.shiftKey)" class="btn"><i class="fa fa-trash-o"></i></button>
+					<button class="btn file-upload" [class.active]="clue.image">
+						<i class="fa fa-photo"></i>
+						<input type="file" accept="image/*" (change)="firebaseFileUploader.process($event.target.files, clue.image, true)" />
+					</button>
+					<button class="btn file-upload" [class.active]="clue.audio" (contextmenu)="clue.audio = null">
+						<i class="fa fa-volume-up"></i>
+						<input type="file" accept="audio/*" (change)="firebaseFileUploader.process($event.target.files, clue.audio = clue.audio || {}, true)" />
+					</button>
+					<button (click)="updateClue(clue)" class="btn"><i class="fa fa-save"></i></button>
+				</footer>
+			</div>
+			<div class="conversation" [messagesRef]="data('messages', clue.$id)" [users]="firebase.ref('hunts:users', huntId) | value:firebase.ref('users')" [me]="me"></div>
+			<div class="resolution">
+				<div>
+					<h3 *ngIf="clue.notes">Explanation</h3>
+					<div [markdown]="clue.notes || ''"></div>
+				</div>
+				<footer *ngIf="clue.solution" (mouseenter)="clue.$solution = true" (touchstart)="clue.$solution = true" (mouseleave)="clue.$solution = false" (touchend)="clue.$solution = false" [class.hover]="clue.$solution">
+					<h3>Solution</h3>
+					<div [markdown]="clue.solution"></div>
+				</footer>
+			</div>
 		</aside>
-		<main>
-			<div *ngIf="!huntId || !(firebase.ref('hunts:data', huntId, 'clues') | value)">Loading...</div>
-			<section *ngIf="huntId">
-				<article *ngFor="#clue of firebase.ref('hunts:data', huntId, 'clues') | value | array" (mouseenter)="play(clue)" (mouseleave)="stop(clue)" (touchstart)="play(clue)" (touchend)="stop(clue)" [id]="clue.$id" class="clue {{ active(clue) }}">
-					<header>
-						<a [href]="'#' + clue.$id" [innerHTML]="clue.num || '#'"></a>
-						<a (click)="active(clue, 'editing')" [class.active]="active(clue) === 'editing'"><i class="fa fa-edit"></i></a>
-					</header>
-					<aside>
-						<figure>
-							<img [src]="clue.image.src" />
-						</figure>
-						<div class="information">
-							<div class="fieldset">
-								<input type="file" accept="image/*" (change)="upload($event.target.files, clue.image, true)" />
-								<input [(ngModel)]="clue.num" placeholder="Number" />
-								<textarea [(ngModel)]="clue.notes" placeholder="Explanation"></textarea>
-								<textarea [(ngModel)]="clue.solution" placeholder="Solution"></textarea>
-							</div>
-							<footer>
-								<a (click)="deleteClue(firebase.ref('hunts:data', huntId, 'clues', clue.$id), $event.shiftKey)"><i class="fa fa-trash-o"></i></a>
-								<a (click)="firebase.ref('hunts:data', huntId, 'clues', clue.$id).update(firebase.clean(clue))"><i class="fa fa-save"></i></a>
-							</footer>
-						</div>
-						<div class="conversation" [messagesRef]="firebase.ref('hunts:data', huntId, 'messages', clue.$id)" [users]="firebase.ref('hunts:users', huntId) | value:firebase.ref('users')" [user]="me"></div>
-						<div class="resolution">
-							<div>
-								<h3 *ngIf="clue.notes">Explanation</h3>
-								<div [markdown]="clue.notes || ''"></div>
-							</div>
-							<footer *ngIf="clue.solution" (mouseenter)="clue.$solution = true" (touchstart)="clue.$solution = true" (mouseleave)="clue.$solution = false" (touchend)="clue.$solution = false" [class.hover]="clue.$solution">
-								<h3>Solution</h3>
-								<div [markdown]="clue.solution"></div>
-							</footer>
-						</div>
-					</aside>
-					<footer>
-						<a (click)="active(clue, 'conversing')" [class.active]="active(clue) === 'conversing'">
-							<i class="fa fa-comments"></i>
-							<small [innerHTML]="(firebase.ref('hunts:data', huntId, 'messages', clue.$id) | value | length) || ''"></small>
-						</a>
-						<a *ngIf="clue.notes || clue.solution" (click)="active(clue, 'resolving')" [class.active]="active(clue) === 'resolving'"><i class="fa fa-question-circle"></i></a>
-					</footer>
-				</article>
-				<article *ngIf="firebase.ref('hunts:data', huntId, 'clues') | value" class="clue new">
-					<div>
-						Drop Image Here<br /><br />
-						<small>or</small><br />
-						Click to Upload
-					</div>
-					<input type="file" accept="image/*" (change)="upload($event.target.files, firebase.ref('hunts:data', huntId, 'clues').push().child('image'), true)" class="invisible-cover" />
-				</article>
-			</section>
-		</main>
-	`,
+		<footer>
+			<button (click)="active(clue, 'conversing')" class="btn" [class.active]="active(clue) === 'conversing'">
+				<i class="fa fa-comments"></i>
+				<small [innerHTML]="(data('messages', clue.$id) | value | length) || ''"></small>
+			</button>
+			<button *ngIf="clue.notes || clue.solution" (click)="active(clue, 'resolving')" class="btn" [class.active]="active(clue) === 'resolving'"><i class="fa fa-question-circle"></i></button>
+		</footer>
+	</article>
+	<article class="clue new file-upload">
+		<div>
+			Drop Image Here<br /><br />
+			<small>or</small><br />
+			Click to Upload
+		</div>
+		<input type="file" accept="image/*" (change)="firebaseFileUploader.process($event.target.files, data('clues').push().child('image'), true)" />
+	</article>
+</section>`,
 	pipes: [
 		FirebaseValuePipe,
 		FirebaseArrayPipe,
 		LengthPipe,
 	],
 	directives: [
-		AvatarComponent,
 		MarkdownDirective,
 		MessagerComponent,
 	],
 })
+export class HuntComponent {
+	@Input() huntId: string;
+	@Input() firebase: FirebaseHelper;
+	@Input() me: object;
+
+	private firebaseFileUploader = new FirebaseFileUploader();
+
+	data(...args) {
+		return this.firebase.ref('hunts:data', this.huntId, ...args);
+	}
+
+	// clues
+	play(clue) {
+		if (clue.audio) {
+			clue.$audio = clue.$audio || new Audio(clue.audio.src);
+			clue.$audio.loop = true;
+			clue.$audio.play();
+		}
+	}
+	stop(clue) {
+		if (clue.$audio) {
+			clue.$audio.pause();
+			clue.$audio.currentTime = 0;
+		}
+	}
+
+	// helper
+	active(clue, active) {
+		if(active) clue.$active = clue.$active === active ? '' : active;
+		return clue.$active || '';
+	}
+
+	// CRUD
+	updateClue(clue) {
+		this.data('clues', clue.$id).update(this.firebase.clean(clue));
+	}
+	deleteClue(clue, skipConfirm) {
+		return doConfirm(skipConfirm).then(() => this.data('clues', clue.$id).remove());
+	}
+}
+
+
+@Component({
+	selector: 'body',
+	template: `
+<aside id="sidebar">
+	<header>
+		<h1><a href="http://treasureleague.com/" target="_blank">Treasure League</a> <span style="white-space: nowrap;">Clue Explorer</span></h1>
+		<button (click)="me ? firebase.ref().unauth() : firebase.ref().authWithOAuthPopup('facebook')" [innerHTML]="me ? 'Logout' : 'Login with Facebook'"></button>
+	</header>
+	<section *ngIf="me">
+		<header>
+			<h2>My Hunts</h2>
+		</header>
+		<ul class="flex-column" style="margin-left: -10px; margin-right: -10px;">
+			<li *ngFor="#hunt of usersHuntsIds | value:firebase.ref('hunts') | array">
+				<header>
+					<a (click)="huntId = hunt.$id" [innerHTML]="hunt.name" class="btn" [class.active]="hunt.$id === huntId"></a>
+					<button *ngIf="hunt.$id === huntId" (click)="deleteHunt(hunt.$id, $event.shiftKey)" title="Delete" class="btn"><i class="fa fa-trash-o"></i></button>
+				</header>
+				<ul *ngIf="hunt.$id === huntId" class="flex-column">
+					<li *ngFor="#user of firebase.ref('hunts:users', hunt.$id) | value:firebase.ref('users') | array" class="user">
+						<header>
+							<figure [avatar]="user"></figure>
+							<span [innerHTML]="user.name"></span>
+						</header>
+					</li>
+				</ul>
+			</li>
+			<li>
+				<header>
+					<input [(ngModel)]="newHuntName" placeholder="New hunt name" />
+					<button (click)="createHunt()" title="Create" class="btn"><i class="fa fa-plus"></i></button>
+				</header>
+			</li>
+		</ul>
+	</section>
+</aside>
+<main [huntId]="huntId" [firebase]="firebase" [me]="me"></main>`,
+	pipes: [
+		FirebaseValuePipe,
+		FirebaseArrayPipe,
+	],
+	directives: [
+		HuntComponent,
+		AvatarComponent,
+		MarkdownDirective,
+	],
+})
 export class App {
 	public hunt: object = {};
-	public clues: array = [];
 
 	constructor() {
 		// public
@@ -339,30 +400,6 @@ export class App {
 			}
 		});
 	}
-	play(clue) {
-		if (clue.audio) {
-			clue.$audio = clue.$audio || new Audio(clue.audio.src);
-			clue.$audio.loop = true;
-			clue.$audio.play();
-		}
-	}
-	stop(clue) {
-		if (clue.$audio) {
-			clue.$audio.pause();
-			clue.$audio.currentTime = 0;
-		}
-	}
-
-	active(clue, active) {
-		if(active) clue.$active = clue.$active === active ? '' : active;
-		return clue.$active || '';
-	}
-
-	// editing
-	upload(files, ref, single) {
-		if (!this.firebaseFileUploader) this.firebaseFileUploader = new FirebaseFileUploader();
-		this.firebaseFileUploader.process(files, ref, single);
-	}
 
 	// CRUD
 	createHunt() {
@@ -373,9 +410,6 @@ export class App {
 	}
 	deleteHunt(huntId, skipConfirm) {
 		return doConfirm(skipConfirm).then(() => new Hunt(this.firebase.ref(), this.me).delete(huntId));
-	}
-	deleteClue(clueRef, skipConfirm) {
-		return doConfirm(skipConfirm).then(() => clueRef.remove());
 	}
 }
 

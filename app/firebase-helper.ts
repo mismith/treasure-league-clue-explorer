@@ -52,7 +52,6 @@ export class FirebaseHelper {
 })
 export class FirebaseValuePipe implements PipeTransform {
 	private lastValue: any;
-	private lastReturnedValue: any;
 
 	private nearRef: Firebase;
 	private farRef: Firebase;
@@ -61,15 +60,51 @@ export class FirebaseValuePipe implements PipeTransform {
 	transform(nearRef: Firebase, [farRef: Firebase]) {
 		if (!farRef) {
 			// value of reference
-
 			if (this.nearRef !== nearRef) {
 				if (this.nearRef) this.nearRef.off();
 				this.nearRef = nearRef;
 
 				this.lastValue = undefined;
+				this.changeDetectorRef.markForCheck();
 
 				this.nearRef.on('value', snap => {
 					this.lastValue = snap.val();
+
+					this.changeDetectorRef.markForCheck();
+				});
+			}
+		} else if (farRef === true) {
+			// array of child object values
+			if (this.nearRef !== nearRef) {
+				if (this.nearRef) this.nearRef.off();
+				this.nearRef = nearRef;
+
+				this.lastValue = [];
+				this.changeDetectorRef.markForCheck();
+
+				nearRef.on('child_added', nearSnap => {
+					let child = nearSnap.val();
+					child.$id = nearSnap.key();
+
+					this.lastValue.push(child);
+
+					this.changeDetectorRef.markForCheck();
+				});
+				nearRef.on('child_changed', nearSnap => {
+					let key = nearSnap.key();
+					let child = this.lastValue.find(val => val.$id === key);
+					let index = this.lastValue.indexOf(child);
+					child = nearSnap.val();
+					child.$id = key;
+					this.lastValue.splice(index, 1, child);
+
+					this.changeDetectorRef.markForCheck();
+				});
+				nearRef.on('child_removed', nearSnap => {
+					let key = nearSnap.key();
+					let child = this.lastValue.find(val => val.$id === key);
+					let index = this.lastValue.indexOf(child);
+					this.lastValue.splice(index, 1);
 
 					this.changeDetectorRef.markForCheck();
 				});
@@ -87,6 +122,7 @@ export class FirebaseValuePipe implements PipeTransform {
 				this.nearRef = nearRef;
 
 				this.lastValue = {};
+				this.changeDetectorRef.markForCheck();
 
 				nearRef.on('child_added', nearSnap => {
 					let key = nearSnap.key();
@@ -105,17 +141,12 @@ export class FirebaseValuePipe implements PipeTransform {
 				});
 			}
 		}
-
-		if (this.lastReturnedValue !== this.lastValue) {
-			// new value, store it for next check
-			this.lastReturnedValue = this.lastValue;
-		} // else: nothing changed
-		return this.lastReturnedValue;
+		return this.lastValue;
 	}
 	ngOnDestroy() {
 		if (this.nearRef) this.nearRef.off();
 		if (this.farRef) {
-			for (let key in this.obj) {
+			for (let key in this.lastValue) {
 				this.farRef.child(key).off();
 			}
 		}
