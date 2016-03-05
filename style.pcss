@@ -56,6 +56,7 @@ figure {
 a {
 	color: var(--accent);
 	text-decoration: none;
+	cursor: pointer;
 
 	&:hover {
 		text-decoration: underline;
@@ -69,6 +70,20 @@ textarea {
 	min-height: 5em;
 	flex-grow: 1;
 	resize: vertical;
+}
+
+.invisible-cover {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	width: 100%;
+	height: 100%;
+	font-size: 1000px;
+	opacity: 0;
+	cursor: pointer;
+	z-index: 1;
 }
 
 .clue {
@@ -134,14 +149,22 @@ textarea {
 				& > footer {
 					flex-shrink: 0;
 
-					& textarea {
+					& > div {
+						display: flex;
 						flex-grow: 1;
-						border: 0;
-						border-radius: 5px;
-						margin: 3px;
+						background-color: rgba(0,0,0,.5);
+
+						& textarea {
+							flex-grow: 1;
+							border: 0;
+							border-radius: 5px;
+							margin: 3px;
+						}
 					}
 					& a {
+						position: relative;
 						flex-grow: 0;
+						overflow: hidden;
 					}
 				}
 			}
@@ -245,19 +268,6 @@ textarea {
 			border: dashed 3px var(--bg);
 			margin: 3px;
 		}
-		& [type=file] {
-			position: absolute;
-			top: 0;
-			left: 0;
-			right: 0;
-			bottom: 0;
-			width: 100%;
-			height: 100%;
-			font-size: 1000px;
-			opacity: 0;
-			cursor: pointer;
-			z-index: 1;
-		}
 		&:not(:hover) {
 			opacity: .5;
 		}
@@ -328,6 +338,19 @@ textarea {
 				white-space: pre-wrap;
 				text-overflow: ellipsis;
 
+				& .attachment {
+					align-self: flex-start;
+					display: inline-block;
+					margin-bottom: 3px;
+
+					& img {
+						max-height: 200px;
+					}
+				}
+				& .editing {
+					display: flex;
+					flex-grow: 1;
+				}
 				& p {
 					margin: 0;
 				}
@@ -388,6 +411,12 @@ textarea {
 						border-left-color: var(--accent);
 					}
 				}
+			}
+		}
+		&.active {
+			& .avatar {
+				margin-top: 20px;
+				margin-bottom: 20px;
 			}
 		}
 		&:not(.active) {

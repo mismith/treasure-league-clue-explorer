@@ -21,9 +21,6 @@ class AvatarComponent {
 	@Input('avatar') user: object = {};
 	@Input() size: number = 24;
 
-ngOnInit() {
-	console.log(this.user);
-}
 	getPhotoUrl(facebookId) {
 		return `https://graph.facebook.com/v2.1/${facebookId || ''}/picture?type=square`;
 	}
@@ -43,19 +40,19 @@ class MarkdownDirective {
 	}
 }
 
-@Directive({
-	selector: '[scrollTo]',
-})
-class ScrollToDirective {
-	@Input() scrollTo: any;
+// @Directive({
+// 	selector: '[scrollTo]',
+// })
+// class ScrollToDirective {
+// 	@Input() scrollTo: any;
 
-	constructor(private el: ElementRef) {}
-	ngOnInit() {
-		console.log(
-			this.el.nativeElement.scrollTop = this.el.nativeElement.scrollHeight
-		);
-	}
-}
+// 	constructor(private el: ElementRef) {}
+// 	ngOnInit() {
+// 		console.log(
+// 			this.el.nativeElement.scrollTop = this.el.nativeElement.scrollHeight
+// 		);
+// 	}
+// }
 
 @Pipe({
 	name: 'length',
@@ -63,6 +60,15 @@ class ScrollToDirective {
 class LengthPipe implements PipeTransform {
 	transform(values: any) {
 		return values ? (typeof values === 'object' ? Object.keys(values).length : values.length) : 0;
+	}
+}
+
+@Pipe({
+	name: 'moment',
+})
+class MomentPipe implements PipeTransform {
+	transform(dateLike: any, [options: object = {}]) {
+		return moment(dateLike, options).toDate();
 	}
 }
 
@@ -109,15 +115,18 @@ class Hunt {
 		<figure [avatar]="users[message.creator]"></figure>
 		<div class="content">
 			<header>
-				<timestamp [innerHTML]="message?.created"></timestamp>
+				<timestamp [innerHTML]="message?.created | moment | date:'medium'"></timestamp>
 			</header>
-			<div *ngIf="!message.$editing" (click)="message.$active = ! message.$active" [markdown]="message.content"></div>
-			<div *ngIf="message.$editing" class="editing">
-				<textarea [(ngModel)]="message.content"></textarea>
+			<div (click)="!message.$editing ? (message.$active = ! message.$active) : null">
+				<a *ngFor="#attachment of message.attachments" [href]="attachment.src" target="_blank" class="attachment"><img [src]="attachment.src" /></a>
+				<div *ngIf="!message.$editing" [markdown]="message.content"></div>
+				<div *ngIf="message.$editing" class="editing">
+					<textarea [(ngModel)]="message.content"></textarea>
+				</div>
 			</div>
 			<footer *ngIf="message.$editing">
-				<button (click)="update.next({message: message, event: $event})">Save</button>
 				<button (click)="message.$editing = false; message.content = message.$content">Cancel</button>
+				<button (click)="update.next({message: message, event: $event})">Save</button>
 			</footer>
 			<footer *ngIf="message.creator === user.uid && !message.$editing">
 				<button (click)="message.$editing = true; message.$content = message.content">Edit</button>
@@ -127,6 +136,9 @@ class Hunt {
 	</li>
 	<li *ngIf="!messages.length" class="message empty">No comments yet.</li>
 </ul>`,
+	pipes: [
+		MomentPipe,
+	],
 	directives: [
 		AvatarComponent,
 		MarkdownDirective,
@@ -147,8 +159,11 @@ class MessagesComponent {
 <div [messages]="messagesRef | value | array" [users]="users" [user]="user" (update)="update($event.message.$id, $event.message.content)" (delete)="delete($event.message.$id, $event.event.shiftKey)">
 </div>
 <footer>
-	<textarea [(ngModel)]="typing" (keypress)="isEnter($event) ? send(typing) : null"></textarea>
-	<a (click)="send(typing)"><i class="fa fa-send"></i></a>
+	<div>
+		<textarea [(ngModel)]="typing" (keypress)="isEnter($event) ? send() : null"></textarea>
+	</div>
+	<a [class.active]="attachments.length"><i class="fa fa-photo"></i><input type="file" (change)="attachments = []; firebaseFileUploader.process($event.target.files, attachments);" accept="image/*" multiple class="invisible-cover" /></a>
+	<a (click)="send()"><i class="fa fa-send"></i></a>
 </footer>`,
 	pipes: [
 		FirebaseValuePipe,
@@ -158,25 +173,29 @@ class MessagesComponent {
 		MessagesComponent,
 	],
 })
-class MessagesRefComponent {
+class MessagerComponent {
 	@Input() messagesRef: Firebase;
 	@Input() users: object;
 	@Input() user: object;
 
 	private typing: string = '';
+	private firebaseFileUploader = new FirebaseFileUploader();
+	private attachments: array = [];
 
 	isEnter(e) {
 		return (e.keyCode === 13 /* enter */ && !e.shiftKey);
 	}
-	send(content) {
-		if (content !== undefined) {
+	send() {
+		if (this.typing || this.attachments.length) {
 			this.messagesRef.push({
 				created: new Date().toISOString(),
 				creator: this.user.uid,
-				content: content,
+				content: this.typing,
+				attachments: this.attachments,
 			});
 
 			this.typing = '';
+			this.attachments = [];
 		}
 	}
 	update(messageId, content) {
@@ -236,10 +255,11 @@ class MessagesRefComponent {
 					</header>
 					<aside>
 						<figure>
-							<img [src]="clue.image" />
+							<img [src]="clue.image.src" />
 						</figure>
 						<div class="information">
 							<div class="fieldset">
+								<input type="file" accept="image/*" (change)="upload($event.target.files, clue.image, true)" />
 								<input [(ngModel)]="clue.num" placeholder="Number" />
 								<textarea [(ngModel)]="clue.notes" placeholder="Explanation"></textarea>
 								<textarea [(ngModel)]="clue.solution" placeholder="Solution"></textarea>
@@ -266,7 +286,7 @@ class MessagesRefComponent {
 							<i class="fa fa-comments"></i>
 							<small [innerHTML]="(firebase.ref('hunts:data', huntId, 'messages', clue.$id) | value | length) || ''"></small>
 						</a>
-						<a *ngIf="clue.notes || clue.solution" (click)="active(clue, 'resolving')"><i class="fa fa-question-circle" [class.active]="active(clue) === 'resolving'"></i></a>
+						<a *ngIf="clue.notes || clue.solution" (click)="active(clue, 'resolving')" [class.active]="active(clue) === 'resolving'"><i class="fa fa-question-circle"></i></a>
 					</footer>
 				</article>
 				<article *ngIf="firebase.ref('hunts:data', huntId, 'clues') | value" class="clue new">
@@ -275,7 +295,7 @@ class MessagesRefComponent {
 						<small>or</small><br />
 						Click to Upload
 					</div>
-					<input type="file" accept="image/*" (change)="upload(firebase.ref('hunts:data', huntId, 'clues').push().child('image'), $event.target.files)" />
+					<input type="file" accept="image/*" (change)="upload($event.target.files, firebase.ref('hunts:data', huntId, 'clues').push().child('image'), true)" class="invisible-cover" />
 				</article>
 			</section>
 		</main>
@@ -288,8 +308,7 @@ class MessagesRefComponent {
 	directives: [
 		AvatarComponent,
 		MarkdownDirective,
-		ScrollToDirective,
-		MessagesRefComponent,
+		MessagerComponent,
 	],
 })
 export class App {
@@ -322,7 +341,7 @@ export class App {
 	}
 	play(clue) {
 		if (clue.audio) {
-			clue.$audio = clue.$audio || new Audio(clue.audio);
+			clue.$audio = clue.$audio || new Audio(clue.audio.src);
 			clue.$audio.loop = true;
 			clue.$audio.play();
 		}
@@ -340,8 +359,9 @@ export class App {
 	}
 
 	// editing
-	upload(ref, fileList) {
-		new FirebaseFileUploader(ref).upload(fileList, true);
+	upload(files, ref, single) {
+		if (!this.firebaseFileUploader) this.firebaseFileUploader = new FirebaseFileUploader();
+		this.firebaseFileUploader.process(files, ref, single);
 	}
 
 	// CRUD

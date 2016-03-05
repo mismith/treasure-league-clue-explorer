@@ -77,7 +77,8 @@ figure {
 }
 a {
 	color: rgb(59, 153, 252);
-	text-decoration: none
+	text-decoration: none;
+	cursor: pointer
 }
 a:hover {
 	text-decoration: underline;
@@ -93,6 +94,20 @@ textarea {
 	    -ms-flex-positive: 1;
 	        flex-grow: 1;
 	resize: vertical;
+}
+
+.invisible-cover {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	width: 100%;
+	height: 100%;
+	font-size: 1000px;
+	opacity: 0;
+	cursor: pointer;
+	z-index: 1;
 }
 
 .clue {
@@ -222,7 +237,20 @@ textarea {
 	        flex-shrink: 0;
 }
 
-.clue > aside > *:not(figure).conversation > footer textarea {
+.clue > aside > *:not(figure).conversation > footer > div {
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-flex: 1;
+	-webkit-flex-grow: 1;
+	    -ms-flex-positive: 1;
+	        flex-grow: 1;
+	background-color: #000000;
+	background-color: rgba(0,0,0,.5);
+}
+
+.clue > aside > *:not(figure).conversation > footer > div textarea {
 	-webkit-box-flex: 1;
 	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
@@ -233,10 +261,12 @@ textarea {
 }
 
 .clue > aside > *:not(figure).conversation > footer a {
+	position: relative;
 	-webkit-box-flex: 0;
 	-webkit-flex-grow: 0;
 	    -ms-flex-positive: 0;
 	        flex-grow: 0;
+	overflow: hidden;
 }
 
 .clue > aside > *:not(figure).resolution {
@@ -406,20 +436,6 @@ textarea {
 	margin: 3px;
 }
 
-.clue.new [type=file] {
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	width: 100%;
-	height: 100%;
-	font-size: 1000px;
-	opacity: 0;
-	cursor: pointer;
-	z-index: 1;
-}
-
 .clue.new:not(:hover) {
 	opacity: .5;
 }
@@ -534,6 +550,26 @@ textarea {
 	white-space: pre-wrap;
 	text-overflow: ellipsis;
 }
+.messages .message .content > div .attachment {
+	-webkit-align-self: flex-start;
+	    -ms-flex-item-align: start;
+	        align-self: flex-start;
+	display: inline-block;
+	margin-bottom: 3px;
+}
+.messages .message .content > div .attachment img {
+	max-height: 200px;
+}
+.messages .message .content > div .editing {
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-flex: 1;
+	-webkit-flex-grow: 1;
+	    -ms-flex-positive: 1;
+	        flex-grow: 1;
+}
 .messages .message .content > div p {
 	margin: 0;
 }
@@ -602,6 +638,11 @@ textarea {
 	left: 100%;
 	border-right-color: transparent;
 	border-left-color: rgb(59, 153, 252);
+}
+.messages .message.active {}
+.messages .message.active .avatar {
+	margin-top: 20px;
+	margin-bottom: 20px;
 }
 .messages .message:not(.active) {}
 .messages .message:not(.active) .content {}

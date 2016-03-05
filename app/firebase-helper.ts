@@ -6,6 +6,7 @@ export class FirebaseHelper {
 	public url: string;
 	private root: Firebase;
 	private cache: object = {};
+	private snaps: object = {};
 
 	constructor(public url: string) {
 		if (this.url) this.root = new Firebase(this.url);
@@ -17,13 +18,29 @@ export class FirebaseHelper {
 		}
 		return this.cache[path];
 	}
+
 	clean(obj: object) {
-		var out = {};
+		let out = {};
 		for(let k in obj) {
 			if (obj && !k.match(/[\.\#\$\/\[\]]/)) out[k] = obj[k];
 		}
 		return out;
 	}
+
+	// snapshot(obj: object) {
+	// 	if (!obj || !obj.$id) throw new Error('Cannot take a snapshot of this object');
+
+	// 	return this.snaps[obj.$id] = Object.assign({}, obj);
+	// }
+	// revert(obj: object) {
+	// 	if (!obj || !obj.$id || !this.snaps[obj.$id]) throw new Error('Cannot revert to a snapshot of this object');
+
+	// 	let snap = this.snaps[obj.$id];
+	// 	for(let k in obj) if (snap[k] === undefined) delete obj[k]; // remove any added props
+	// 	for (k in snap) obj[k] = snap[k]; // restore all other props
+
+	// 	return obj;
+	// }
 }
 
 
