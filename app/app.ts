@@ -40,20 +40,6 @@ class MarkdownDirective {
 	}
 }
 
-// @Directive({
-// 	selector: '[scrollTo]',
-// })
-// class ScrollToDirective {
-// 	@Input() scrollTo: any;
-
-// 	constructor(private el: ElementRef) {}
-// 	ngOnInit() {
-// 		console.log(
-// 			this.el.nativeElement.scrollTop = this.el.nativeElement.scrollHeight
-// 		);
-// 	}
-// }
-
 @Pipe({
 	name: 'length',
 })
@@ -156,24 +142,23 @@ class MessagesComponent {
 @Component({
 	selector '[messagesRef]',
 	template: `
-<div [messages]="messagesRef | value | array" [users]="users" [user]="me" (update)="update($event.message.$id, $event.message.content)" (delete)="delete($event.message.$id, $event.event.shiftKey)">
+<div [messages]="messagesRef | value:true" [users]="users" [user]="me" (update)="update($event.message.$id, $event.message.content)" (delete)="delete($event.message.$id, $event.event.shiftKey)">
 </div>
 <footer>
 	<div>
-		<textarea [(ngModel)]="typing" (keypress)="isEnter($event) ? send() : null"></textarea>
+		<textarea [(ngModel)]="typing" (keypress)="isEnter($event) ? create() : null"></textarea>
 	</div>
 	<button class="btn file-upload" [class.active]="attachments.length"><i class="fa fa-photo"></i><input type="file" (change)="attachments = []; firebaseFileUploader.process($event.target.files, attachments);" accept="image/*" multiple /></button>
-	<button (click)="send()" class="btn"><i class="fa fa-send"></i></button>
+	<button (click)="create()" class="btn"><i class="fa fa-send"></i></button>
 </footer>`,
 	pipes: [
 		FirebaseValuePipe,
-		FirebaseArrayPipe,
 	],
 	directives: [
 		MessagesComponent,
 	],
 })
-class MessagerComponent {
+class MessengerComponent {
 	@Input() messagesRef: Firebase;
 	@Input() users: object;
 	@Input() me: object;
@@ -182,10 +167,22 @@ class MessagerComponent {
 	private firebaseFileUploader = new FirebaseFileUploader();
 	private attachments: array = [];
 
+	constructor(private el: ElementRef) {}
+	ngOnInit() {
+		this.messagesRef.once('value', snap => {
+			setTimeout(() => {
+				this.scrollToBottom();
+			});
+		});
+	}
+	scrollToBottom() {
+		this.el.nativeElement.firstElementChild.scrollTop = this.el.nativeElement.firstElementChild.scrollHeight;
+	}
+
 	isEnter(e) {
 		return (e.keyCode === 13 /* enter */ && !e.shiftKey);
 	}
-	send() {
+	create() {
 		if (this.typing || this.attachments.length) {
 			this.messagesRef.push({
 				created: new Date().toISOString(),
@@ -281,7 +278,7 @@ class MessagerComponent {
 	],
 	directives: [
 		MarkdownDirective,
-		MessagerComponent,
+		MessengerComponent,
 	],
 })
 export class HuntComponent {
@@ -370,11 +367,11 @@ export class HuntComponent {
 	directives: [
 		HuntComponent,
 		AvatarComponent,
-		MarkdownDirective,
 	],
 })
 export class App {
-	public hunt: object = {};
+	public me: object;
+	public huntId: string;
 
 	constructor() {
 		// public

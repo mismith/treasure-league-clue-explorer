@@ -569,8 +569,7 @@ ul.flex-column > * > ul > li > header .avatar {
 	    -ms-flex-negative: 0;
 	        flex-shrink: 0;
 	padding: 0;
-	margin: 0;
-	overflow: auto
+	margin: 0
 }
 .messages .message {
 	display: -webkit-box;
