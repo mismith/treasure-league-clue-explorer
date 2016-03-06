@@ -160,7 +160,7 @@ class MessagesComponent {
 </div>
 <footer>
 	<div>
-		<textarea [(ngModel)]="typing" (keypress)="isEnter($event) ? create() : null"></textarea>
+		<textarea [(ngModel)]="typing" (keypress)="isEnter($event) ? create() : null" (paste)="firebaseFileUploader.process($event.clipboardData.items, attachments)"></textarea>
 	</div>
 	<button class="btn file-upload" [class.active]="attachments.length"><i class="fa fa-photo"></i><input type="file" (change)="attachments = []; firebaseFileUploader.process($event.target.files, attachments);" accept="image/*" multiple /></button>
 	<button (click)="create()" class="btn"><i class="fa fa-send"></i></button>
@@ -197,7 +197,11 @@ class MessengerComponent {
 	}
 
 	isEnter(e) {
-		return (e.keyCode === 13 /* enter */ && !e.shiftKey);
+		if (e.keyCode === 13 /* enter */ && !e.shiftKey) {
+			e.preventDefault();
+			return true;
+		}
+		return false;
 	}
 	create() {
 		if (this.typing || this.attachments.length) {
@@ -230,8 +234,8 @@ class MessengerComponent {
 @Component({
 	selector: '[huntId]',
 	template: `
-<section>
-	<loader *ngIf="!(data('clues') | loaded)">Loading...</loader>
+<section *ngIf="me">
+	<loader *ngIf="!(data('clues') | loaded)" class="fill">Loading...</loader>
 	<article *ngFor="#clue of data('clues') | value:true" (mouseenter)="play(clue)" (mouseleave)="stop(clue)" (touchstart)="play(clue)" (touchend)="stop(clue)" [id]="clue.$id" class="clue {{ active(clue) }}">
 		<header>
 			<a [href]="'#' + clue.$id" [innerHTML]="clue.num || '#'" class="btn"></a>
@@ -288,6 +292,9 @@ class MessengerComponent {
 		</div>
 		<input type="file" accept="image/*" (change)="firebaseFileUploader.process($event.target.files, data('clues').push().child('image'), true)" />
 	</article>
+</section>
+<section *ngIf="!me" class="fill">
+	You need to login.
 </section>`,
 	pipes: [
 		FirebaseLoadedPipe,

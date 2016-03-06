@@ -80,6 +80,10 @@ app > main > section {
 	-webkit-justify-content: center;
 	    -ms-flex-pack: center;
 	        justify-content: center;
+	-webkit-box-flex: 1;
+	-webkit-flex-grow: 1;
+	    -ms-flex-positive: 1;
+	        flex-grow: 1;
 }
 figure {
 	padding: 0;
@@ -106,6 +110,29 @@ textarea {
 	resize: vertical;
 }
 
+.fill {
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	-webkit-flex-direction: column;
+	    -ms-flex-direction: column;
+	        flex-direction: column;
+	-webkit-box-pack: center;
+	-webkit-justify-content: center;
+	    -ms-flex-pack: center;
+	        justify-content: center;
+	-webkit-box-align: center;
+	-webkit-align-items: center;
+	    -ms-flex-align: center;
+	        align-items: center;
+	-webkit-box-flex: 1;
+	-webkit-flex-grow: 1;
+	    -ms-flex-positive: 1;
+	        flex-grow: 1;
+}
 .btn {
 	-webkit-appearance: none;
 	   -moz-appearance: none;
@@ -131,15 +158,12 @@ textarea {
 	-webkit-transition: all 300ms;
 	transition: all 300ms
 }
-
 .btn small {
 	margin-left: 5px;
 }
-
 .btn + .btn {
 	margin-left: 1px;
 }
-
 .btn:hover,
 	.btn.active {
 	color: rgb(59, 153, 252);
@@ -551,12 +575,15 @@ textarea {
 	-webkit-align-items: flex-start;
 	    -ms-flex-align: start;
 	        align-items: flex-start;
-}
-.messages .message .content > header {
-	color: #EEE;
-	opacity: .666;
-	font-size: 12px;
-	margin: 3px;
+	max-width: calc(100% - 36px);
+	// @HACK
+
+			& > header {
+		color: #EEE;
+		opacity: .666;
+		font-size: 12px;
+		margin: 3px;
+	}
 }
 .messages .message .content > div {
 	display: -webkit-box;
@@ -568,12 +595,16 @@ textarea {
 	-webkit-flex-direction: column;
 	    -ms-flex-direction: column;
 	        flex-direction: column;
+	max-width: 100%;
 	position: relative;
 	background-color: #EEE;
 	color: #202327;
 	text-align: left;
 	padding: 3px 5px;
 	border-radius: 5px;
+}
+.messages .message .content > div * {
+	overflow: hidden;
 	white-space: pre-wrap;
 	text-overflow: ellipsis;
 }
@@ -610,11 +641,12 @@ textarea {
 	border: solid 6px transparent;
 	border-right-color: #EEE;
 }
-.messages .message .content > footer {
+.messages .message .content > header,
+			.messages .message .content > footer {
 	font-size: 12px;
 	margin: 3px;
 }
-.messages .message .content > footer button {
+.messages .message .content > header button, .messages .message .content > footer button {
 	-webkit-appearance: none;
 	   -moz-appearance: none;
 	        appearance: none;
@@ -626,7 +658,7 @@ textarea {
 	border: 0;
 	cursor: pointer;
 }
-.messages .message .content > footer button:hover {
+.messages .message .content > header button:hover, .messages .message .content > footer button:hover {
 	color: rgb(59, 153, 252);
 }
 .messages .message.mine {
@@ -708,9 +740,9 @@ textarea {
 
 
 #sidebar {
-	-webkit-flex-shrink: 0;
-	    -ms-flex-negative: 0;
-	        flex-shrink: 0;
+	-webkit-flex-basis: 33%;
+	    -ms-flex-preferred-size: 33%;
+	        flex-basis: 33%;
 	background-color: #51535F
 }
 
