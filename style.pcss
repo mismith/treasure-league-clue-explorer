@@ -21,43 +21,14 @@ body {
 	color: var(--lighter);
 	font: 15px sans-serif;
 }
-app {
-	display: flex;
-	flex-wrap: nowrap;
-	width: 100%;
-	height: 100%;
-
-	@media (width <= 600px) {
-		height: auto;
-		flex-direction: column;
-	}
-	& > *:not(script) {
-		display: flex;
-		flex-direction: column;
-		overflow: auto;
-
-	}
-	& > main {
-		align-items: center;
-		flex-grow: 1;
-		padding: 10px;
-
-		& > header {
-			display: flex;
-			justify-content: space-around;
-			width: 100%;
-		}
-		& > section {
-			display: flex;
-			flex-wrap: wrap;
-			justify-content: center;
-			flex-grow: 1;
-		}
-	}
-}
-figure {
-	padding: 0;
-	margin: 0;
+h1,
+h2,
+h3,
+h4 {
+	font-size: 11px;
+	font-weight: normal;
+	text-transform: uppercase;
+	letter-spacing: .2em;
 }
 a {
 	color: var(--accent);
@@ -67,6 +38,10 @@ a {
 	&:hover {
 		text-decoration: underline;
 	}
+}
+figure {
+	padding: 0;
+	margin: 0;
 }
 input,
 textarea {
@@ -102,6 +77,10 @@ textarea {
 
 	& small {
 		margin-left: 5px;
+	}
+	& > i:first-child,
+	& > .avatar:first-child {
+		margin-right: 10px;
 	}
 	& + .btn {
 		margin-left: 1px;
@@ -192,13 +171,6 @@ textarea {
 					display: flex;
 					overflow: auto;
 
-					& h3 {
-						text-transform: uppercase;
-						font-weight: normal;
-						font-size: 12px;
-						letter-spacing: .3em;
-						margin: 0 auto 20px;
-					}
 					& div {
 						white-space: pre-wrap;
 					}
@@ -209,6 +181,9 @@ textarea {
 					flex-grow: 1;
 					padding: 10px;
 
+					& h3 {
+						margin: 0 auto 20px;
+					}
 					& div {
 						font-size: 24px;
 					}
@@ -473,26 +448,62 @@ textarea {
 }
 
 
+#app {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	height: 100%;
+}
+#frame {
+	display: flex;
+	flex-grow: 1;
+	flex-wrap: nowrap;
+
+	& > * {
+		display: flex;
+		flex-direction: column;
+		overflow: auto;
+	}
+	@media (width <= 600px) {
+		height: auto;
+		flex-direction: column;
+	}
+}
+#header {
+	display: flex;
+	align-items: center;
+	flex-shrink: 0;
+	background-color: var(--primary);
+	margin-bottom: 1px;
+
+	& > header,
+	& > div {
+		padding: 0 10px;
+	}
+	& > div {
+		flex-grow: 1;
+		text-align: right;
+	}
+}
 #sidebar {
 	flex-basis: 33%;
-	background-color: var(--primary);
 
-	& > header {
-		padding: 10px;
-	}
 	& > section {
 		display: flex;
 		flex-direction: column;
 		flex-grow: 1;
+		flex-shrink: 1;
+		background-color: var(--primary);
+		overflow: auto;
+		margin-bottom: 1px;
 
 		& h2,
 		& h3 {
-			margin: 5px 10px;
+			margin: 10px;
 		}
-		& .huntList {
+/*		&.huntList {
 			display: flex;
 			flex-direction: column;
-			padding: 0;
 
 			& > ul {
 				display: flex;
@@ -519,41 +530,50 @@ textarea {
 					}
 				}
 			}
-		}
-		& .huntDetail {
+		}*/
+		& .messenger {
 			display: flex;
 			flex-direction: column;
 			flex-grow: 1;
-			flex-shrink: 1;
-			padding: 0;
 
-			& .messenger {
-				display: flex;
-				flex-direction: column;
-				flex-grow: 1;
-
-				& .messages {
-					justify-content: flex-end;
-				}
+			& .messages {
+				justify-content: flex-end;
 			}
-			& .users {
-				display: flex;
-				flex-direction: column;
-				padding: 10px;
-				margin: 0;
+		}
+		& .users {
+			display: flex;
+			flex-direction: column;
+			padding: 10px;
+			margin: 0;
 
-				& > li {
-					padding: 3px 0;
+			& > li {
+				padding: 3px 0;
 
-					& > header {
-						align-items: center;
+				& > header {
+					align-items: center;
 
-						& .avatar {
-							margin-right: 10px;
-						}
+					& .avatar {
+						margin-right: 10px;
 					}
 				}
 			}
 		}
+	}
+}
+#main {
+	align-items: center;
+	flex-grow: 1;
+	padding: 10px;
+
+	& > header {
+		display: flex;
+		justify-content: space-around;
+		width: 100%;
+	}
+	& > section {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		flex-grow: 1;
 	}
 }

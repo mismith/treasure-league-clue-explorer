@@ -11,14 +11,14 @@ function doConfirm(skip) {
 
 @Component({
 	selector: '[avatar]',
-	template: `<img [src]="getPhotoUrl(user?.facebookId)" alt="" [width]="size" [height]="size" />`,
+	template: `<img [src]="getPhotoUrl(user?.facebookId)" [alt]="'Avatar for ' + user?.name" [width]="size" [height]="size" />`,
 	host: {
 		'[title]': 'user?.name',
 		'[class.avatar]': 'true',
 	},
 })
 class AvatarComponent {
-	@Input('avatar') user: Object = {};
+	@Input('avatar') user: Object;
 	@Input() size: number = 24;
 
 	getPhotoUrl(facebookId) {
@@ -63,7 +63,9 @@ class MomentPipe implements PipeTransform {
 	pure: false,
 })
 class SortPipe implements PipeTransform {
-	transform(sortable: Array, [key: string = '$id', flip: boolean = false]) {
+	transform(sortable: Array, args: string[]) {
+		let key = args[0] || '$id',
+			flip = args[1] || false;
 		return sortable.sort((a, b) => (a[key] < b[key] ? -1 : 1) * (flip ? -1 : 1));
 	}
 }
@@ -156,6 +158,7 @@ class MessagesComponent {
 @Component({
 	selector '[messagesRef]',
 	template: `
+<loading *ngIf="!(messagesRef | loaded)" class="fill">Loading...</loading>
 <div [messages]="messagesRef | value:true" [users]="users" [user]="me" (update)="update($event.message.$id, $event.message.content)" (delete)="delete($event.message.$id, $event.event.shiftKey)">
 </div>
 <footer>
@@ -170,6 +173,7 @@ class MessagesComponent {
 	},
 	pipes: [
 		FirebaseValuePipe,
+		FirebaseLoadedPipe,
 	],
 	directives: [
 		MessagesComponent,
@@ -235,7 +239,7 @@ class MessengerComponent {
 	selector: '[huntId]',
 	template: `
 <section *ngIf="me">
-	<loader *ngIf="!(data('clues') | loaded)" class="fill">Loading...</loader>
+	<loading *ngIf="!(data('clues') | loaded)" class="fill">Loading...</loading>
 	<article *ngFor="#clue of data('clues') | value:true" (mouseenter)="play(clue)" (mouseleave)="stop(clue)" (touchstart)="play(clue)" (touchend)="stop(clue)" [id]="clue.$id" class="clue {{ active(clue) }}">
 		<header>
 			<a [href]="'#' + clue.$id" [innerHTML]="clue.num || '#'" class="btn"></a>
@@ -349,15 +353,20 @@ export class HuntComponent {
 
 
 @Component({
-	selector: 'app',
+	selector: '[app]',
 	template: `
-<aside id="sidebar">
+<header id="header">
 	<header>
 		<h1><a href="http://treasureleague.com/" target="_blank">Treasure League</a> <span style="white-space: nowrap;">Clue Explorer</span></h1>
-		<button (click)="me ? firebase.ref().unauth() : firebase.ref().authWithOAuthPopup('facebook')" [innerHTML]="me ? 'Logout' : 'Login with Facebook'" class="btn"></button>
 	</header>
-	<section *ngIf="me">
-		<div class="huntList">
+	<div>
+		<label *ngIf="me">
+			<small>Hunt:</small>
+			<select [(ngModel)]="huntId">
+				<option *ngFor="#hunt of firebase.ref('users:hunts', me.uid) | value:firebase.ref('hunts') | sort:'$id':true" [value]="hunt.$id" [innerHTML]="hunt.name"></option>
+			</select>
+		</label>
+		<!--<div *ngIf="me" class="huntList">
 			<header>
 				<h2>My Hunts</h2>
 			</header>
@@ -377,11 +386,22 @@ export class HuntComponent {
 					</header>
 				</li>
 			</ul>
-		</div>
-		<div *ngIf="huntId" class="huntDetail">
-			<!--<header>
-				<h2>Hunt</h2>
-			</header>-->
+		</div>-->
+	</div>
+	<footer>
+		<button *ngIf="!me" (click)="firebase.ref().authWithOAuthPopup('facebook')" class="btn">
+			<i class="fa fa-facebook"></i>
+			Login with Facebook
+		</button>
+		<button *ngIf="me" (click)="firebase.ref().unauth()" class="btn">
+			<figure [avatar]="me"></figure>
+			Logout
+		</button>
+	</footer>
+</header>
+<div id="frame">
+	<aside *ngIf="huntId" id="sidebar">
+		<section class="huntDetail">
 			<h3>Participants</h3>
 			<ul class="users">
 				<li *ngFor="#user of firebase.ref('hunts:users', huntId) | value:firebase.ref('users')" class="user">
@@ -391,14 +411,17 @@ export class HuntComponent {
 					</header>
 				</li>
 			</ul>
+		</section>
+		<section *ngIf="huntId" class="huntComments">
 			<h3>Comments</h3>
 			<div [messagesRef]="firebase.ref('hunts:data', huntId, 'messages', huntId)" [users]="firebase.ref('hunts:users', huntId) | value:firebase.ref('users')" [me]="me"></div>
-		</div>
-	</section>
-</aside>
-<main [huntId]="huntId" [firebase]="firebase" [me]="me"></main>`,
+		</section>
+	</aside>
+	<main id="main" [huntId]="huntId" [firebase]="firebase" [me]="me"></main>
+</div>`,
 	pipes: [
 		FirebaseValuePipe,
+		FirebaseLoadedPipe,
 		SortPipe,
 	],
 	directives: [
@@ -408,8 +431,8 @@ export class HuntComponent {
 	],
 })
 export class App {
-	public me: Object;
-	public huntId: string;
+	private me: Object;
+	private huntId: string;
 
 	constructor() {
 		// public
@@ -417,16 +440,17 @@ export class App {
 
 		// authed
 		this.firebase.ref().onAuth(authData => {
-			this.me = authData;
-
 			if (authData) {
-				// store up-to-date user data
-				this.firebase.ref('users', this.me.uid).set({
+				this.me = {
 					name: authData.facebook.displayName,
 					facebookId: authData.facebook.id,
 					uid: authData.uid,
-				});
+				};
 
+				// update user data
+				this.firebase.ref('users', this.me.uid).set(this.me);
+
+				// auto-pick huntId
 				this.firebase.ref('users:data', this.me.uid).once('value').then(snap => {
 					let userData = snap.val();
 					if (userData && userData.huntId) {
@@ -438,6 +462,7 @@ export class App {
 					}
 				});
 			} else {
+				this.me = null;
 				this.huntId = null;
 			}
 		});
