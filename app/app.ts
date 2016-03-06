@@ -1,6 +1,6 @@
 //our root app component
 import {Component, Directive, Input, Output, EventEmitter, ElementRef, Pipe, PipeTransform} from 'angular2/core';
-import {FirebaseHelper, FirebaseValuePipe, FirebaseArrayPipe} from './firebase-helper';
+import {FirebaseHelper, FirebaseValuePipe, FirebaseLoadedPipe} from './firebase-helper';
 
 function doConfirm(skip) {
 	return new Promise((resolve, reject) => {
@@ -18,7 +18,7 @@ function doConfirm(skip) {
 	},
 })
 class AvatarComponent {
-	@Input('avatar') user: object = {};
+	@Input('avatar') user: Object = {};
 	@Input() size: number = 24;
 
 	getPhotoUrl(facebookId) {
@@ -53,8 +53,18 @@ class LengthPipe implements PipeTransform {
 	name: 'moment',
 })
 class MomentPipe implements PipeTransform {
-	transform(dateLike: any, [options: object = {}]) {
+	transform(dateLike: any, [options: Object = {}]) {
 		return moment(dateLike, options).toDate();
+	}
+}
+
+@Pipe({
+	name: 'sort',
+	pure: false,
+})
+class SortPipe implements PipeTransform {
+	transform(sortable: Array, [key: string = '$id', flip: boolean = false]) {
+		return sortable.sort((a, b) => (a[key] < b[key] ? -1 : 1) * (flip ? -1 : 1));
 	}
 }
 
@@ -98,7 +108,7 @@ class Hunt {
 	template: `
 <ul class="messages">
 	<li *ngFor="#message of messages" class="message" [class.mine]="message.creator === user.uid" [class.active]="message.$active">
-		<figure [avatar]="users[message.creator]"></figure>
+		<figure [avatar]="getUser(message.creator)"></figure>
 		<div class="content">
 			<header>
 				<timestamp [innerHTML]="message?.created | moment | date:'medium'"></timestamp>
@@ -131,12 +141,16 @@ class Hunt {
 	],
 })
 class MessagesComponent {
-	@Input() messages: array;
-	@Input() users: object;
-	@Input() user: object;
+	@Input() messages: Array;
+	@Input() users: Array;
+	@Input() user: Object;
 
 	@Output() update: EventEmitter = new EventEmitter();
 	@Output() delete: EventEmitter = new EventEmitter();
+
+	getUser(userId) {
+		return this.users.find(user => user.$id === userId);
+	}
 }
 
 @Component({
@@ -151,6 +165,9 @@ class MessagesComponent {
 	<button class="btn file-upload" [class.active]="attachments.length"><i class="fa fa-photo"></i><input type="file" (change)="attachments = []; firebaseFileUploader.process($event.target.files, attachments);" accept="image/*" multiple /></button>
 	<button (click)="create()" class="btn"><i class="fa fa-send"></i></button>
 </footer>`,
+	host: {
+		'[class.messenger]': 'true',
+	},
 	pipes: [
 		FirebaseValuePipe,
 	],
@@ -160,12 +177,12 @@ class MessagesComponent {
 })
 class MessengerComponent {
 	@Input() messagesRef: Firebase;
-	@Input() users: object;
-	@Input() me: object;
+	@Input() users: Object;
+	@Input() me: Object;
 
 	private typing: string = '';
 	private firebaseFileUploader = new FirebaseFileUploader();
-	private attachments: array = [];
+	private attachments: Array = [];
 
 	constructor(private el: ElementRef) {}
 	ngOnInit() {
@@ -214,6 +231,7 @@ class MessengerComponent {
 	selector: '[huntId]',
 	template: `
 <section>
+	<loader *ngIf="!(data('clues') | loaded)">Loading...</loader>
 	<article *ngFor="#clue of data('clues') | value:true" (mouseenter)="play(clue)" (mouseleave)="stop(clue)" (touchstart)="play(clue)" (touchend)="stop(clue)" [id]="clue.$id" class="clue {{ active(clue) }}">
 		<header>
 			<a [href]="'#' + clue.$id" [innerHTML]="clue.num || '#'" class="btn"></a>
@@ -262,7 +280,7 @@ class MessengerComponent {
 			<button *ngIf="clue.notes || clue.solution" (click)="active(clue, 'resolving')" class="btn" [class.active]="active(clue) === 'resolving'"><i class="fa fa-question-circle"></i></button>
 		</footer>
 	</article>
-	<article class="clue new file-upload">
+	<article *ngIf="data('clues') | loaded" class="clue new file-upload">
 		<div>
 			Drop Image Here<br /><br />
 			<small>or</small><br />
@@ -272,8 +290,8 @@ class MessengerComponent {
 	</article>
 </section>`,
 	pipes: [
+		FirebaseLoadedPipe,
 		FirebaseValuePipe,
-		FirebaseArrayPipe,
 		LengthPipe,
 	],
 	directives: [
@@ -284,7 +302,7 @@ class MessengerComponent {
 export class HuntComponent {
 	@Input() huntId: string;
 	@Input() firebase: FirebaseHelper;
-	@Input() me: object;
+	@Input() me: Object;
 
 	private firebaseFileUploader = new FirebaseFileUploader();
 
@@ -324,53 +342,66 @@ export class HuntComponent {
 
 
 @Component({
-	selector: 'body',
+	selector: 'app',
 	template: `
 <aside id="sidebar">
 	<header>
 		<h1><a href="http://treasureleague.com/" target="_blank">Treasure League</a> <span style="white-space: nowrap;">Clue Explorer</span></h1>
-		<button (click)="me ? firebase.ref().unauth() : firebase.ref().authWithOAuthPopup('facebook')" [innerHTML]="me ? 'Logout' : 'Login with Facebook'"></button>
+		<button (click)="me ? firebase.ref().unauth() : firebase.ref().authWithOAuthPopup('facebook')" [innerHTML]="me ? 'Logout' : 'Login with Facebook'" class="btn"></button>
 	</header>
 	<section *ngIf="me">
-		<header>
-			<h2>My Hunts</h2>
-		</header>
-		<ul class="flex-column" style="margin-left: -10px; margin-right: -10px;">
-			<li *ngFor="#hunt of usersHuntsIds | value:firebase.ref('hunts') | array">
-				<header>
-					<a (click)="huntId = hunt.$id" [innerHTML]="hunt.name" class="btn" [class.active]="hunt.$id === huntId"></a>
-					<button *ngIf="hunt.$id === huntId" (click)="deleteHunt(hunt.$id, $event.shiftKey)" title="Delete" class="btn"><i class="fa fa-trash-o"></i></button>
-				</header>
-				<ul *ngIf="hunt.$id === huntId" class="flex-column">
-					<li *ngFor="#user of firebase.ref('hunts:users', hunt.$id) | value:firebase.ref('users') | array" class="user">
-						<header>
-							<figure [avatar]="user"></figure>
-							<span [innerHTML]="user.name"></span>
-						</header>
-					</li>
-				</ul>
-			</li>
-			<li>
-				<header>
-					<input [(ngModel)]="newHuntName" placeholder="New hunt name" />
-					<button (click)="createHunt()" title="Create" class="btn"><i class="fa fa-plus"></i></button>
-				</header>
-			</li>
-		</ul>
+		<div class="huntList">
+			<header>
+				<h2>My Hunts</h2>
+			</header>
+			<ul>
+				<li *ngFor="#hunt of firebase.ref('users:hunts', me.uid) | value:firebase.ref('hunts')">
+					<header>
+						<a (click)="huntId = hunt.$id" [innerHTML]="hunt.name" class="btn" [class.active]="hunt.$id === huntId"></a>
+						<button (click)="deleteHunt(hunt.$id, $event.shiftKey)" title="Delete" class="btn"><i class="fa fa-trash-o"></i></button>
+					</header>
+				</li>
+				<li>
+					<header>
+						<span class="btn">
+							<input [(ngModel)]="newHuntName" placeholder="New hunt name" />
+						</span>
+						<button (click)="createHunt()" title="Create" class="btn"><i class="fa fa-plus"></i></button>
+					</header>
+				</li>
+			</ul>
+		</div>
+		<div *ngIf="huntId" class="huntDetail">
+			<!--<header>
+				<h2>Hunt</h2>
+			</header>-->
+			<h3>Participants</h3>
+			<ul class="users">
+				<li *ngFor="#user of firebase.ref('hunts:users', huntId) | value:firebase.ref('users')" class="user">
+					<header>
+						<figure [avatar]="user"></figure>
+						<span [innerHTML]="user.name"></span>
+					</header>
+				</li>
+			</ul>
+			<h3>Comments</h3>
+			<div [messagesRef]="firebase.ref('hunts:data', huntId, 'messages', huntId)" [users]="firebase.ref('hunts:users', huntId) | value:firebase.ref('users')" [me]="me"></div>
+		</div>
 	</section>
 </aside>
 <main [huntId]="huntId" [firebase]="firebase" [me]="me"></main>`,
 	pipes: [
 		FirebaseValuePipe,
-		FirebaseArrayPipe,
+		SortPipe,
 	],
 	directives: [
 		HuntComponent,
 		AvatarComponent,
+		MessengerComponent,
 	],
 })
 export class App {
-	public me: object;
+	public me: Object;
 	public huntId: string;
 
 	constructor() {
@@ -389,9 +420,16 @@ export class App {
 					uid: authData.uid,
 				});
 
-				this.usersHuntsIds = this.firebase.ref('users:hunts', this.me.uid);
-				// auto-set huntId to user's latest hunt
-				this.usersHuntsIds.limitToLast(1).once('child_added').then(snap => this.huntId = snap.key());
+				this.firebase.ref('users:data', this.me.uid).once('value').then(snap => {
+					let userData = snap.val();
+					if (userData && userData.huntId) {
+						// load the hunt the user was last looking at
+						this.huntId = userData.huntId;
+					} else {
+						// auto-set huntId to user's latest hunt
+						this.firebase.ref('users:hunts', this.me.uid).limitToLast(1).once('child_added').then(snap => this.huntId = snap.key());
+					}
+				});
 			} else {
 				this.huntId = null;
 			}

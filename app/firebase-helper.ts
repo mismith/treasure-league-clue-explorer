@@ -5,8 +5,8 @@ import {Pipe, PipeTransform, ChangeDetectorRef, ChangeDetectionStrategy} from 'a
 export class FirebaseHelper {
 	public url: string;
 	private root: Firebase;
-	private cache: object = {};
-	private snaps: object = {};
+	private cache: Object = {};
+	private snaps: Object = {};
 
 	constructor(public url: string) {
 		if (this.url) this.root = new Firebase(this.url);
@@ -19,7 +19,7 @@ export class FirebaseHelper {
 		return this.cache[path];
 	}
 
-	clean(obj: object) {
+	clean(obj: Object) {
 		let out = {};
 		for(let k in obj) {
 			if (obj && !k.match(/[\.\#\$\/\[\]]/)) out[k] = obj[k];
@@ -27,12 +27,12 @@ export class FirebaseHelper {
 		return out;
 	}
 
-	// snapshot(obj: object) {
+	// snapshot(obj: Object) {
 	// 	if (!obj || !obj.$id) throw new Error('Cannot take a snapshot of this object');
 
 	// 	return this.snaps[obj.$id] = Object.assign({}, obj);
 	// }
-	// revert(obj: object) {
+	// revert(obj: Object) {
 	// 	if (!obj || !obj.$id || !this.snaps[obj.$id]) throw new Error('Cannot revert to a snapshot of this object');
 
 	// 	let snap = this.snaps[obj.$id];
@@ -57,121 +57,191 @@ export class FirebaseValuePipe implements PipeTransform {
 	private farRef: Firebase;
 
 	constructor(private changeDetectorRef: ChangeDetectorRef) {}
+
+	onNearValue(nearSnap) {
+		this.lastValue = nearSnap.val();
+
+		this.changeDetectorRef.markForCheck();
+	}
+
+	onNearChildAdded(nearSnap) {
+		let child = nearSnap.val();
+		if (typeof child === 'object') child.$id = nearSnap.key();
+
+		this.lastValue.push(child);
+
+		this.changeDetectorRef.markForCheck();
+	}
+	onNearChildChanged(nearSnap) {
+		let key = nearSnap.key(),
+			index = this.indexOf(key),
+			child = nearSnap.val();
+		if (typeof child === 'object') child.$id = key;
+
+		this.lastValue.splice(index, 1, child);
+
+		this.changeDetectorRef.markForCheck();
+	}
+	onNearChildRemoved(nearSnap) {
+		let key = nearSnap.key(),
+			index = this.indexOf(key);
+
+		this.lastValue.splice(index, 1);
+
+		this.changeDetectorRef.markForCheck();
+	}
+
+	onFarValue(farSnap) {
+		let key   = farSnap.key(),
+			index = this.indexOf(key),
+			child = farSnap.val();
+		if (typeof child === 'object') child.$id = key;
+
+		// sync locally
+		if (index >= 0) {
+			// update
+			this.lastValue.splice(index, 1, child);
+		} else {
+			// append
+			this.lastValue.push(child);
+		}
+
+		this.changeDetectorRef.markForCheck();
+	}
+	onNearFarChildAdded(nearSnap) {
+		// hook
+		let key = nearSnap.key();
+		this.farRef.child(key).on('value', this.onFarValue, this);
+	}
+	onNearFarChildRemoved(nearSnap) {
+		// clean up hooks
+		let key = nearSnap.key();
+		this.farRef.child(key).off('value', this.onFarValue, this);
+
+		// remove locally
+		let index = this.indexOf(key);
+		this.lastValue.splice(index, 1);
+
+		this.changeDetectorRef.markForCheck();
+	}
+
+	indexOf($id) {
+		let child = this.lastValue.find(val => val.$id === $id);
+		return this.lastValue.indexOf(child);
+	}
+
 	transform(nearRef: Firebase, [farRef: Firebase]) {
 		if (!farRef) {
 			// value of reference
 			if (this.nearRef !== nearRef) {
-				if (this.nearRef) this.nearRef.off();
+				// input changed, clean up hooks
+				if (this.nearRef) {
+					this.nearRef.off('value', this.onNearValue, this);
+				}
 				this.nearRef = nearRef;
 
+				// reset
 				this.lastValue = undefined;
 				this.changeDetectorRef.markForCheck();
 
-				this.nearRef.on('value', snap => {
-					this.lastValue = snap.val();
-
-					this.changeDetectorRef.markForCheck();
-				});
+				// hook
+				this.nearRef.on('value', this.onNearValue, this);
 			}
 		} else if (farRef === true) {
 			// array of child object values
 			if (this.nearRef !== nearRef) {
-				if (this.nearRef) this.nearRef.off();
+				// input changed, clean up hooks
+				if (this.nearRef) {
+					this.nearRef.off('child_added', this.onNearChildAdded, this);
+					this.nearRef.off('child_changed', this.onNearChildChanged, this);
+					this.nearRef.off('child_removed', this.onNearChildRemoved, this);
+				}
 				this.nearRef = nearRef;
 
+				// reset
 				this.lastValue = [];
 				this.changeDetectorRef.markForCheck();
 
-				nearRef.on('child_added', nearSnap => {
-					let child = nearSnap.val();
-					child.$id = nearSnap.key();
-
-					this.lastValue.push(child);
-
-					this.changeDetectorRef.markForCheck();
-				});
-				nearRef.on('child_changed', nearSnap => {
-					let key = nearSnap.key();
-					let child = this.lastValue.find(val => val.$id === key);
-					let index = this.lastValue.indexOf(child);
-					child = nearSnap.val();
-					child.$id = key;
-					this.lastValue.splice(index, 1, child);
-
-					this.changeDetectorRef.markForCheck();
-				});
-				nearRef.on('child_removed', nearSnap => {
-					let key = nearSnap.key();
-					let child = this.lastValue.find(val => val.$id === key);
-					let index = this.lastValue.indexOf(child);
-					this.lastValue.splice(index, 1);
-
-					this.changeDetectorRef.markForCheck();
-				});
+				// hook
+				nearRef.on('child_added', this.onNearChildAdded, this);
+				nearRef.on('child_changed', this.onNearChildChanged, this);
+				nearRef.on('child_removed', this.onNearChildRemoved, this);
 			}
 		} else {
 			// values of key-linked references
 			if (this.farRef !== farRef) {
-				for (let key in this.obj) {
-					this.farRef.child(key).off();
+				// input changed, clean up hooks
+				if (this.lastValue && this.lastValue.length) {
+					this.lastValue.map(child => {
+						this.farRef.child(child.$id).off('value', this.onFarValue, this);
+					});
 				}
 				this.farRef = farRef;
 			}
 			if (this.nearRef !== nearRef) {
-				if (this.nearRef) this.nearRef.off();
+				// input changed, clean up hooks
+				if (this.nearRef) {
+					nearRef.off('child_added', this.onNearFarChildAdded, this);
+					nearRef.off('child_removed', this.onNearFarChildRemoved, this);
+				}
 				this.nearRef = nearRef;
 
-				this.lastValue = {};
+				// reset
+				this.lastValue = [];
 				this.changeDetectorRef.markForCheck();
 
-				nearRef.on('child_added', nearSnap => {
-					let key = nearSnap.key();
-					this.farRef.child(key).on('value', farSnap => {
-						this.lastValue[key] = farSnap.val();
-
-						this.changeDetectorRef.markForCheck();
-					});
-				});
-				nearRef.on('child_removed', nearSnap => {
-					let key = nearSnap.key();
-					this.farRef.child(key).off('value');
-					delete this.lastValue[key];
-
-					this.changeDetectorRef.markForCheck();
-				});
+				// hook
+				nearRef.on('child_added', this.onNearFarChildAdded, this);
+				nearRef.on('child_removed', this.onNearFarChildRemoved, this);
 			}
 		}
 		return this.lastValue;
 	}
 	ngOnDestroy() {
-		if (this.nearRef) this.nearRef.off();
-		if (this.farRef) {
-			for (let key in this.lastValue) {
-				this.farRef.child(key).off();
-			}
-		}
+		// @TODO: clean up all hooks
 	}
 }
 
 
 
 @Pipe({
-	name: 'array',
+	name: 'loaded',
 	pure: false,
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FirebaseArrayPipe implements PipeTransform {
-	private arr: array = [];
+export class FirebaseLoadedPipe implements PipeTransform {
+	private loaded: boolean = false;
+	private nearRef: Firebase;
 
-	transform(obj: object, args: string[]) {
-		this.arr.length = 0; // clear existing array
+	transform(nearRef: Firebase) {
+		if (this.nearRef !== nearRef) {
+			this.nearRef = nearRef;
 
-		for (let k in obj) {
-			let item = obj[k];
-			item[args[0] || '$id'] = k;
-			this.arr.push(item);
+			nearRef.once('value', () => this.loaded = true);
 		}
-
-		return this.arr;
+		return this.loaded;
 	}
 }
+
+
+
+// @Pipe({
+// 	name: 'array',
+// 	pure: false,
+// 	changeDetection: ChangeDetectionStrategy.OnPush,
+// })
+// export class FirebaseArrayPipe implements PipeTransform {
+// 	private arr: Array = [];
+
+// 	transform(obj: Object, args: string[]) {
+// 		this.arr.length = 0; // clear existing array
+
+// 		for (let k in obj) {
+// 			let item = obj[k];
+// 			item[args[0] || '$id'] = k;
+// 			this.arr.push(item);
+// 		}
+
+// 		return this.arr;
+// 	}
+// }
