@@ -369,7 +369,7 @@ class MessengerComponent {
 	</article>
 </section>
 <section *ngIf="!me" class="fill">
-	You need to login.
+	Login to begin.
 </section>`,
 	pipes: [
 		FirebaseLoadedPipe,
@@ -462,11 +462,11 @@ export class HuntComponent {
 	<footer>
 		<button *ngIf="!me" (click)="login()" class="btn">
 			<i class="fa fa-facebook"></i>
-			Login with Facebook
+			<span>Login with Facebook</span>
 		</button>
 		<button *ngIf="me" (click)="firebase.ref().unauth()" class="btn">
 			<figure [avatar]="me"></figure>
-			Logout
+			<span>Logout</span>
 		</button>
 	</footer>
 </header>
@@ -540,8 +540,14 @@ export class App {
 	}
 
 	login() {
-		let isMobile = navigator.userAgent.match('i(Phone|Pod|Pad|OS)|Android');
-		this.firebase.ref()[isMobile ? 'authWithOAuthRedirect' : 'authWithOAuthPopup']('facebook');
+		// fallback ofr browser which don't support popups
+		this.firebase.ref().authWithOAuthPopup('facebook').catch(err => {
+			if (err.code === 'TRANSPORT_UNAVAILABLE') {
+				this.firebase.ref().authWithOAuthRedirect('facebook');
+			} else {
+				console.error(err);
+			}
+		});
 	}
 
 	// CRUD
