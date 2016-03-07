@@ -76,12 +76,11 @@ textarea {
 	cursor: pointer;
 	transition: all 300ms;
 
-	& small {
-		margin-left: 5px;
-	}
-	& > i:first-child,
-	& > .avatar:first-child {
-		margin-right: 10px;
+	& > i,
+	& > .avatar {
+		& + * {
+			margin-left: 10px;
+		}
 	}
 	& + .btn {
 		margin-left: 1px;
@@ -310,28 +309,53 @@ textarea {
 
 	& .message {
 		display: flex;
-		align-items: flex-start;
+		flex-direction: column;
 		margin: 2px 0;
 
+		& header {
+			align-self: center;
+			color: var(--lighter);
+			opacity: .666;
+			font-size: 12px;
+			margin: 3px;
+		}
+		& header,
+		& footer {
+			font-size: 12px;
+			margin: 3px;
+
+			& button {
+				appearance: none;
+				background: none;
+				color: var(--lighter);
+				font: inherit;
+				padding: 0;
+				margin: 0 3px;
+				border: 0;
+				cursor: pointer;
+
+				&:hover {
+					color: var(--accent);
+				}
+			}
+		}
+		& footer {
+			align-self: flex-end;
+			margin-left: 36px;
+			margin-right: 36px;
+		}
 		& .avatar {
+			align-self: flex-start;
 			flex-shrink: 0;
 			margin-right: 10px;
 		}
 		& .content {
 			display: flex;
-			flex-direction: column;
-			align-items: flex-start;
-			max-width: calc(100% - 36px); // @HACK
 
-			& > header {
-				color: var(--lighter);
-				opacity: .666;
-				font-size: 12px;
-				margin: 3px;
-			}
 			& > div {
 				display: flex;
 				flex-direction: column;
+				min-width: 0;
 				max-width: 100%;
 				position: relative;
 				background-color: var(--lighter);
@@ -345,21 +369,19 @@ textarea {
 					white-space: pre-wrap;
 					text-overflow: ellipsis;
 				}
+				& img {
+					max-height: 200px;
+				}
+				& p {
+					margin: 0;
+				}
 				& .attachment {
 					align-self: flex-start;
 					display: inline-block;
 					margin-bottom: 3px;
-
-					& img {
-						max-height: 200px;
-					}
 				}
-				& .editing {
-					display: flex;
+				&.editing {
 					flex-grow: 1;
-				}
-				& p {
-					margin: 0;
 				}
 				&:before {
 					content: "";
@@ -372,36 +394,39 @@ textarea {
 					border-right-color: var(--lighter);
 				}
 			}
-			& > header,
-			& > footer {
-				font-size: 12px;
-				margin: 3px;
+		}
+		& .extra {
+			align-self: center;
+			padding: 0 5px;
 
-				& button {
-					appearance: none;
-					background: none;
-					color: var(--lighter);
-					font: inherit;
-					padding: 0;
-					margin: 0 3px;
-					border: 0;
-					cursor: pointer;
+			& button {
+				appearance: none;
+				background: none;
+				color: var(--lighter);
+				font: inherit;
+				padding: 0;
+				margin: 0 3px;
+				border: 0;
+				opacity: .5;
+				cursor: pointer;
 
-					&:hover {
-						color: var(--accent);
-					}
+				&:hover {
+					opacity: 1;
+				}
+				&.active {
+					color: var(--accent);
+					opacity: 1;
 				}
 			}
 		}
 		&.mine {
-			align-items: flex-end;
-			flex-direction: row-reverse;
-
 			& .avatar {
+				align-self: flex-end;
 				margin-right: 0;
 				margin-left: 10px;
 			}
 			& .content {
+				flex-direction: row-reverse;
 				align-items: flex-end;
 
 				& a {
@@ -421,22 +446,10 @@ textarea {
 				}
 			}
 		}
-		&.active {
-			& .avatar {
-				margin-top: 20px;
-			}
-			&.mine {
-				& .avatar {
-					margin-bottom: 20px;
-				}
-			}
-		}
 		&:not(.active) {
-			& .content {
-				& > header,
-				& > footer {
-					display: none;
-				}
+			& header,
+			& footer {
+				display: none;
 			}
 		}
 		&.empty {
@@ -446,6 +459,16 @@ textarea {
 			align-items: center;
 			opacity: .666;
 		}
+	}
+}
+.reactions {
+	display: flex;
+	padding: 0;
+	margin: 0;
+
+	& .reaction {
+		display: inline-flex;
+		align-items: center;
 	}
 }
 

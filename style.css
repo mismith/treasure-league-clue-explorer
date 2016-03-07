@@ -95,12 +95,11 @@ textarea {
 	-webkit-transition: all 300ms;
 	transition: all 300ms
 }
-.btn small {
-	margin-left: 5px;
+.btn > i,
+	.btn > .avatar {
 }
-.btn > i:first-child,
-	.btn > .avatar:first-child {
-	margin-right: 10px;
+.btn > i + *, .btn > .avatar + * {
+	margin-left: 10px;
 }
 .btn + .btn {
 	margin-left: 1px;
@@ -487,13 +486,53 @@ textarea {
 	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
-	-webkit-box-align: start;
-	-webkit-align-items: flex-start;
-	    -ms-flex-align: start;
-	        align-items: flex-start;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	-webkit-flex-direction: column;
+	    -ms-flex-direction: column;
+	        flex-direction: column;
 	margin: 2px 0;
 }
+.messages .message header {
+	-webkit-align-self: center;
+	    -ms-flex-item-align: center;
+	        align-self: center;
+	color: #EEE;
+	opacity: .666;
+	font-size: 12px;
+	margin: 3px;
+}
+.messages .message header,
+		.messages .message footer {
+	font-size: 12px;
+	margin: 3px;
+}
+.messages .message header button, .messages .message footer button {
+	-webkit-appearance: none;
+	   -moz-appearance: none;
+	        appearance: none;
+	background: none;
+	color: #EEE;
+	font: inherit;
+	padding: 0;
+	margin: 0 3px;
+	border: 0;
+	cursor: pointer;
+}
+.messages .message header button:hover, .messages .message footer button:hover {
+	color: rgb(59, 153, 252);
+}
+.messages .message footer {
+	-webkit-align-self: flex-end;
+	    -ms-flex-item-align: end;
+	        align-self: flex-end;
+	margin-left: 36px;
+	margin-right: 36px;
+}
 .messages .message .avatar {
+	-webkit-align-self: flex-start;
+	    -ms-flex-item-align: start;
+	        align-self: flex-start;
 	-webkit-flex-shrink: 0;
 	    -ms-flex-negative: 0;
 	        flex-shrink: 0;
@@ -504,24 +543,6 @@ textarea {
 	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
-	-webkit-box-orient: vertical;
-	-webkit-box-direction: normal;
-	-webkit-flex-direction: column;
-	    -ms-flex-direction: column;
-	        flex-direction: column;
-	-webkit-box-align: start;
-	-webkit-align-items: flex-start;
-	    -ms-flex-align: start;
-	        align-items: flex-start;
-	max-width: calc(100% - 36px);
-	// @HACK
-
-			& > header {
-		color: #EEE;
-		opacity: .666;
-		font-size: 12px;
-		margin: 3px;
-	}
 }
 .messages .message .content > div {
 	display: -webkit-box;
@@ -533,6 +554,7 @@ textarea {
 	-webkit-flex-direction: column;
 	    -ms-flex-direction: column;
 	        flex-direction: column;
+	min-width: 0;
 	max-width: 100%;
 	position: relative;
 	background-color: #EEE;
@@ -546,6 +568,12 @@ textarea {
 	white-space: pre-wrap;
 	text-overflow: ellipsis;
 }
+.messages .message .content > div img {
+	max-height: 200px;
+}
+.messages .message .content > div p {
+	margin: 0;
+}
 .messages .message .content > div .attachment {
 	-webkit-align-self: flex-start;
 	    -ms-flex-item-align: start;
@@ -553,21 +581,11 @@ textarea {
 	display: inline-block;
 	margin-bottom: 3px;
 }
-.messages .message .content > div .attachment img {
-	max-height: 200px;
-}
-.messages .message .content > div .editing {
-	display: -webkit-box;
-	display: -webkit-flex;
-	display: -ms-flexbox;
-	display: flex;
+.messages .message .content > div.editing {
 	-webkit-box-flex: 1;
 	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
 	        flex-grow: 1;
-}
-.messages .message .content > div p {
-	margin: 0;
 }
 .messages .message .content > div:before {
 	content: "";
@@ -579,12 +597,13 @@ textarea {
 	border: solid 6px transparent;
 	border-right-color: #EEE;
 }
-.messages .message .content > header,
-			.messages .message .content > footer {
-	font-size: 12px;
-	margin: 3px;
+.messages .message .extra {
+	-webkit-align-self: center;
+	    -ms-flex-item-align: center;
+	        align-self: center;
+	padding: 0 5px;
 }
-.messages .message .content > header button, .messages .message .content > footer button {
+.messages .message .extra button {
 	-webkit-appearance: none;
 	   -moz-appearance: none;
 	        appearance: none;
@@ -594,28 +613,31 @@ textarea {
 	padding: 0;
 	margin: 0 3px;
 	border: 0;
+	opacity: .5;
 	cursor: pointer;
 }
-.messages .message .content > header button:hover, .messages .message .content > footer button:hover {
+.messages .message .extra button:hover {
+	opacity: 1;
+}
+.messages .message .extra button.active {
 	color: rgb(59, 153, 252);
+	opacity: 1;
 }
 .messages .message.mine {
-	-webkit-box-align: end;
-	-webkit-align-items: flex-end;
-	    -ms-flex-align: end;
-	            -ms-grid-row-align: flex-end;
-	        align-items: flex-end;
+}
+.messages .message.mine .avatar {
+	-webkit-align-self: flex-end;
+	    -ms-flex-item-align: end;
+	        align-self: flex-end;
+	margin-right: 0;
+	margin-left: 10px;
+}
+.messages .message.mine .content {
 	-webkit-box-orient: horizontal;
 	-webkit-box-direction: reverse;
 	-webkit-flex-direction: row-reverse;
 	    -ms-flex-direction: row-reverse;
 	        flex-direction: row-reverse;
-}
-.messages .message.mine .avatar {
-	margin-right: 0;
-	margin-left: 10px;
-}
-.messages .message.mine .content {
 	-webkit-box-align: end;
 	-webkit-align-items: flex-end;
 	    -ms-flex-align: end;
@@ -636,22 +658,10 @@ textarea {
 	border-right-color: transparent;
 	border-left-color: rgb(59, 153, 252);
 }
-.messages .message.active {
-}
-.messages .message.active .avatar {
-	margin-top: 20px;
-}
-.messages .message.active.mine {
-}
-.messages .message.active.mine .avatar {
-	margin-bottom: 20px;
-}
 .messages .message:not(.active) {
 }
-.messages .message:not(.active) .content {
-}
-.messages .message:not(.active) .content > header,
-				.messages .message:not(.active) .content > footer {
+.messages .message:not(.active) header,
+			.messages .message:not(.active) footer {
 	display: none;
 }
 .messages .message.empty {
@@ -674,6 +684,24 @@ textarea {
 	            -ms-grid-row-align: center;
 	        align-items: center;
 	opacity: .666;
+}
+.reactions {
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+	padding: 0;
+	margin: 0
+}
+.reactions .reaction {
+	display: -webkit-inline-box;
+	display: -webkit-inline-flex;
+	display: -ms-inline-flexbox;
+	display: inline-flex;
+	-webkit-box-align: center;
+	-webkit-align-items: center;
+	    -ms-flex-align: center;
+	        align-items: center;
 }
 
 

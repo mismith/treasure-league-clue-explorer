@@ -1,6 +1,6 @@
 //our root app component
 import {Component, Directive, Input, Output, EventEmitter, ElementRef, Pipe, PipeTransform} from 'angular2/core';
-import {FirebaseHelper, FirebaseValuePipe, FirebaseLoadedPipe} from './firebase-helper';
+import {FirebaseHelper, FirebaseValuePipe, FirebaseLoadedPipe, FirebaseChildPipe} from './firebase-helper';
 
 function doConfirm(skip) {
 	return new Promise((resolve, reject) => {
@@ -106,46 +106,116 @@ class Hunt {
 
 
 @Component({
+	selector: '[reactionsRef]',
+	template: `
+<ul class="reactions">
+	<li *ngFor="#reaction of reactionTypes" [title]="caption(reaction.$id)" class="reaction">
+		<button (click)="toggle(reaction.$id)" [class.active]="reacted[reaction.$id]"><i class="fa fa-{{ reaction.icon }}"></i></button>
+		<small [innerHTML]="(reactions[reaction.$id] | length) || ''"></small>
+	</li>
+</ul>`,
+	pipes: [
+		FirebaseValuePipe,
+		LengthPipe,
+	],
+})
+class ReactionsComponent {
+	@Input() reactionsRef: Firebase;
+	@Input() users: Array;
+	@Input() me: Object;
+
+	private reactionTypes = [
+		{
+			$id: 'like',
+			name: 'Like',
+			icon: 'thumbs-up',
+		},
+		// {
+		// 	$id: 'dislike',
+		// 	name: 'Dislike',
+		// 	icon: 'thumbs-down',
+		// },
+	];
+	private reactions = {};
+	private reacted = {};
+
+	ngOnInit() {
+		this.reactionTypes.forEach(reaction => {
+			this.reactionsRef.child(reaction.$id).on('value', snap => {
+				let reactions = snap.val();
+				this.reactions[reaction.$id] = reactions;
+				this.reacted[reaction.$id] = reactions ? reactions[this.me.uid] : false;
+			});
+		});
+	}
+
+	getUser(userId) {
+		return this.users ? this.users.find(user => user.$id === userId) : {};
+	}
+	getReactionType(reactionId) {
+		return this.reactionTypes ? this.reactionTypes.find(reactionType => reactionType.$id === reactionId) : {};
+	}
+
+	caption(reactionId) {
+		if (this.reactions[reactionId]) {
+			var userNames = Object.keys(this.reactions[reactionId]).map(
+				userId => this.getUser(userId).name
+			);
+			return this.getReactionType(reactionId).name + ':\n' + userNames.join('\n');
+		} else {
+			return this.getReactionType(reactionId).name;
+		}
+	}
+	toggle(reactionId) {
+		return this.reactionsRef.child(reactionId).child(this.me.uid).once('value').then(snap => {
+			return snap.ref().set(snap.val() ? null : new Date().toISOString());
+		});
+	}
+}
+
+@Component({
 	selector: '[messages]',
 	template: `
 <ul class="messages">
-	<li *ngFor="#message of messages" class="message" [class.mine]="message.creator === user.uid" [class.active]="message.$active">
-		<figure [avatar]="getUser(message.creator)"></figure>
+	<li *ngFor="#message of messages" class="message" [class.mine]="message.creator === me.uid" [class.active]="message.$active">
+		<header>
+			<timestamp [innerHTML]="message.created | moment | date:'medium'"></timestamp>
+		</header>
 		<div class="content">
-			<header>
-				<timestamp [innerHTML]="message?.created | moment | date:'medium'"></timestamp>
-			</header>
-			<div (click)="!message.$editing ? (message.$active = ! message.$active) : null">
+			<figure [avatar]="getUser(message.creator)"></figure>
+			<div (click)="!message.$editing ? (message.$active = ! message.$active) : null" [class.editing]="message.$editing">
 				<a *ngFor="#attachment of message.attachments" [href]="attachment.src" target="_blank" class="attachment"><img [src]="attachment.src" /></a>
 				<div *ngIf="!message.$editing" [markdown]="message.content"></div>
-				<div *ngIf="message.$editing" class="editing">
-					<textarea [(ngModel)]="message.content"></textarea>
-				</div>
+				<textarea *ngIf="message.$editing" [(ngModel)]="message.content"></textarea>
 			</div>
-			<footer *ngIf="message.$editing">
-				<button (click)="message.$editing = false; message.content = message.$content">Cancel</button>
-				<button (click)="update.next({message: message, event: $event})">Save</button>
-			</footer>
-			<footer *ngIf="message.creator === user.uid && !message.$editing">
-				<button (click)="message.$editing = true; message.$content = message.content">Edit</button>
-				<button (click)="delete.next({message: message, event: $event})">Delete</button>
-			</footer>
+			<aside class="extra" [reactionsRef]="reactionsRef | child:message.$id" [users]="users" [me]="me"></aside>
 		</div>
+		<footer *ngIf="message.creator === me.uid && !message.$editing">
+			<button (click)="message.$editing = true; message.$content = message.content">Edit</button>
+			<button (click)="delete.next({message: message, event: $event})">Delete</button>
+		</footer>
+		<footer *ngIf="message.$editing">
+			<button (click)="message.$editing = false; message.content = message.$content">Cancel</button>
+			<button (click)="update.next({message: message, event: $event})">Save</button>
+		</footer>
 	</li>
 	<li *ngIf="!messages.length" class="message empty">No comments yet.</li>
 </ul>`,
 	pipes: [
 		MomentPipe,
+		FirebaseChildPipe,
 	],
 	directives: [
 		AvatarComponent,
 		MarkdownDirective,
+		ReactionsComponent,
 	],
 })
 class MessagesComponent {
 	@Input() messages: Array;
 	@Input() users: Array;
-	@Input() user: Object;
+	@Input() me: Object;
+	@Input() reactionsRef: Firebase;
 
 	@Output() update: EventEmitter = new EventEmitter();
 	@Output() delete: EventEmitter = new EventEmitter();
@@ -159,7 +229,7 @@ class MessagesComponent {
 	selector '[messagesRef]',
 	template: `
 <loading *ngIf="!(messagesRef | loaded)" class="fill">Loading...</loading>
-<div [messages]="messagesRef | value:true" [users]="users" [user]="me" (update)="update($event.message.$id, $event.message.content)" (delete)="delete($event.message.$id, $event.event.shiftKey)">
+<div [messages]="messagesRef | value:true" [users]="users" [me]="me" [reactionsRef]="reactionsRef" (update)="update($event.message.$id, $event.message.content)" (delete)="delete($event.message.$id, $event.event.shiftKey)">
 </div>
 <footer>
 	<div>
@@ -183,6 +253,7 @@ class MessengerComponent {
 	@Input() messagesRef: Firebase;
 	@Input() users: Object;
 	@Input() me: Object;
+	@Input() reactionsRef: Firebase;
 
 	private typing: string = '';
 	private firebaseFileUploader = new FirebaseFileUploader();
@@ -268,7 +339,7 @@ class MessengerComponent {
 					<button (click)="updateClue(clue)" class="btn"><i class="fa fa-save"></i></button>
 				</footer>
 			</div>
-			<div class="conversation" [messagesRef]="data('messages', clue.$id)" [users]="firebase.ref('hunts:users', huntId) | value:firebase.ref('users')" [me]="me"></div>
+			<div class="conversation" [messagesRef]="data('messages', clue.$id)" [users]="firebase.ref('hunts:users', huntId) | value:firebase.ref('users')" [me]="me" [reactionsRef]="data('reactions')"></div>
 			<div class="resolution">
 				<div>
 					<h3 *ngIf="clue.notes">Explanation</h3>
@@ -414,7 +485,7 @@ export class HuntComponent {
 		</section>
 		<section *ngIf="huntId" class="huntComments">
 			<h3>Comments</h3>
-			<div [messagesRef]="firebase.ref('hunts:data', huntId, 'messages', huntId)" [users]="firebase.ref('hunts:users', huntId) | value:firebase.ref('users')" [me]="me"></div>
+			<div [messagesRef]="firebase.ref('hunts:data', huntId, 'messages', huntId)" [users]="firebase.ref('hunts:users', huntId) | value:firebase.ref('users')" [me]="me" [reactionsRef]="firebase.ref('hunts:data', huntId, 'reactions', huntId)"></div>
 		</section>
 	</aside>
 	<main id="main" [huntId]="huntId" [firebase]="firebase" [me]="me"></main>

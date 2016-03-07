@@ -131,6 +131,7 @@ export class FirebaseValuePipe implements PipeTransform {
 	}
 
 	transform(nearRef: Firebase, [farRef: Firebase]) {
+		if (!nearRef) return nearRef;
 		if (!farRef) {
 			// value of reference
 			if (this.nearRef !== nearRef) {
@@ -199,6 +200,31 @@ export class FirebaseValuePipe implements PipeTransform {
 	}
 	ngOnDestroy() {
 		// @TODO: clean up all hooks
+	}
+}
+
+
+
+@Pipe({
+	name: 'child',
+	pure: false,
+	changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class FirebaseChildPipe implements PipeTransform {
+	private nearRef: Firebase;
+	private child: Firebase;
+	private path: string;
+
+	transform(nearRef: Firebase, args: any[]) {
+		if (this.nearRef !== nearRef) {
+			this.nearRef = nearRef;
+		}
+		let path = args.join('/');
+		if (this.path !== path) {
+			this.path = path;
+			this.child = this.nearRef.child(this.path);
+		}
+		return this.child;
 	}
 }
 
