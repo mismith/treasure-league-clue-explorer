@@ -446,6 +446,12 @@ textarea {
 				}
 			}
 		}
+		&.continued:not(.active) {
+			& .avatar,
+			& .content > div:before {
+				visibility: hidden;
+			}
+		}
 		&:not(.active) {
 			& header,
 			& footer {

@@ -658,6 +658,12 @@ textarea {
 	border-right-color: transparent;
 	border-left-color: rgb(59, 153, 252);
 }
+.messages .message.continued:not(.active) {
+}
+.messages .message.continued:not(.active) .avatar,
+			.messages .message.continued:not(.active) .content > div:before {
+	visibility: hidden;
+}
 .messages .message:not(.active) {
 }
 .messages .message:not(.active) header,
