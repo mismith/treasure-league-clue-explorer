@@ -5,6 +5,7 @@
 	--lighter: #EEE;
 	--accent: rgb(59, 153, 252);
 }
+@custom-media --mobile (width <= 600px);
 
 * {
 	box-sizing: border-box;
@@ -114,8 +115,8 @@ textarea {
 	position: relative;
 	display: inline-flex;
 	flex-direction: column;
-	min-width: 300px;
 	min-height: 300px;
+	min-width: 300px;
 	background-color: var(--primary);
 	margin: 10px;
 	opacity: 1;
@@ -133,6 +134,7 @@ textarea {
 
 		& > figure {
 			& img {
+				width: 100%;
 				max-width: 500px;
 				vertical-align: middle;
 			}
@@ -464,7 +466,7 @@ textarea {
 		flex-direction: column;
 		overflow: auto;
 	}
-	@media (width <= 600px) {
+	@media (--mobile) {
 		height: auto;
 		flex-direction: column;
 	}
@@ -559,6 +561,10 @@ textarea {
 			}
 		}
 	}
+	@media (--mobile) {
+		flex-shrink: 0;
+		order: 2;
+	}
 }
 #main {
 	align-items: center;
@@ -575,5 +581,9 @@ textarea {
 		flex-wrap: wrap;
 		justify-content: center;
 		flex-grow: 1;
+	}
+	@media (--mobile) {
+		flex-direction: column;
+		flex-shrink: 0;
 	}
 }

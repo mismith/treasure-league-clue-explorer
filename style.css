@@ -140,8 +140,8 @@ textarea {
 	-webkit-flex-direction: column;
 	    -ms-flex-direction: column;
 	        flex-direction: column;
-	min-width: 300px;
 	min-height: 300px;
+	min-width: 300px;
 	background-color: #51535F;
 	margin: 10px;
 	opacity: 1;
@@ -178,6 +178,7 @@ textarea {
 }
 
 .clue > aside > figure img {
+	width: 100%;
 	max-width: 500px;
 	vertical-align: middle;
 }
@@ -857,6 +858,17 @@ textarea {
 #sidebar > section .users > li > header .avatar {
 	margin-right: 10px;
 }
+@media (max-width: 600px) {
+	#sidebar {
+		-webkit-flex-shrink: 0;
+		    -ms-flex-negative: 0;
+		        flex-shrink: 0;
+		-webkit-box-ordinal-group: 3;
+		-webkit-order: 2;
+		    -ms-flex-order: 2;
+		        order: 2;
+	}
+	}
 #main {
 	-webkit-box-align: center;
 	-webkit-align-items: center;
@@ -896,3 +908,15 @@ textarea {
 	    -ms-flex-positive: 1;
 	        flex-grow: 1;
 }
+@media (max-width: 600px) {
+	#main {
+		-webkit-box-orient: vertical;
+		-webkit-box-direction: normal;
+		-webkit-flex-direction: column;
+		    -ms-flex-direction: column;
+		        flex-direction: column;
+		-webkit-flex-shrink: 0;
+		    -ms-flex-negative: 0;
+		        flex-shrink: 0;
+	}
+	}

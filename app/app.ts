@@ -389,7 +389,7 @@ export class HuntComponent {
 		</div>-->
 	</div>
 	<footer>
-		<button *ngIf="!me" (click)="firebase.ref().authWithOAuthPopup('facebook')" class="btn">
+		<button *ngIf="!me" (click)="login()" class="btn">
 			<i class="fa fa-facebook"></i>
 			Login with Facebook
 		</button>
@@ -466,6 +466,11 @@ export class App {
 				this.huntId = null;
 			}
 		});
+	}
+
+	login() {
+		let isMobile = navigator.userAgent.match('i(Phone|Pod|Pad|OS)|Android');
+		this.firebase.ref()[isMobile ? 'authWithOAuthRedirect' : 'authWithOAuthPopup']('facebook');
 	}
 
 	// CRUD
