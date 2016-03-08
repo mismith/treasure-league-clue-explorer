@@ -9,6 +9,24 @@ function doConfirm(skip) {
 	});
 }
 
+
+@Component({
+	selector: '[avatar]',
+	template: `<img [src]="getPhotoUrl(user?.facebookId)" [alt]="'Avatar for ' + user?.name" [width]="size" [height]="size" />`,
+	host: {
+		'[title]': 'user?.name',
+		'[class.avatar]': 'true',
+	},
+})
+class AvatarComponent {
+	@Input('avatar') user: Object;
+	@Input() size: number = 24;
+
+	getPhotoUrl(facebookId) {
+		return `https://graph.facebook.com/v2.1/${facebookId || ''}/picture?type=square`;
+	}
+}
+
 @Component({
 	selector: '[avatar]',
 	template: `<img [src]="getPhotoUrl(user?.facebookId)" [alt]="'Avatar for ' + user?.name" [width]="size" [height]="size" />`,
@@ -228,7 +246,6 @@ class MessagesComponent {
 @Component({
 	selector '[messagesRef]',
 	template: `
-<loading *ngIf="!(messagesRef | loaded)" class="fill">Loading...</loading>
 <div [messages]="messagesRef | value:true" [users]="users" [me]="me" [reactionsRef]="reactionsRef" (update)="update($event.message.$id, $event.message.content)" (delete)="delete($event.message.$id, $event.event.shiftKey)">
 </div>
 <footer>
@@ -240,6 +257,7 @@ class MessagesComponent {
 </footer>`,
 	host: {
 		'[class.messenger]': 'true',
+		'[class.loading]': '!(messagesRef | loaded)',
 	},
 	pipes: [
 		FirebaseValuePipe,
@@ -309,8 +327,7 @@ class MessengerComponent {
 @Component({
 	selector: '[huntId]',
 	template: `
-<section *ngIf="me">
-	<loading *ngIf="!(data('clues') | loaded)" class="fill">Loading...</loading>
+<section *ngIf="me" [class.loading]="!(data('clues') | loaded)">
 	<article *ngFor="#clue of data('clues') | value:true" (mouseenter)="play(clue)" (mouseleave)="stop(clue)" (touchstart)="play(clue)" (touchend)="stop(clue)" [id]="clue.$id" class="clue {{ active(clue) }}">
 		<header>
 			<a [href]="'#' + clue.$id" [innerHTML]="clue.num || '#'" class="btn"></a>
@@ -473,7 +490,9 @@ export class HuntComponent {
 <div id="frame">
 	<aside *ngIf="huntId" id="sidebar">
 		<section class="huntDetail">
-			<h3>Participants</h3>
+			<header>
+				<h3>Participants</h3>
+			</header>
 			<ul class="users">
 				<li *ngFor="#user of firebase.ref('hunts:users', huntId) | value:firebase.ref('users')" class="user">
 					<header>
@@ -490,6 +509,9 @@ export class HuntComponent {
 	</aside>
 	<main id="main" [huntId]="huntId" [firebase]="firebase" [me]="me"></main>
 </div>`,
+	host: {
+		'[class.loading]': 'false',
+	},
 	pipes: [
 		FirebaseValuePipe,
 		FirebaseLoadedPipe,

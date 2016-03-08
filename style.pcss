@@ -5,7 +5,16 @@
 	--lighter: #EEE;
 	--accent: rgb(59, 153, 252);
 }
-@custom-media --mobile (width <= 600px);
+@custom-media --mobile (width <= 800px);
+
+.loading {
+	background: url(loading.gif) center center no-repeat;
+	background-size: 100px;
+
+	& > * {
+		opacity: 0;
+	}
+}
 
 * {
 	box-sizing: border-box;
@@ -31,15 +40,6 @@ h4 {
 	text-transform: uppercase;
 	letter-spacing: .2em;
 }
-a {
-	color: var(--accent);
-	text-decoration: none;
-	cursor: pointer;
-
-	&:hover {
-		text-decoration: underline;
-	}
-}
 figure {
 	padding: 0;
 	margin: 0;
@@ -53,7 +53,33 @@ textarea {
 	flex-grow: 1;
 	resize: vertical;
 }
+button {
+	min-width: 32px;
+	cursor: pointer;
 
+	&:hover {
+		color: var(--accent);
+	}
+}
+a {
+	color: var(--accent);
+	text-decoration: none;
+	cursor: pointer;
+
+	&:hover {
+		text-decoration: underline;
+	}
+}
+
+.passthru {
+	appearance: none;
+	background: none;
+	color: inherit;
+	font: inherit;
+	padding: 0;
+	border: 0;
+	margin: 0;
+}
 .fill {
 	display: flex;
 	flex-direction: column;
@@ -74,7 +100,6 @@ textarea {
 	margin: 0;
 	opacity: .75;
 	cursor: pointer;
-	transition: all 300ms;
 
 	& > i,
 	& > .avatar {
@@ -308,6 +333,7 @@ textarea {
 
 	& .message {
 		display: flex;
+		align-items: flex-start;
 		flex-direction: column;
 		margin: 2px 0;
 
@@ -350,6 +376,7 @@ textarea {
 		}
 		& .content {
 			display: flex;
+			max-width: 480px;
 
 			& > div {
 				display: flex;
@@ -369,6 +396,7 @@ textarea {
 					text-overflow: ellipsis;
 				}
 				& img {
+					max-width: 100%;
 					max-height: 200px;
 				}
 				& p {
@@ -396,6 +424,7 @@ textarea {
 		}
 		& .extra {
 			align-self: center;
+			flex-shrink: 0;
 			padding: 0 5px;
 
 			& button {
@@ -419,6 +448,8 @@ textarea {
 			}
 		}
 		&.mine {
+			align-items: flex-end;
+
 			& .avatar {
 				align-self: flex-end;
 				margin-right: 0;
@@ -483,6 +514,11 @@ textarea {
 	flex-direction: column;
 	width: 100%;
 	height: 100%;
+
+	@media (--mobile) {
+		min-height: 100%;
+		height: auto;
+	}
 }
 #frame {
 	display: flex;
@@ -495,7 +531,6 @@ textarea {
 		overflow: auto;
 	}
 	@media (--mobile) {
-		height: auto;
 		flex-direction: column;
 	}
 }
@@ -506,6 +541,7 @@ textarea {
 	flex-wrap: wrap;
 	flex-shrink: 0;
 	background-color: var(--primary);
+	text-align: center;
 	margin-bottom: 1px;
 
 	& > header,
@@ -515,6 +551,9 @@ textarea {
 	& > div {
 		flex-grow: 1;
 		text-align: right;
+	}
+	@media (--mobile) {
+		flex-direction: column;
 	}
 }
 #sidebar {
@@ -565,6 +604,16 @@ textarea {
 				}
 			}
 		}*/
+		&.huntDetail {
+			& > header {
+				display: flex;
+				align-items: center;
+
+				& > *:first-child {
+					flex-grow: 1;
+				}
+			}
+		}
 		& .messenger {
 			display: flex;
 			flex-direction: column;
@@ -595,8 +644,11 @@ textarea {
 		}
 	}
 	@media (--mobile) {
+		flex-basis: auto;
+		flex-grow: 1;
 		flex-shrink: 0;
 		order: 2;
+		max-width: none;
 	}
 }
 #main {

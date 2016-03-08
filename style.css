@@ -1,3 +1,12 @@
+.loading {
+	background: url(loading.gif) center center no-repeat;
+	background-size: 100px
+}
+
+.loading > * {
+	opacity: 0
+}
+
 * {
 	box-sizing: border-box;
 }
@@ -22,14 +31,6 @@ h4 {
 	text-transform: uppercase;
 	letter-spacing: .2em;
 }
-a {
-	color: rgb(59, 153, 252);
-	text-decoration: none;
-	cursor: pointer
-}
-a:hover {
-	text-decoration: underline;
-}
 figure {
 	padding: 0;
 	margin: 0;
@@ -46,7 +47,33 @@ textarea {
 	        flex-grow: 1;
 	resize: vertical;
 }
+button {
+	min-width: 32px;
+	cursor: pointer
+}
+button:hover {
+	color: rgb(59, 153, 252)
+}
+a {
+	color: rgb(59, 153, 252);
+	text-decoration: none;
+	cursor: pointer
+}
+a:hover {
+	text-decoration: underline
+}
 
+.passthru {
+	-webkit-appearance: none;
+	   -moz-appearance: none;
+	        appearance: none;
+	background: none;
+	color: inherit;
+	font: inherit;
+	padding: 0;
+	border: 0;
+	margin: 0;
+}
 .fill {
 	display: -webkit-box;
 	display: -webkit-flex;
@@ -85,22 +112,20 @@ textarea {
 	border: 0;
 	margin: 0;
 	opacity: .75;
-	cursor: pointer;
-	-webkit-transition: all 300ms;
-	transition: all 300ms
+	cursor: pointer
 }
 .btn > i,
 	.btn > .avatar {
 }
 .btn > i + *, .btn > .avatar + * {
-	margin-left: 10px;
+	margin-left: 10px
 }
 .btn + .btn {
-	margin-left: 1px;
+	margin-left: 1px
 }
 .btn:hover,
 	.btn.active {
-	color: rgb(59, 153, 252);
+	color: rgb(59, 153, 252)
 }
 
 .file-upload {
@@ -119,7 +144,7 @@ textarea {
 	font-size: 1000px;
 	opacity: 0;
 	cursor: pointer;
-	z-index: 1;
+	z-index: 1
 }
 
 .clue {
@@ -143,7 +168,7 @@ textarea {
 }
 
 .clue .btn {
-	font-size: 24px;
+	font-size: 24px
 }
 
 .clue > aside {
@@ -160,7 +185,7 @@ textarea {
 	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
 	        flex-grow: 1;
-	position: relative;
+	position: relative
 }
 
 .clue > aside > figure {
@@ -169,7 +194,7 @@ textarea {
 .clue > aside > figure img {
 	width: 100%;
 	max-width: 500px;
-	vertical-align: middle;
+	vertical-align: middle
 }
 
 .clue > aside > *:not(figure) {
@@ -196,12 +221,12 @@ textarea {
 	        transform: scale(0, 0);
 	-webkit-backface-visibility: hidden;
 	        backface-visibility: hidden;
-	overflow: auto;
+	overflow: auto
 }
 
 .clue > aside > *:not(figure).information {
 	-webkit-transform-origin: 80% top;
-	        transform-origin: 80% top;
+	        transform-origin: 80% top
 }
 
 .clue > aside > *:not(figure).information .fieldset {
@@ -217,18 +242,18 @@ textarea {
 	-webkit-box-flex: 1;
 	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
-	        flex-grow: 1;
+	        flex-grow: 1
 }
 
 .clue > aside > *:not(figure).conversation {
 	-webkit-transform-origin: 20% bottom;
-	        transform-origin: 20% bottom;
+	        transform-origin: 20% bottom
 }
 
 .clue > aside > *:not(figure).resolution {
 	-webkit-transform-origin: 80% bottom;
 	        transform-origin: 80% bottom;
-	text-align: center;
+	text-align: center
 }
 
 .clue > aside > *:not(figure).resolution > * {
@@ -236,11 +261,11 @@ textarea {
 	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
-	overflow: auto;
+	overflow: auto
 }
 
 .clue > aside > *:not(figure).resolution > * div {
-	white-space: pre-wrap;
+	white-space: pre-wrap
 }
 
 .clue > aside > *:not(figure).resolution > div {
@@ -257,15 +282,15 @@ textarea {
 	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
 	        flex-grow: 1;
-	padding: 10px;
+	padding: 10px
 }
 
 .clue > aside > *:not(figure).resolution > div h3 {
-	margin: 0 auto 20px;
+	margin: 0 auto 20px
 }
 
 .clue > aside > *:not(figure).resolution > div div {
-	font-size: 24px;
+	font-size: 24px
 }
 
 .clue > aside > *:not(figure).resolution > footer {
@@ -277,7 +302,7 @@ textarea {
 	max-height: 50%;
 	background-color: #FFF;
 	color: #000;
-	padding: 32px 10px;
+	padding: 32px 10px
 }
 
 .clue > aside > *:not(figure).resolution > footer div {
@@ -288,7 +313,7 @@ textarea {
 	-webkit-transition: -webkit-filter 300ms;
 	transition: -webkit-filter 300ms;
 	transition: filter 300ms;
-	transition: filter 300ms, -webkit-filter 300ms;
+	transition: filter 300ms, -webkit-filter 300ms
 }
 
 .clue > aside > *:not(figure).resolution > footer.hover {
@@ -297,7 +322,7 @@ textarea {
 .clue > aside > *:not(figure).resolution > footer.hover div {
 	filter: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg"><filter id="filter"><feGaussianBlur stdDeviation="0" /></filter></svg>#filter');
 	-webkit-filter: blur(0);
-	        filter: blur(0);
+	        filter: blur(0)
 }
 
 .clue header,
@@ -305,7 +330,7 @@ textarea {
 	display: -webkit-box;
 	display: -webkit-flex;
 	display: -ms-flexbox;
-	display: flex;
+	display: flex
 }
 
 .clue header .btn, .clue footer .btn {
@@ -314,19 +339,19 @@ textarea {
 	-webkit-box-flex: 1;
 	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
-	        flex-grow: 1;
+	        flex-grow: 1
 }
 
 .clue > header {
-	margin-bottom: 1px;
+	margin-bottom: 1px
 }
 
 .clue > footer {
-	margin-top: 1px;
+	margin-top: 1px
 }
 
 .clue.new {
-	overflow: hidden;
+	overflow: hidden
 }
 
 .clue.new > div {
@@ -349,11 +374,11 @@ textarea {
 	        flex-grow: 1;
 	text-align: center;
 	border: dashed 3px #202327;
-	margin: 3px;
+	margin: 3px
 }
 
 .clue.new:not(:hover) {
-	opacity: .5;
+	opacity: .5
 }
 
 .clue.editing {
@@ -361,7 +386,7 @@ textarea {
 
 .clue.editing .information {
 	-webkit-transform: scale(1, 1);
-	        transform: scale(1, 1);
+	        transform: scale(1, 1)
 }
 
 .clue.conversing {
@@ -369,7 +394,7 @@ textarea {
 
 .clue.conversing .conversation {
 	-webkit-transform: scale(1, 1);
-	        transform: scale(1, 1);
+	        transform: scale(1, 1)
 }
 
 .clue.resolving {
@@ -377,7 +402,7 @@ textarea {
 
 .clue.resolving .resolution {
 	-webkit-transform: scale(1, 1);
-	        transform: scale(1, 1);
+	        transform: scale(1, 1)
 }
 
 .avatar {
@@ -411,7 +436,7 @@ textarea {
 	    -ms-flex-negative: 1;
 	        flex-shrink: 1;
 	padding: 10px;
-	overflow: auto;
+	overflow: auto
 }
 .messenger > footer {
 	display: -webkit-box;
@@ -420,7 +445,7 @@ textarea {
 	display: flex;
 	-webkit-flex-shrink: 0;
 	    -ms-flex-negative: 0;
-	        flex-shrink: 0;
+	        flex-shrink: 0
 }
 .messenger > footer > div {
 	display: -webkit-box;
@@ -432,7 +457,7 @@ textarea {
 	    -ms-flex-positive: 1;
 	        flex-grow: 1;
 	background-color: #000000;
-	background-color: rgba(0,0,0,.5);
+	background-color: rgba(0,0,0,.5)
 }
 .messenger > footer > div textarea {
 	-webkit-box-flex: 1;
@@ -441,7 +466,7 @@ textarea {
 	        flex-grow: 1;
 	border: 0;
 	border-radius: 5px;
-	margin: 3px;
+	margin: 3px
 }
 .messenger > footer .btn {
 	position: relative;
@@ -449,7 +474,7 @@ textarea {
 	-webkit-flex-grow: 0;
 	    -ms-flex-positive: 0;
 	        flex-grow: 0;
-	overflow: hidden;
+	overflow: hidden
 }
 .messages {
 	display: -webkit-box;
@@ -476,12 +501,16 @@ textarea {
 	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
+	-webkit-box-align: start;
+	-webkit-align-items: flex-start;
+	    -ms-flex-align: start;
+	        align-items: flex-start;
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
 	-webkit-flex-direction: column;
 	    -ms-flex-direction: column;
 	        flex-direction: column;
-	margin: 2px 0;
+	margin: 2px 0
 }
 .messages .message header {
 	-webkit-align-self: center;
@@ -490,12 +519,12 @@ textarea {
 	color: #EEE;
 	opacity: .666;
 	font-size: 12px;
-	margin: 3px;
+	margin: 3px
 }
 .messages .message header,
 		.messages .message footer {
 	font-size: 12px;
-	margin: 3px;
+	margin: 3px
 }
 .messages .message header button, .messages .message footer button {
 	-webkit-appearance: none;
@@ -507,17 +536,17 @@ textarea {
 	padding: 0;
 	margin: 0 3px;
 	border: 0;
-	cursor: pointer;
+	cursor: pointer
 }
 .messages .message header button:hover, .messages .message footer button:hover {
-	color: rgb(59, 153, 252);
+	color: rgb(59, 153, 252)
 }
 .messages .message footer {
 	-webkit-align-self: flex-end;
 	    -ms-flex-item-align: end;
 	        align-self: flex-end;
 	margin-left: 36px;
-	margin-right: 36px;
+	margin-right: 36px
 }
 .messages .message .avatar {
 	-webkit-align-self: flex-start;
@@ -526,13 +555,14 @@ textarea {
 	-webkit-flex-shrink: 0;
 	    -ms-flex-negative: 0;
 	        flex-shrink: 0;
-	margin-right: 10px;
+	margin-right: 10px
 }
 .messages .message .content {
 	display: -webkit-box;
 	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
+	max-width: 480px
 }
 .messages .message .content > div {
 	display: -webkit-box;
@@ -551,31 +581,32 @@ textarea {
 	color: #202327;
 	text-align: left;
 	padding: 3px 5px;
-	border-radius: 5px;
+	border-radius: 5px
 }
 .messages .message .content > div * {
 	overflow: hidden;
 	white-space: pre-wrap;
-	text-overflow: ellipsis;
+	text-overflow: ellipsis
 }
 .messages .message .content > div img {
-	max-height: 200px;
+	max-width: 100%;
+	max-height: 200px
 }
 .messages .message .content > div p {
-	margin: 0;
+	margin: 0
 }
 .messages .message .content > div .attachment {
 	-webkit-align-self: flex-start;
 	    -ms-flex-item-align: start;
 	        align-self: flex-start;
 	display: inline-block;
-	margin-bottom: 3px;
+	margin-bottom: 3px
 }
 .messages .message .content > div.editing {
 	-webkit-box-flex: 1;
 	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
-	        flex-grow: 1;
+	        flex-grow: 1
 }
 .messages .message .content > div:before {
 	content: "";
@@ -585,13 +616,16 @@ textarea {
 	width: 0;
 	height: 0;
 	border: solid 6px transparent;
-	border-right-color: #EEE;
+	border-right-color: #EEE
 }
 .messages .message .extra {
 	-webkit-align-self: center;
 	    -ms-flex-item-align: center;
 	        align-self: center;
-	padding: 0 5px;
+	-webkit-flex-shrink: 0;
+	    -ms-flex-negative: 0;
+	        flex-shrink: 0;
+	padding: 0 5px
 }
 .messages .message .extra button {
 	-webkit-appearance: none;
@@ -604,23 +638,28 @@ textarea {
 	margin: 0 3px;
 	border: 0;
 	opacity: .5;
-	cursor: pointer;
+	cursor: pointer
 }
 .messages .message .extra button:hover {
-	opacity: 1;
+	opacity: 1
 }
 .messages .message .extra button.active {
 	color: rgb(59, 153, 252);
-	opacity: 1;
+	opacity: 1
 }
 .messages .message.mine {
+	-webkit-box-align: end;
+	-webkit-align-items: flex-end;
+	    -ms-flex-align: end;
+	            -ms-grid-row-align: flex-end;
+	        align-items: flex-end
 }
 .messages .message.mine .avatar {
 	-webkit-align-self: flex-end;
 	    -ms-flex-item-align: end;
 	        align-self: flex-end;
 	margin-right: 0;
-	margin-left: 10px;
+	margin-left: 10px
 }
 .messages .message.mine .content {
 	-webkit-box-orient: horizontal;
@@ -632,13 +671,13 @@ textarea {
 	-webkit-align-items: flex-end;
 	    -ms-flex-align: end;
 	            -ms-grid-row-align: flex-end;
-	        align-items: flex-end;
+	        align-items: flex-end
 }
 .messages .message.mine .content a {
-	color: #EEE;
+	color: #EEE
 }
 .messages .message.mine .content > div {
-	background-color: rgb(59, 153, 252);
+	background-color: rgb(59, 153, 252)
 }
 .messages .message.mine .content > div:before {
 	right: auto;
@@ -646,19 +685,19 @@ textarea {
 	bottom: 7px;
 	left: 100%;
 	border-right-color: transparent;
-	border-left-color: rgb(59, 153, 252);
+	border-left-color: rgb(59, 153, 252)
 }
 .messages .message.continued:not(.active) {
 }
 .messages .message.continued:not(.active) .avatar,
 			.messages .message.continued:not(.active) .content > div:before {
-	visibility: hidden;
+	visibility: hidden
 }
 .messages .message:not(.active) {
 }
 .messages .message:not(.active) header,
 			.messages .message:not(.active) footer {
-	display: none;
+	display: none
 }
 .messages .message.empty {
 	-webkit-box-orient: vertical;
@@ -679,7 +718,7 @@ textarea {
 	    -ms-flex-align: center;
 	            -ms-grid-row-align: center;
 	        align-items: center;
-	opacity: .666;
+	opacity: .666
 }
 .reactions {
 	display: -webkit-box;
@@ -697,7 +736,7 @@ textarea {
 	-webkit-box-align: center;
 	-webkit-align-items: center;
 	    -ms-flex-align: center;
-	        align-items: center;
+	        align-items: center
 }
 
 
@@ -712,8 +751,17 @@ textarea {
 	    -ms-flex-direction: column;
 	        flex-direction: column;
 	width: 100%;
-	height: 100%;
+	height: 100%
 }
+
+
+@media (max-width: 800px) {
+
+	#app {
+		min-height: 100%;
+		height: auto
+	}
+	}
 #frame {
 	display: -webkit-box;
 	display: -webkit-flex;
@@ -737,16 +785,16 @@ textarea {
 	-webkit-flex-direction: column;
 	    -ms-flex-direction: column;
 	        flex-direction: column;
-	overflow: auto;
+	overflow: auto
 }
-@media (max-width: 600px) {
+@media (max-width: 800px) {
+
 	#frame {
-		height: auto;
 		-webkit-box-orient: vertical;
 		-webkit-box-direction: normal;
 		-webkit-flex-direction: column;
 		    -ms-flex-direction: column;
-		        flex-direction: column;
+		        flex-direction: column
 	}
 	}
 #header {
@@ -769,19 +817,30 @@ textarea {
 	    -ms-flex-negative: 0;
 	        flex-shrink: 0;
 	background-color: #51535F;
+	text-align: center;
 	margin-bottom: 1px
 }
 #header > header,
 	#header > div {
-	padding: 0 10px;
+	padding: 0 10px
 }
 #header > div {
 	-webkit-box-flex: 1;
 	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
 	        flex-grow: 1;
-	text-align: right;
+	text-align: right
 }
+@media (max-width: 800px) {
+
+	#header {
+		-webkit-box-orient: vertical;
+		-webkit-box-direction: normal;
+		-webkit-flex-direction: column;
+		    -ms-flex-direction: column;
+		        flex-direction: column
+	}
+	}
 #sidebar {
 	min-width: 300px;
 	max-width: 480px;
@@ -808,7 +867,7 @@ textarea {
 	        flex-shrink: 1;
 	background-color: #51535F;
 	overflow: auto;
-	margin-bottom: 1px;
+	margin-bottom: 1px
 	/*		&.huntList {
 			display: flex;
 			flex-direction: column;
@@ -842,7 +901,25 @@ textarea {
 }
 #sidebar > section h2,
 		#sidebar > section h3 {
-	margin: 10px;
+	margin: 10px
+}
+#sidebar > section.huntDetail {
+}
+#sidebar > section.huntDetail > header {
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-align: center;
+	-webkit-align-items: center;
+	    -ms-flex-align: center;
+	        align-items: center
+}
+#sidebar > section.huntDetail > header > *:first-child {
+	-webkit-box-flex: 1;
+	-webkit-flex-grow: 1;
+	    -ms-flex-positive: 1;
+	        flex-grow: 1
 }
 #sidebar > section .messenger {
 	display: -webkit-box;
@@ -857,13 +934,13 @@ textarea {
 	-webkit-box-flex: 1;
 	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
-	        flex-grow: 1;
+	        flex-grow: 1
 }
 #sidebar > section .messenger .messages {
 	-webkit-box-pack: end;
 	-webkit-justify-content: flex-end;
 	    -ms-flex-pack: end;
-	        justify-content: flex-end;
+	        justify-content: flex-end
 }
 #sidebar > section .users {
 	display: -webkit-box;
@@ -879,23 +956,31 @@ textarea {
 	    -ms-flex-negative: 0;
 	        flex-shrink: 0;
 	padding: 10px;
-	margin: 0;
+	margin: 0
 }
 #sidebar > section .users > li {
-	padding: 3px 0;
+	padding: 3px 0
 }
 #sidebar > section .users > li > header {
 	-webkit-box-align: center;
 	-webkit-align-items: center;
 	    -ms-flex-align: center;
 	            -ms-grid-row-align: center;
-	        align-items: center;
+	        align-items: center
 }
 #sidebar > section .users > li > header .avatar {
-	margin-right: 10px;
+	margin-right: 10px
 }
-@media (max-width: 600px) {
+@media (max-width: 800px) {
+
 	#sidebar {
+		-webkit-flex-basis: auto;
+		    -ms-flex-preferred-size: auto;
+		        flex-basis: auto;
+		-webkit-box-flex: 1;
+		-webkit-flex-grow: 1;
+		    -ms-flex-positive: 1;
+		        flex-grow: 1;
 		-webkit-flex-shrink: 0;
 		    -ms-flex-negative: 0;
 		        flex-shrink: 0;
@@ -903,6 +988,7 @@ textarea {
 		-webkit-order: 2;
 		    -ms-flex-order: 2;
 		        order: 2;
+		max-width: none
 	}
 	}
 #main {
@@ -925,7 +1011,7 @@ textarea {
 	-webkit-justify-content: space-around;
 	    -ms-flex-pack: distribute;
 	        justify-content: space-around;
-	width: 100%;
+	width: 100%
 }
 #main > section {
 	display: -webkit-box;
@@ -942,9 +1028,10 @@ textarea {
 	-webkit-box-flex: 1;
 	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
-	        flex-grow: 1;
+	        flex-grow: 1
 }
-@media (max-width: 600px) {
+@media (max-width: 800px) {
+
 	#main {
 		-webkit-box-orient: vertical;
 		-webkit-box-direction: normal;
@@ -953,6 +1040,6 @@ textarea {
 		        flex-direction: column;
 		-webkit-flex-shrink: 0;
 		    -ms-flex-negative: 0;
-		        flex-shrink: 0;
+		        flex-shrink: 0
 	}
 	}
