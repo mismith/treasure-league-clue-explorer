@@ -493,7 +493,9 @@ export class HuntComponent {
 		</button>
 	</footer>
 </header>
-<div id="frame" [huntId]="huntId" [firebase]="firebase" [me]="me"></div>`,
+<div id="body">
+	<section id="hunt" [huntId]="huntId" [firebase]="firebase" [me]="me"></section>
+</div>`,
 	host: {
 		'[class.loading]': 'false',
 	},

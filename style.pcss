@@ -521,20 +521,6 @@ a {
 		height: auto;
 	}
 }
-#frame {
-	display: flex;
-	flex-grow: 1;
-	flex-wrap: nowrap;
-
-	& > * {
-		display: flex;
-		flex-direction: column;
-		overflow: auto;
-	}
-	@media (--mobile) {
-		flex-direction: column;
-	}
-}
 #header {
 	display: flex;
 	justify-content: center;
@@ -552,6 +538,23 @@ a {
 	& > div {
 		flex-grow: 1;
 		text-align: right;
+	}
+	@media (--mobile) {
+		flex-direction: column;
+	}
+}
+#body {
+	display: flex;
+	flex-grow: 1;
+}
+#hunt {
+	display: flex;
+	flex-wrap: nowrap;
+
+	& > * {
+		display: flex;
+		flex-direction: column;
+		overflow: auto;
 	}
 	@media (--mobile) {
 		flex-direction: column;
