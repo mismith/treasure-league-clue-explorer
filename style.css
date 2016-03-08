@@ -48,13 +48,6 @@ textarea {
 	        flex-grow: 1;
 	resize: vertical;
 }
-button {
-	min-width: 32px;
-	cursor: pointer
-}
-button:hover {
-	color: rgb(59, 153, 252)
-}
 a {
 	color: rgb(59, 153, 252);
 	text-decoration: none;
@@ -563,7 +556,7 @@ a:hover {
 	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
-	max-width: 480px
+	max-width: 100%
 }
 .messages .message .content > div {
 	display: -webkit-box;
