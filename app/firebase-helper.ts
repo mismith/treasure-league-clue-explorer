@@ -164,9 +164,9 @@ export class FirebaseValuePipe implements PipeTransform {
 				this.changeDetectorRef.markForCheck();
 
 				// hook
-				nearRef.on('child_added', this.onNearChildAdded, this);
-				nearRef.on('child_changed', this.onNearChildChanged, this);
-				nearRef.on('child_removed', this.onNearChildRemoved, this);
+				this.nearRef.on('child_added', this.onNearChildAdded, this);
+				this.nearRef.on('child_changed', this.onNearChildChanged, this);
+				this.nearRef.on('child_removed', this.onNearChildRemoved, this);
 			}
 		} else {
 			// values of key-linked references
@@ -182,8 +182,8 @@ export class FirebaseValuePipe implements PipeTransform {
 			if (this.nearRef !== nearRef) {
 				// input changed, clean up hooks
 				if (this.nearRef) {
-					nearRef.off('child_added', this.onNearFarChildAdded, this);
-					nearRef.off('child_removed', this.onNearFarChildRemoved, this);
+					this.nearRef.off('child_added', this.onNearFarChildAdded, this);
+					this.nearRef.off('child_removed', this.onNearFarChildRemoved, this);
 				}
 				this.nearRef = nearRef;
 
@@ -192,8 +192,8 @@ export class FirebaseValuePipe implements PipeTransform {
 				this.changeDetectorRef.markForCheck();
 
 				// hook
-				nearRef.on('child_added', this.onNearFarChildAdded, this);
-				nearRef.on('child_removed', this.onNearFarChildRemoved, this);
+				this.nearRef.on('child_added', this.onNearFarChildAdded, this);
+				this.nearRef.on('child_removed', this.onNearFarChildRemoved, this);
 			}
 		}
 		return this.lastValue;
