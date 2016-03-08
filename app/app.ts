@@ -178,7 +178,7 @@ class ReactionsComponent {
 	selector: '[messages]',
 	template: `
 <ul class="messages">
-	<li *ngFor="#message of messages; #i = index" class="message" [class.mine]="message.creator === me.uid" [class.active]="message.$active" [class.continued]="messages[i + (message.creator === me.uid ? 1 : -1)]?.creator === message.creator">
+	<li *ngFor="#message of messages; #i = index" class="message" [ngClass]="{mine: message.creator === me.uid, active: message.$active, continued: messages[i + (message.creator === me.uid ? 1 : -1)]?.creator === message.creator}">
 		<header>
 			<timestamp [innerHTML]="message.created | moment | date:'medium'"></timestamp>
 		</header>
