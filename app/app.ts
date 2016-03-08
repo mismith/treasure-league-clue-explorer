@@ -27,23 +27,6 @@ class AvatarComponent {
 	}
 }
 
-@Component({
-	selector: '[avatar]',
-	template: `<img [src]="getPhotoUrl(user?.facebookId)" [alt]="'Avatar for ' + user?.name" [width]="size" [height]="size" />`,
-	host: {
-		'[title]': 'user?.name',
-		'[class.avatar]': 'true',
-	},
-})
-class AvatarComponent {
-	@Input('avatar') user: Object;
-	@Input() size: number = 24;
-
-	getPhotoUrl(facebookId) {
-		return `https://graph.facebook.com/v2.1/${facebookId || ''}/picture?type=square`;
-	}
-}
-
 @Directive({
 	selector: '[markdown]',
 	host: {
