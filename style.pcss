@@ -10,9 +10,10 @@
 .loading {
 	background: url(loading.gif) center center no-repeat;
 	background-size: 100px;
+	opacity: .5;
 
 	& > * {
-		opacity: 0;
+		opacity: 0 !important;
 	}
 }
 
@@ -570,9 +571,18 @@ a {
 		overflow: auto;
 		margin-bottom: 1px;
 
-		& h2,
-		& h3 {
-			margin: 10px;
+		& > header {
+			display: flex;
+			align-items: center;
+			border-bottom: solid 1px color(var(--primary) blackness(+20%));
+
+			& h2,
+			& h3 {
+				margin: 10px;
+			}
+			& > *:first-child {
+				flex-grow: 1;
+			}
 		}
 /*		&.huntList {
 			display: flex;
@@ -604,16 +614,6 @@ a {
 				}
 			}
 		}*/
-		&.huntDetail {
-			& > header {
-				display: flex;
-				align-items: center;
-
-				& > *:first-child {
-					flex-grow: 1;
-				}
-			}
-		}
 		& .messenger {
 			display: flex;
 			flex-direction: column;
