@@ -314,8 +314,8 @@ class MessengerComponent {
 @Component({
 	selector: '[huntId]',
 	template: `
-<aside *ngIf="huntId" id="sidebar">
-	<section class="huntDetail">
+<aside *ngIf="huntId" id="sidebar" [class.active]="hash === 'participants' || hash === 'comments'">
+	<section class="huntDetail" [class.active]="hash === 'participants'">
 		<header>
 			<h3>Participants</h3>
 			<button (click)="invite()" title="Invite Friends" class="btn"><i class="fa fa-user-plus"></i></button>
@@ -329,7 +329,7 @@ class MessengerComponent {
 			</li>
 		</ul>
 	</section>
-	<section *ngIf="huntId" class="huntComments">
+	<section class="huntComments" [class.active]="hash === 'comments'">
 		<header>
 			<h3>Comments</h3>
 		</header>
@@ -393,7 +393,14 @@ class MessengerComponent {
 		</div>
 		<input type="file" accept="image/*" (change)="firebaseFileUploader.process($event.target.files, data('clues').push().child('image'), true)" />
 	</article>
-</main>`,
+</main>
+<nav id="nav">
+	<a href="#participants" [class.active]="hash === 'participants'"><i class="fa fa-user"></i></a>
+	<div>
+		<a *ngFor="#clue of data('clues') | value:true" [href]="'#' + clue.$id" [class.active]="hash === clue.$id" [innerHTML]="clue.num"></a>
+	</div>
+	<a href="#comments" [class.active]="hash === 'comments'"><i class="fa fa-comments"></i></a>
+</nav>`,
 	host: {
 		'[class.loading]': `!(firebase.ref('hunts', huntId) | loaded | async)`,
 	},
@@ -414,6 +421,13 @@ export class HuntComponent {
 	@Input() me: Object;
 
 	private firebaseFileUploader = new FirebaseFileUploader();
+	private hash: string = location.hash.substr(1);
+
+	constructor() {
+		window.addEventListener('hashchange' e => {
+			this.hash = location.hash.substr(1);
+		});
+	}
 
 	// helpers
 	data(...args) {
