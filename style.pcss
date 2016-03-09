@@ -184,13 +184,13 @@ a {
 			bottom: -1px;
 			background-color: var(--primary);
 			transition: transform 300ms;
-			transform: scale(0, 0);
 			backface-visibility: hidden;
 			overflow: auto;
 			-webkit-overflow-scrolling: touch;
 
 			&.information {
-				transform-origin: 80% top;
+				transform-origin: center top;
+				transform: scale(1, 0);
 
 				& .fieldset {
 					display: flex;
@@ -199,10 +199,12 @@ a {
 				}
 			}
 			&.conversation {
-				transform-origin: 20% bottom;
+				transform-origin: left center;
+				transform: scale(0, 1);
 			}
 			&.resolution {
-				transform-origin: 80% bottom;
+				transform-origin: right center;
+				transform: scale(0, 1);
 				text-align: center;
 
 				& > * {
@@ -255,14 +257,14 @@ a {
 		& .btn {
 			min-width: 48px;
 			min-height: 48px;
-			flex-grow: 1;
+
+			&:not(.no-grow) {
+				flex-grow: 1;
+			}
 		}
 	}
 	& > header {
 		margin-bottom: 1px;
-	}
-	& > footer {
-		margin-top: 1px;
 	}
 	&.new {
 		overflow: hidden;

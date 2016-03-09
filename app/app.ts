@@ -339,8 +339,13 @@ class MessengerComponent {
 <main id="main" [class.loading]="!(data('clues') | loaded | async)">
 	<article *ngFor="#clue of data('clues') | value:true" (mouseenter)="play(clue)" (mouseleave)="stop(clue)" (touchstart)="play(clue)" (touchend)="stop(clue)" [id]="clue.$id" class="clue {{ active(clue) }} {{ hash === clue.$id ? 'active' : '' }}">
 		<header>
-			<a [href]="'#' + clue.$id" [innerHTML]="clue.num || '#'" class="btn"></a>
-			<button (click)="active(clue, 'editing')" title="Edit" class="btn" [class.active]="active(clue) === 'editing'"><i class="fa fa-edit"></i></button>
+			<a [href]="'#' + clue.$id" [innerHTML]="clue.num || '#'" class="btn no-grow"></a>
+			<button (click)="active(clue, 'editing')" title="Edit" class="btn no-grow" [class.active]="active(clue) === 'editing'"><i class="fa fa-edit"></i></button>
+			<button (click)="active(clue, 'conversing')" title="Comments" class="btn" [class.active]="active(clue) === 'conversing'">
+				<i class="fa fa-comments"></i>
+				<small [innerHTML]="(data('messages', clue.$id) | value | length) || ''"></small>
+			</button>
+			<button *ngIf="clue.notes || clue.solution" (click)="active(clue, 'resolving')" title="Resolution" class="btn" [class.active]="active(clue) === 'resolving'"><i class="fa fa-question-circle"></i></button>
 		</header>
 		<aside>
 			<figure>
@@ -377,13 +382,6 @@ class MessengerComponent {
 				</footer>
 			</div>
 		</aside>
-		<footer>
-			<button (click)="active(clue, 'conversing')" title="Comments" class="btn" [class.active]="active(clue) === 'conversing'">
-				<i class="fa fa-comments"></i>
-				<small [innerHTML]="(data('messages', clue.$id) | value | length) || ''"></small>
-			</button>
-			<button *ngIf="clue.notes || clue.solution" (click)="active(clue, 'resolving')" title="Resolution" class="btn" [class.active]="active(clue) === 'resolving'"><i class="fa fa-question-circle"></i></button>
-		</footer>
 	</article>
 	<article class="clue new file-upload">
 		<div>
