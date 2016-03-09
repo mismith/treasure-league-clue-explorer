@@ -69,7 +69,7 @@ class SortPipe implements PipeTransform {
 	transform(sortable: Array, args: string[]) {
 		let key = args[0] || '$id',
 			flip = args[1] || false;
-		return sortable.sort((a, b) => (a[key] < b[key] ? -1 : 1) * (flip ? -1 : 1));
+		return sortable && sortable.sort ? sortable.sort((a, b) => (a[key] < b[key] ? -1 : 1) * (flip ? -1 : 1)) : sortable;
 	}
 }
 
@@ -203,11 +203,12 @@ class ReactionsComponent {
 			<button (click)="update.next({message: message, event: $event})">Save</button>
 		</footer>
 	</li>
-	<li *ngIf="!messages.length" class="message empty">No comments yet.</li>
+	<li *ngIf="!(messages | length)" class="message empty">No comments yet.</li>
 </ul>`,
 	pipes: [
 		MomentPipe,
 		FirebaseChildPipe,
+		LengthPipe,
 	],
 	directives: [
 		AvatarComponent,
@@ -225,7 +226,7 @@ class MessagesComponent {
 	@Output() delete: EventEmitter = new EventEmitter();
 
 	getUser(userId) {
-		return this.users.find(user => user.$id === userId);
+		return this.users && this.users.find(user => user.$id === userId);
 	}
 }
 
@@ -243,7 +244,7 @@ class MessagesComponent {
 </footer>`,
 	host: {
 		'[class.messenger]': 'true',
-		'[class.loading]': '!(messagesRef | loaded)',
+		'[class.loading]': '!(messagesRef | loaded | async)',
 	},
 	pipes: [
 		FirebaseValuePipe,
@@ -319,7 +320,7 @@ class MessengerComponent {
 			<h3>Participants</h3>
 			<button (click)="invite()" title="Invite Friends" class="btn"><i class="fa fa-user-plus"></i></button>
 		</header>
-		<ul class="users">
+		<ul class="users" [class.loading]="!(data('users') | value:firebase.ref('users') | length)">
 			<li *ngFor="#user of data('users') | value:firebase.ref('users')" class="user">
 				<header>
 					<figure [avatar]="user"></figure>
@@ -335,69 +336,67 @@ class MessengerComponent {
 		<div [messagesRef]="data('messages', huntId)" [users]="data('users') | value:firebase.ref('users')" [me]="me" [reactionsRef]="data('reactions', huntId)"></div>
 	</section>
 </aside>
-<main id="main">
-	<section *ngIf="me" [class.loading]="!(data('clues') | loaded)">
-		<article *ngFor="#clue of data('clues') | value:true" (mouseenter)="play(clue)" (mouseleave)="stop(clue)" (touchstart)="play(clue)" (touchend)="stop(clue)" [id]="clue.$id" class="clue {{ active(clue) }}">
-			<header>
-				<a [href]="'#' + clue.$id" [innerHTML]="clue.num || '#'" class="btn"></a>
-				<button (click)="active(clue, 'editing')" title="Edit" class="btn" [class.active]="active(clue) === 'editing'"><i class="fa fa-edit"></i></button>
-			</header>
-			<aside>
-				<figure>
-					<img [src]="clue.image.src" />
-				</figure>
-				<div class="information">
-					<div class="fieldset">
-						<input [(ngModel)]="clue.num" placeholder="Number" />
-						<textarea [(ngModel)]="clue.notes" placeholder="Explanation"></textarea>
-						<textarea [(ngModel)]="clue.solution" placeholder="Solution"></textarea>
-					</div>
-					<footer>
-						<button (click)="deleteClue(clue, $event.shiftKey)" title="Delete" class="btn"><i class="fa fa-trash-o"></i></button>
-						<button title="Upload Photo" class="btn file-upload" [class.active]="clue.image">
-							<i class="fa fa-photo"></i>
-							<input type="file" accept="image/*" (change)="firebaseFileUploader.process($event.target.files, clue.image, true)" />
-						</button>
-						<button title="Upload Audio" class="btn file-upload" [class.active]="clue.audio" (contextmenu)="clue.audio = null">
-							<i class="fa fa-volume-up"></i>
-							<input type="file" accept="audio/*" (change)="firebaseFileUploader.process($event.target.files, clue.audio = clue.audio || {}, true)" />
-						</button>
-						<button (click)="updateClue(clue)" title="Save" class="btn"><i class="fa fa-save"></i></button>
-					</footer>
+<main id="main" [class.loading]="!(data('clues') | loaded | async)">
+	<article *ngFor="#clue of data('clues') | value:true" (mouseenter)="play(clue)" (mouseleave)="stop(clue)" (touchstart)="play(clue)" (touchend)="stop(clue)" [id]="clue.$id" class="clue {{ active(clue) }}">
+		<header>
+			<a [href]="'#' + clue.$id" [innerHTML]="clue.num || '#'" class="btn"></a>
+			<button (click)="active(clue, 'editing')" title="Edit" class="btn" [class.active]="active(clue) === 'editing'"><i class="fa fa-edit"></i></button>
+		</header>
+		<aside>
+			<figure>
+				<img [src]="clue.image.src" />
+			</figure>
+			<div class="information">
+				<div class="fieldset">
+					<input [(ngModel)]="clue.num" placeholder="Number" />
+					<textarea [(ngModel)]="clue.notes" placeholder="Explanation"></textarea>
+					<textarea [(ngModel)]="clue.solution" placeholder="Solution"></textarea>
 				</div>
-				<div class="conversation" [messagesRef]="data('messages', clue.$id)" [users]="data('users') | value:firebase.ref('users')" [me]="me" [reactionsRef]="data('reactions')"></div>
-				<div class="resolution">
-					<div>
-						<h3 *ngIf="clue.notes">Explanation</h3>
-						<div [markdown]="clue.notes || ''"></div>
-					</div>
-					<footer *ngIf="clue.solution" (mouseenter)="clue.$solution = true" (touchstart)="clue.$solution = true" (mouseleave)="clue.$solution = false" (touchend)="clue.$solution = false" [class.hover]="clue.$solution">
-						<h3>Solution</h3>
-						<div [markdown]="clue.solution"></div>
-					</footer>
-				</div>
-			</aside>
-			<footer>
-				<button (click)="active(clue, 'conversing')" title="Comments" class="btn" [class.active]="active(clue) === 'conversing'">
-					<i class="fa fa-comments"></i>
-					<small [innerHTML]="(data('messages', clue.$id) | value | length) || ''"></small>
-				</button>
-				<button *ngIf="clue.notes || clue.solution" (click)="active(clue, 'resolving')" title="Resolution" class="btn" [class.active]="active(clue) === 'resolving'"><i class="fa fa-question-circle"></i></button>
-			</footer>
-		</article>
-		<article *ngIf="data('clues') | loaded" class="clue new file-upload">
-			<div>
-				Drop Image Here<br /><br />
-				<small>or</small><br />
-				Click to Upload
+				<footer>
+					<button (click)="deleteClue(clue, $event.shiftKey)" title="Delete" class="btn"><i class="fa fa-trash-o"></i></button>
+					<button title="Upload Photo" class="btn file-upload" [class.active]="clue.image">
+						<i class="fa fa-photo"></i>
+						<input type="file" accept="image/*" (change)="firebaseFileUploader.process($event.target.files, clue.image, true)" />
+					</button>
+					<button title="Upload Audio" class="btn file-upload" [class.active]="clue.audio" (contextmenu)="clue.audio = null">
+						<i class="fa fa-volume-up"></i>
+						<input type="file" accept="audio/*" (change)="firebaseFileUploader.process($event.target.files, clue.audio = clue.audio || {}, true)" />
+					</button>
+					<button (click)="updateClue(clue)" title="Save" class="btn"><i class="fa fa-save"></i></button>
+				</footer>
 			</div>
-			<input type="file" accept="image/*" (change)="firebaseFileUploader.process($event.target.files, data('clues').push().child('image'), true)" />
-		</article>
-	</section>
-	<section *ngIf="!me" class="fill">
-		Login to begin.
-	</section>
+			<div class="conversation" [messagesRef]="data('messages', clue.$id)" [users]="data('users') | value:firebase.ref('users')" [me]="me" [reactionsRef]="data('reactions')"></div>
+			<div class="resolution">
+				<div>
+					<h3 *ngIf="clue.notes">Explanation</h3>
+					<div [markdown]="clue.notes || ''"></div>
+				</div>
+				<footer *ngIf="clue.solution" (mouseenter)="clue.$solution = true" (touchstart)="clue.$solution = true" (mouseleave)="clue.$solution = false" (touchend)="clue.$solution = false" [class.hover]="clue.$solution">
+					<h3>Solution</h3>
+					<div [markdown]="clue.solution"></div>
+				</footer>
+			</div>
+		</aside>
+		<footer>
+			<button (click)="active(clue, 'conversing')" title="Comments" class="btn" [class.active]="active(clue) === 'conversing'">
+				<i class="fa fa-comments"></i>
+				<small [innerHTML]="(data('messages', clue.$id) | value | length) || ''"></small>
+			</button>
+			<button *ngIf="clue.notes || clue.solution" (click)="active(clue, 'resolving')" title="Resolution" class="btn" [class.active]="active(clue) === 'resolving'"><i class="fa fa-question-circle"></i></button>
+		</footer>
+	</article>
+	<article class="clue new file-upload">
+		<div>
+			Drop Image Here<br /><br />
+			<small>or</small><br />
+			Click to Upload
+		</div>
+		<input type="file" accept="image/*" (change)="firebaseFileUploader.process($event.target.files, data('clues').push().child('image'), true)" />
+	</article>
 </main>`,
+	host: {
+		'[class.loading]': `!(firebase.ref('hunts', huntId) | loaded | async)`,
+	},
 	pipes: [
 		FirebaseLoadedPipe,
 		FirebaseValuePipe,
@@ -416,13 +415,6 @@ export class HuntComponent {
 
 	private firebaseFileUploader = new FirebaseFileUploader();
 
-	constructor() {
-		// init Facebook
-		FB.init({
-			appId: '238023659868967',
-		});
-	}
-
 	// helpers
 	data(...args) {
 		return this.firebase.ref('hunts:data', this.huntId, ...args);
@@ -434,11 +426,18 @@ export class HuntComponent {
 
 	// hunt
 	invite() {
+		// init Facebook
+		FB.init({
+			appId: '238023659868967',
+		});
+
+		// create invite
 		this.firebase.ref('invites').push({
 			huntId: this.huntId,
 			creator: this.me.uid,
 			created: new Date().toISOString(),
 		}).then(snap => {
+			// open dialog
 			FB.ui({
 				method: 'send',
 				link: 'http://mismith.github.io/treasure-league-clue-explorer/?inviteId=' + snap.key(),
@@ -447,6 +446,7 @@ export class HuntComponent {
 					// remove the invite if the user cancels
 					this.firebase.ref('invites', snap.key()).remove();
 				} else {
+					// if successful, link this invite to the current user
 					this.firebase.ref('users:data', this.me.uid, 'invites', snap.key()).set(true);
 				}
 			});
@@ -524,13 +524,17 @@ export class HuntComponent {
 	</footer>
 </header>
 <div id="body">
-	<section id="hunt" [huntId]="huntId" [firebase]="firebase" [me]="me"></section>
+	<section *ngIf="me" id="hunt" [huntId]="huntId" [firebase]="firebase" [me]="me" class="loading"></section>
+	<section *ngIf="!me" class="fill">
+		Login to begin.
+	</section>
 </div>`,
 	host: {
-		'[class.loading]': 'false',
+		'[class.loading]': '!me',
 	},
 	pipes: [
 		FirebaseValuePipe,
+		FirebaseLoadedPipe,
 		SortPipe,
 	],
 	directives: [

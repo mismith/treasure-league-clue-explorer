@@ -68,6 +68,7 @@ export class FirebaseValuePipe implements PipeTransform {
 		let child = nearSnap.val();
 		if (typeof child === 'object') child.$id = nearSnap.key();
 
+		this.lastValue = this.lastValue || [];
 		this.lastValue.push(child);
 
 		this.changeDetectorRef.markForCheck();
@@ -103,6 +104,7 @@ export class FirebaseValuePipe implements PipeTransform {
 			this.lastValue.splice(index, 1, child);
 		} else {
 			// append
+			this.lastValue = this.lastValue || [];
 			this.lastValue.push(child);
 		}
 
@@ -126,6 +128,7 @@ export class FirebaseValuePipe implements PipeTransform {
 	}
 
 	indexOf($id) {
+		if (!this.lastValue) return -1;
 		let child = this.lastValue.find(val => val.$id === $id);
 		return this.lastValue.indexOf(child);
 	}
@@ -160,7 +163,7 @@ export class FirebaseValuePipe implements PipeTransform {
 				this.nearRef = nearRef;
 
 				// reset
-				this.lastValue = [];
+				this.lastValue = undefined;
 				this.changeDetectorRef.markForCheck();
 
 				// hook
@@ -188,7 +191,7 @@ export class FirebaseValuePipe implements PipeTransform {
 				this.nearRef = nearRef;
 
 				// reset
-				this.lastValue = [];
+				this.lastValue = undefined;
 				this.changeDetectorRef.markForCheck();
 
 				// hook
@@ -207,7 +210,6 @@ export class FirebaseValuePipe implements PipeTransform {
 
 @Pipe({
 	name: 'child',
-	pure: false,
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FirebaseChildPipe implements PipeTransform {
@@ -232,20 +234,11 @@ export class FirebaseChildPipe implements PipeTransform {
 
 @Pipe({
 	name: 'loaded',
-	pure: false,
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FirebaseLoadedPipe implements PipeTransform {
-	private loaded: boolean = false;
-	private nearRef: Firebase;
-
 	transform(nearRef: Firebase) {
-		if (this.nearRef !== nearRef) {
-			this.nearRef = nearRef;
-
-			nearRef.once('value', () => this.loaded = true);
-		}
-		return this.loaded;
+		return nearRef.once('value');
 	}
 }
 
