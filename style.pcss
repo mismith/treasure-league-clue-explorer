@@ -736,8 +736,17 @@ a {
 		order: 2;
 		max-width: none;
 
-		& > section:not(.active) {
-			display: none;
+		& > section {
+			&.huntDetail {
+				& > header {
+					& .btn {
+						display: none;
+					}
+				}
+			}
+			&:not(.active) {
+				display: none;
+			}
 		}
 		&.active {
 			flex-grow: 1;
