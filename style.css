@@ -817,7 +817,11 @@ a:hover {
 	display: flex;
 	-webkit-flex-wrap: nowrap;
 	    -ms-flex-wrap: nowrap;
-	        flex-wrap: nowrap
+	        flex-wrap: nowrap;
+	-webkit-box-flex: 1;
+	-webkit-flex-grow: 1;
+	    -ms-flex-positive: 1;
+	        flex-grow: 1
 }
 #hunt > * {
 	display: -webkit-box;

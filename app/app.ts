@@ -1,5 +1,7 @@
 //our root app component
 import {Component, Directive, Input, Output, EventEmitter, ElementRef, Pipe, PipeTransform} from 'angular2/core';
+import {URLSearchParams} from 'angular2/http';
+//import {RouteConfig, RouterLink, RouterOutlet, Router, RouterParams} from 'angular2/router';
 import {FirebaseHelper, FirebaseValuePipe, FirebaseLoadedPipe, FirebaseChildPipe} from './firebase-helper';
 
 function doConfirm(skip) {
@@ -85,12 +87,13 @@ class Hunt {
 			hunt = {
 				name: name,
 				created: new Date().toISOString(),
+				creator: this.me.uid,
 			};
 
 		return this.ref.update({
 			[`hunts/${huntId}`]: hunt,
-			[`users:hunts/${this.me.uid}/${huntId}`]: true,
-			[`hunts:users/${huntId}/${this.me.uid}`]: true,
+			[`users:data/${this.me.uid}/hunts/${huntId}`]: true,
+			[`hunts:data/${huntId}/users/${this.me.uid}`]: true,
 		}).then(nil => huntId);
 	}
 	delete(huntId) {
@@ -99,8 +102,8 @@ class Hunt {
 
 		return this.ref.update({
 			[`hunts/${huntId}`]: null,
-			[`users:hunts/${this.me.uid}/${huntId}`]: null,
-			[`hunts:users/${huntId}/${this.me.uid}`]: null,
+			[`users:data/${this.me.uid}/hunts/${huntId}`]: null,
+			[`hunts:data/${huntId}/users/${this.me.uid}`]: null,
 		});
 	}
 }
@@ -235,8 +238,8 @@ class MessagesComponent {
 	<div>
 		<textarea [(ngModel)]="typing" (keypress)="isEnter($event) ? create() : null" (paste)="firebaseFileUploader.process($event.clipboardData.items, attachments)"></textarea>
 	</div>
-	<button class="btn file-upload" [class.active]="attachments.length"><i class="fa fa-photo"></i><input type="file" (change)="attachments = []; firebaseFileUploader.process($event.target.files, attachments);" accept="image/*" multiple /></button>
-	<button (click)="create()" class="btn"><i class="fa fa-send"></i></button>
+	<button title="Attach Photo(s)" class="btn file-upload" [class.active]="attachments.length"><i class="fa fa-photo"></i><input type="file" (change)="attachments = []; firebaseFileUploader.process($event.target.files, attachments);" accept="image/*" multiple /></button>
+	<button (click)="create()" title="Send" class="btn"><i class="fa fa-send"></i></button>
 </footer>`,
 	host: {
 		'[class.messenger]': 'true',
@@ -314,9 +317,10 @@ class MessengerComponent {
 	<section class="huntDetail">
 		<header>
 			<h3>Participants</h3>
+			<button (click)="invite()" title="Invite Friends" class="btn"><i class="fa fa-user-plus"></i></button>
 		</header>
 		<ul class="users">
-			<li *ngFor="#user of firebase.ref('hunts:users', huntId) | value:firebase.ref('users')" class="user">
+			<li *ngFor="#user of data('users') | value:firebase.ref('users')" class="user">
 				<header>
 					<figure [avatar]="user"></figure>
 					<span [innerHTML]="user.name"></span>
@@ -328,7 +332,7 @@ class MessengerComponent {
 		<header>
 			<h3>Comments</h3>
 		</header>
-		<div [messagesRef]="firebase.ref('hunts:data', huntId, 'messages', huntId)" [users]="firebase.ref('hunts:users', huntId) | value:firebase.ref('users')" [me]="me" [reactionsRef]="firebase.ref('hunts:data', huntId, 'reactions', huntId)"></div>
+		<div [messagesRef]="data('messages', huntId)" [users]="data('users') | value:firebase.ref('users')" [me]="me" [reactionsRef]="data('reactions', huntId)"></div>
 	</section>
 </aside>
 <main id="main">
@@ -336,7 +340,7 @@ class MessengerComponent {
 		<article *ngFor="#clue of data('clues') | value:true" (mouseenter)="play(clue)" (mouseleave)="stop(clue)" (touchstart)="play(clue)" (touchend)="stop(clue)" [id]="clue.$id" class="clue {{ active(clue) }}">
 			<header>
 				<a [href]="'#' + clue.$id" [innerHTML]="clue.num || '#'" class="btn"></a>
-				<button (click)="active(clue, 'editing')" class="btn" [class.active]="active(clue) === 'editing'"><i class="fa fa-edit"></i></button>
+				<button (click)="active(clue, 'editing')" title="Edit" class="btn" [class.active]="active(clue) === 'editing'"><i class="fa fa-edit"></i></button>
 			</header>
 			<aside>
 				<figure>
@@ -349,19 +353,19 @@ class MessengerComponent {
 						<textarea [(ngModel)]="clue.solution" placeholder="Solution"></textarea>
 					</div>
 					<footer>
-						<button (click)="deleteClue(clue, $event.shiftKey)" class="btn"><i class="fa fa-trash-o"></i></button>
-						<button class="btn file-upload" [class.active]="clue.image">
+						<button (click)="deleteClue(clue, $event.shiftKey)" title="Delete" class="btn"><i class="fa fa-trash-o"></i></button>
+						<button title="Upload Photo" class="btn file-upload" [class.active]="clue.image">
 							<i class="fa fa-photo"></i>
 							<input type="file" accept="image/*" (change)="firebaseFileUploader.process($event.target.files, clue.image, true)" />
 						</button>
-						<button class="btn file-upload" [class.active]="clue.audio" (contextmenu)="clue.audio = null">
+						<button title="Upload Audio" class="btn file-upload" [class.active]="clue.audio" (contextmenu)="clue.audio = null">
 							<i class="fa fa-volume-up"></i>
 							<input type="file" accept="audio/*" (change)="firebaseFileUploader.process($event.target.files, clue.audio = clue.audio || {}, true)" />
 						</button>
-						<button (click)="updateClue(clue)" class="btn"><i class="fa fa-save"></i></button>
+						<button (click)="updateClue(clue)" title="Save" class="btn"><i class="fa fa-save"></i></button>
 					</footer>
 				</div>
-				<div class="conversation" [messagesRef]="data('messages', clue.$id)" [users]="firebase.ref('hunts:users', huntId) | value:firebase.ref('users')" [me]="me" [reactionsRef]="data('reactions')"></div>
+				<div class="conversation" [messagesRef]="data('messages', clue.$id)" [users]="data('users') | value:firebase.ref('users')" [me]="me" [reactionsRef]="data('reactions')"></div>
 				<div class="resolution">
 					<div>
 						<h3 *ngIf="clue.notes">Explanation</h3>
@@ -374,11 +378,11 @@ class MessengerComponent {
 				</div>
 			</aside>
 			<footer>
-				<button (click)="active(clue, 'conversing')" class="btn" [class.active]="active(clue) === 'conversing'">
+				<button (click)="active(clue, 'conversing')" title="Comments" class="btn" [class.active]="active(clue) === 'conversing'">
 					<i class="fa fa-comments"></i>
 					<small [innerHTML]="(data('messages', clue.$id) | value | length) || ''"></small>
 				</button>
-				<button *ngIf="clue.notes || clue.solution" (click)="active(clue, 'resolving')" class="btn" [class.active]="active(clue) === 'resolving'"><i class="fa fa-question-circle"></i></button>
+				<button *ngIf="clue.notes || clue.solution" (click)="active(clue, 'resolving')" title="Resolution" class="btn" [class.active]="active(clue) === 'resolving'"><i class="fa fa-question-circle"></i></button>
 			</footer>
 		</article>
 		<article *ngIf="data('clues') | loaded" class="clue new file-upload">
@@ -412,6 +416,12 @@ export class HuntComponent {
 
 	private firebaseFileUploader = new FirebaseFileUploader();
 
+	constructor() {
+		// init Facebook
+		FB.init({
+			appId: '238023659868967',
+		});
+	}
 
 	// helpers
 	data(...args) {
@@ -422,6 +432,26 @@ export class HuntComponent {
 		return clue.$active || '';
 	}
 
+	// hunt
+	invite() {
+		this.firebase.ref('invites').push({
+			huntId: this.huntId,
+			creator: this.me.uid,
+			created: new Date().toISOString(),
+		}).then(snap => {
+			FB.ui({
+				method: 'send',
+				link: 'http://mismith.github.io/treasure-league-clue-explorer/?inviteId=' + snap.key(),
+			}, res => {
+				if (!res) {
+					// remove the invite if the user cancels
+					this.firebase.ref('invites', snap.key()).remove();
+				} else {
+					this.firebase.ref('users:data', this.me.uid, 'invites', snap.key()).set(true);
+				}
+			});
+		});
+	}
 
 	// clues
 	updateClue(clue) {
@@ -457,7 +487,7 @@ export class HuntComponent {
 		<label *ngIf="me">
 			<small>Hunt:</small>
 			<select [(ngModel)]="huntId">
-				<option *ngFor="#hunt of firebase.ref('users:hunts', me.uid) | value:firebase.ref('hunts') | sort:'$id':true" [value]="hunt.$id" [innerHTML]="hunt.name"></option>
+				<option *ngFor="#hunt of firebase.ref('users:data', me.uid, 'hunts') | value:firebase.ref('hunts') | sort:'$id':true" [value]="hunt.$id" [innerHTML]="hunt.name"></option>
 			</select>
 		</label>
 		<!--<div *ngIf="me" class="huntList">
@@ -465,7 +495,7 @@ export class HuntComponent {
 				<h2>My Hunts</h2>
 			</header>
 			<ul>
-				<li *ngFor="#hunt of firebase.ref('users:hunts', me.uid) | value:firebase.ref('hunts')">
+				<li *ngFor="#hunt of firebase.ref('users:data', me.uid, 'hunts') | value:firebase.ref('hunts')">
 					<header>
 						<a (click)="huntId = hunt.$id" [innerHTML]="hunt.name" class="btn" [class.active]="hunt.$id === huntId"></a>
 						<button (click)="deleteHunt(hunt.$id, $event.shiftKey)" title="Delete" class="btn"><i class="fa fa-trash-o"></i></button>
@@ -536,9 +566,31 @@ export class App {
 						this.huntId = userData.huntId;
 					} else {
 						// auto-set huntId to user's latest hunt
-						this.firebase.ref('users:hunts', this.me.uid).limitToLast(1).once('child_added').then(snap => this.huntId = snap.key());
+						this.firebase.ref('users:data', this.me.uid, 'hunts').limitToLast(1).once('child_added').then(snap => this.huntId = snap.key());
 					}
 				});
+
+				// accept invite
+				var inviteId = new URLSearchParams(location.search.substr(1)).get('inviteId');
+				if (inviteId) {
+					this.firebase.ref('invites', inviteId).once('value').then(snap => {
+						// snap.ref().child('accepted').push({
+						// 	creator: this.me.uid,
+						// 	created: new Date().toISOString(),
+						// });
+						let huntId = snap.child('huntId').val();
+						Promise.all([
+							this.firebase.ref('users:data', this.me.uid, 'hunts', huntId).set(true),
+							this.firebase.ref('hunts:data', huntId, 'users', this.me.uid).set(true),
+						]).then(() => {
+							// load it
+							this.huntId = huntId;
+
+							// log that this invite was accepted
+							this.firebase.ref('users:data', this.me.uid, 'invites:accepted', inviteId).set(new Date().toISOString());
+						});
+					});
+				}
 			} else {
 				this.me = null;
 				this.huntId = null;
