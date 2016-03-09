@@ -56,8 +56,8 @@ class LengthPipe implements PipeTransform {
 	name: 'moment',
 })
 class MomentPipe implements PipeTransform {
-	transform(dateLike: any, [options: Object = {}]) {
-		return moment(dateLike, options).toDate();
+	transform(dateLike: any, args: any[]) {
+		return moment(dateLike).format(args[0] || 'ddd, MMM D, YYYY @ h:mm:ssa');
 	}
 }
 
@@ -183,7 +183,7 @@ class ReactionsComponent {
 <ul class="messages">
 	<li *ngFor="#message of messages; #i = index" class="message" [ngClass]="{mine: message.creator === me.uid, active: message.$active, continued: messages[i + (message.creator === me.uid ? 1 : -1)]?.creator === message.creator}">
 		<header>
-			<timestamp [innerHTML]="message.created | moment | date:'medium'"></timestamp>
+			<timestamp [innerHTML]="message.created | moment"></timestamp>
 		</header>
 		<div class="content">
 			<figure [avatar]="getUser(message.creator)"></figure>
@@ -337,7 +337,7 @@ class MessengerComponent {
 	</section>
 </aside>
 <main id="main" [class.loading]="!(data('clues') | loaded | async)">
-	<article *ngFor="#clue of data('clues') | value:true" (mouseenter)="play(clue)" (mouseleave)="stop(clue)" (touchstart)="play(clue)" (touchend)="stop(clue)" [id]="clue.$id" class="clue {{ active(clue) }}">
+	<article *ngFor="#clue of data('clues') | value:true" (mouseenter)="play(clue)" (mouseleave)="stop(clue)" (touchstart)="play(clue)" (touchend)="stop(clue)" [id]="clue.$id" class="clue {{ active(clue) }} {{ hash === clue.$id ? 'active' : '' }}">
 		<header>
 			<a [href]="'#' + clue.$id" [innerHTML]="clue.num || '#'" class="btn"></a>
 			<button (click)="active(clue, 'editing')" title="Edit" class="btn" [class.active]="active(clue) === 'editing'"><i class="fa fa-edit"></i></button>
@@ -395,11 +395,11 @@ class MessengerComponent {
 	</article>
 </main>
 <nav id="nav">
-	<a href="#participants" [class.active]="hash === 'participants'"><i class="fa fa-user"></i></a>
+	<a (click)="hash = 'participants'" [class.active]="hash === 'participants'"><i class="fa fa-user"></i></a>
 	<div>
-		<a *ngFor="#clue of data('clues') | value:true" [href]="'#' + clue.$id" [class.active]="hash === clue.$id" [innerHTML]="clue.num"></a>
+		<a *ngFor="#clue of data('clues') | value:true" (click)="hash = clue.$id" [class.active]="hash === clue.$id" [innerHTML]="clue.num"></a>
 	</div>
-	<a href="#comments" [class.active]="hash === 'comments'"><i class="fa fa-comments"></i></a>
+	<a (click)="hash = 'comments'" [class.active]="hash === 'comments'"><i class="fa fa-comments"></i></a>
 </nav>`,
 	host: {
 		'[class.loading]': `!(firebase.ref('hunts', huntId) | loaded | async)`,
@@ -421,7 +421,7 @@ export class HuntComponent {
 	@Input() me: Object;
 
 	private firebaseFileUploader = new FirebaseFileUploader();
-	private hash: string = location.hash.substr(1);
+	private hash: string = location.hash.substr(1) || 'comments';
 
 	constructor() {
 		window.addEventListener('hashchange' e => {
@@ -556,11 +556,9 @@ export class HuntComponent {
 export class App {
 	private me: Object;
 	private huntId: string;
+	private firebase: Firebase = new FirebaseHelper('https://treasure-league.firebaseio.com');
 
 	constructor() {
-		// public
-		this.firebase = new FirebaseHelper('https://treasure-league.firebaseio.com');
-
 		// authed
 		this.firebase.ref().onAuth(authData => {
 			if (authData) {
@@ -617,7 +615,9 @@ export class App {
 		// fallback ofr browser which don't support popups
 		this.firebase.ref().authWithOAuthPopup('facebook').catch(err => {
 			if (err.code === 'TRANSPORT_UNAVAILABLE') {
-				this.firebase.ref().authWithOAuthRedirect('facebook');
+				this.firebase.ref().authWithOAuthRedirect('facebook', err => {
+					if (err) console.error(err);
+				});
 			} else {
 				console.error(err);
 			}

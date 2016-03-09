@@ -434,6 +434,10 @@ a:hover {
 		    -ms-user-select: none;
 		        user-select: none
 	}
+
+	.clue:not(.active) {
+		display: none
+	}
 	}
 
 .avatar {
@@ -932,9 +936,10 @@ a:hover {
 	-webkit-flex-shrink: 0;
 	    -ms-flex-negative: 0;
 	        flex-shrink: 0;
+	min-width: 48px;
+	min-height: 48px;
 	color: inherit;
-	min-width: 32px;
-	min-height: 32px
+	text-decoration: none
 }
 #nav a.active {
 	background-color: rgb(59, 153, 252)
@@ -963,7 +968,8 @@ a:hover {
 	-webkit-box-flex: 1;
 	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
-	        flex-grow: 1
+	        flex-grow: 1;
+	border-right: solid 1px rgba(255,255,255,.08)
 }
 @media (max-width: 800px) {
 
@@ -1122,10 +1128,6 @@ a:hover {
 		-webkit-flex-basis: auto;
 		    -ms-flex-preferred-size: auto;
 		        flex-basis: auto;
-		-webkit-box-flex: 1;
-		-webkit-flex-grow: 1;
-		    -ms-flex-positive: 1;
-		        flex-grow: 1;
 		-webkit-flex-shrink: 0;
 		    -ms-flex-negative: 0;
 		        flex-shrink: 0;
@@ -1138,6 +1140,13 @@ a:hover {
 
 	#sidebar > section:not(.active) {
 		display: none
+	}
+
+	#sidebar.active {
+		-webkit-box-flex: 1;
+		-webkit-flex-grow: 1;
+		    -ms-flex-positive: 1;
+		        flex-grow: 1
 	}
 
 	#sidebar.active + #main {
