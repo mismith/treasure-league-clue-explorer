@@ -483,40 +483,34 @@ export class HuntComponent {
 	<header>
 		<h1><a href="http://treasureleague.com/" target="_blank">Treasure League</a> <span style="white-space: nowrap;">Clue Explorer</span></h1>
 	</header>
-	<div>
-		<label *ngIf="me">
-			<small>Hunt:</small>
-			<select [(ngModel)]="huntId">
-				<option *ngFor="#hunt of firebase.ref('users:data', me.uid, 'hunts') | value:firebase.ref('hunts') | sort:'$id':true" [value]="hunt.$id" [innerHTML]="hunt.name"></option>
-			</select>
-		</label>
-		<!--<div *ngIf="me" class="huntList">
-			<header>
-				<h2>My Hunts</h2>
-			</header>
-			<ul>
-				<li *ngFor="#hunt of firebase.ref('users:data', me.uid, 'hunts') | value:firebase.ref('hunts')">
-					<header>
-						<a (click)="huntId = hunt.$id" [innerHTML]="hunt.name" class="btn" [class.active]="hunt.$id === huntId"></a>
-						<button (click)="deleteHunt(hunt.$id, $event.shiftKey)" title="Delete" class="btn"><i class="fa fa-trash-o"></i></button>
-					</header>
-				</li>
-				<li>
-					<header>
-						<span class="btn">
-							<input [(ngModel)]="newHuntName" placeholder="New hunt name" />
-						</span>
-						<button (click)="createHunt()" title="Create" class="btn"><i class="fa fa-plus"></i></button>
-					</header>
-				</li>
-			</ul>
-		</div>-->
-	</div>
+	<label *ngIf="me">
+		<small>Hunt:</small>
+		<select [(ngModel)]="huntId">
+			<option *ngFor="#hunt of firebase.ref('users:data', me.uid, 'hunts') | value:firebase.ref('hunts') | sort:'$id':true" [value]="hunt.$id" [innerHTML]="hunt.name"></option>
+		</select>
+	</label>
+	<!--<div *ngIf="me" class="huntList">
+		<header>
+			<h2>My Hunts</h2>
+		</header>
+		<ul>
+			<li *ngFor="#hunt of firebase.ref('users:data', me.uid, 'hunts') | value:firebase.ref('hunts')">
+				<header>
+					<a (click)="huntId = hunt.$id" [innerHTML]="hunt.name" class="btn" [class.active]="hunt.$id === huntId"></a>
+					<button (click)="deleteHunt(hunt.$id, $event.shiftKey)" title="Delete" class="btn"><i class="fa fa-trash-o"></i></button>
+				</header>
+			</li>
+			<li>
+				<header>
+					<span class="btn">
+						<input [(ngModel)]="newHuntName" placeholder="New hunt name" />
+					</span>
+					<button (click)="createHunt()" title="Create" class="btn"><i class="fa fa-plus"></i></button>
+				</header>
+			</li>
+		</ul>
+	</div>-->
 	<footer>
-		<button *ngIf="!me" (click)="login()" class="btn">
-			<i class="fa fa-facebook"></i>
-			<span>Login with Facebook</span>
-		</button>
 		<button *ngIf="me" (click)="firebase.ref().unauth()" class="btn">
 			<figure [avatar]="me"></figure>
 			<span>Logout</span>
@@ -526,11 +520,14 @@ export class HuntComponent {
 <div id="body">
 	<section *ngIf="me" id="hunt" [huntId]="huntId" [firebase]="firebase" [me]="me" class="loading"></section>
 	<section *ngIf="!me" class="fill">
-		Login to begin.
+		<button *ngIf="!me" (click)="login()" class="btn btn-facebook">
+			<i class="fa fa-facebook"></i>
+			<span>Login with Facebook</span>
+		</button>
 	</section>
 </div>`,
 	host: {
-		'[class.loading]': '!me',
+		'[class.loading]': 'false',
 	},
 	pipes: [
 		FirebaseValuePipe,

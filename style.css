@@ -121,6 +121,14 @@ a:hover {
 	.btn.active {
 	color: rgb(59, 153, 252)
 }
+.btn.btn-facebook {
+	background-color: #3b5999;
+	opacity: 1
+}
+.btn.btn-facebook:hover,
+		.btn.btn-facebook.active {
+	color: #FFF
+}
 
 .file-upload {
 	position: relative;
@@ -775,15 +783,16 @@ a:hover {
 	-webkit-flex-shrink: 0;
 	    -ms-flex-negative: 0;
 	        flex-shrink: 0;
+	min-height: 44px;
 	background-color: #51535F;
 	text-align: center;
 	margin-bottom: 1px
 }
 #header > header,
-	#header > div {
+	#header > label {
 	padding: 0 10px
 }
-#header > div {
+#header > label {
 	-webkit-box-flex: 1;
 	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;

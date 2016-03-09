@@ -4,6 +4,7 @@
 	--neutral: #333439;
 	--lighter: #EEE;
 	--accent: rgb(59, 153, 252);
+	--facebook: #3b5999;
 }
 @custom-media --mobile (width <= 800px);
 
@@ -106,6 +107,15 @@ a {
 	&:hover,
 	&.active {
 		color: var(--accent);
+	}
+	&.btn-facebook {
+		background-color: var(--facebook);
+		opacity: 1;
+
+		&:hover,
+		&.active {
+			color: #FFF;
+		}
 	}
 }
 
@@ -519,15 +529,16 @@ a {
 	align-items: center;
 	flex-wrap: wrap;
 	flex-shrink: 0;
+	min-height: 44px;
 	background-color: var(--primary);
 	text-align: center;
 	margin-bottom: 1px;
 
 	& > header,
-	& > div {
+	& > label {
 		padding: 0 10px;
 	}
-	& > div {
+	& > label {
 		flex-grow: 1;
 		text-align: right;
 	}
