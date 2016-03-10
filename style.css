@@ -113,10 +113,10 @@ a:hover {
 .btn > i,
 	.btn > .avatar {
 }
-.btn > i + *, .btn > .avatar + * {
+.btn > i + :not(input), .btn > .avatar + :not(input) {
 	margin-left: 10px
 }
-.btn > i + *:empty, .btn > .avatar + *:empty {
+.btn > i + :not(input):empty, .btn > .avatar + :not(input):empty {
 	display: none
 }
 .btn + .btn {
@@ -125,6 +125,9 @@ a:hover {
 .btn:hover,
 	.btn.active {
 	color: rgb(59, 153, 252)
+}
+.btn.highlight {
+	color: #F90
 }
 .btn.btn-facebook {
 	background-color: #3b5999;
@@ -397,26 +400,26 @@ a:hover {
 	opacity: .5
 }
 
-.clue.editing {
+.clue.information {
 }
 
-.clue.editing .information {
+.clue.information .information {
 	-webkit-transform: scale(1, 1);
 	        transform: scale(1, 1)
 }
 
-.clue.conversing {
+.clue.conversation {
 }
 
-.clue.conversing .conversation {
+.clue.conversation .conversation {
 	-webkit-transform: scale(1, 1);
 	        transform: scale(1, 1)
 }
 
-.clue.resolving {
+.clue.resolution {
 }
 
-.clue.resolving .resolution {
+.clue.resolution .resolution {
 	-webkit-transform: scale(1, 1);
 	        transform: scale(1, 1)
 }

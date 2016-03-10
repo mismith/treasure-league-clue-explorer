@@ -314,8 +314,8 @@ class MessengerComponent {
 @Component({
 	selector: '[huntId]',
 	template: `
-<aside *ngIf="huntId" id="sidebar" [class.active]="hash === 'participants' || hash === 'comments'">
-	<section class="huntDetail" [class.active]="hash === 'participants'">
+<aside *ngIf="huntId" id="sidebar" [class.active]="isHash('participants') || isHash('comments')">
+	<section class="huntDetail" [class.active]="isHash('participants')">
 		<header>
 			<h3>Participants</h3>
 			<button (click)="invite()" title="Invite Friends" class="btn"><i class="fa fa-user-plus"></i></button>
@@ -329,7 +329,7 @@ class MessengerComponent {
 			</li>
 		</ul>
 	</section>
-	<section class="huntComments" [class.active]="hash === 'comments'">
+	<section class="huntComments" [class.active]="isHash('comments')">
 		<header>
 			<h3>Comments</h3>
 		</header>
@@ -337,15 +337,15 @@ class MessengerComponent {
 	</section>
 </aside>
 <main id="main" [class.loading]="!(data('clues') | loaded | async)">
-	<article *ngFor="#clue of data('clues') | value:true" (mouseenter)="play(clue)" (mouseleave)="stop(clue)" (touchstart)="play(clue)" (touchend)="stop(clue)" [id]="clue.$id" class="clue {{ active(clue) }} {{ hash === clue.$id ? 'active' : '' }}">
+	<article *ngFor="#clue of data('clues') | value:true" (mouseenter)="play(clue)" (mouseleave)="stop(clue)" (touchstart)="play(clue)" (touchend)="stop(clue)" (click)="see('clues', clue.$id, 'information')" [id]="clue.$id" class="clue {{ tab(clue) }} {{ isHash(clue.$id) ? 'active' : '' }}">
 		<header>
-			<a [href]="'#' + clue.$id" [innerHTML]="clue.num || '#'" class="btn no-grow"></a>
-			<button (click)="active(clue, 'conversing')" title="Comments" class="btn" [class.active]="active(clue) === 'conversing'">
+			<a [href]="'#' + clue.$id" [innerHTML]="clue.num || '#'" class="btn no-grow" [class.highlight]="unseen('clues', clue.$id, 'information') | value"></a>
+			<button (click)="tab(clue, 'conversation')" title="Comments" class="btn"  [ngClass]="{active: tab(clue) === 'conversation', highlight: unseen('clues', clue.$id, 'conversation') | value}">
 				<i class="fa fa-comments"></i>
 				<small [innerHTML]="(data('messages', clue.$id) | value | length) || ''"></small>
 			</button>
-			<button *ngIf="clue.notes || clue.solution" (click)="active(clue, 'resolving')" title="Resolution" class="btn" [class.active]="active(clue) === 'resolving'"><i class="fa fa-question-circle"></i></button>
-			<button (click)="active(clue, 'editing')" title="Edit" class="btn no-grow" [class.active]="active(clue) === 'editing'"><i class="fa fa-edit"></i></button>
+			<button *ngIf="clue.notes || clue.solution" (click)="tab(clue, 'resolution')" title="Resolution" class="btn" [ngClass]="{active: tab(clue) === 'resolution', highlight: unseen('clues', clue.$id, 'resolution') | value}"><i class="fa fa-question-circle"></i></button>
+			<button (click)="tab(clue, 'information')" title="Edit" class="btn no-grow" [class.active]="tab(clue) === 'information'"><i class="fa fa-edit"></i></button>
 		</header>
 		<aside>
 			<figure>
@@ -389,15 +389,15 @@ class MessengerComponent {
 			<small>or</small><br />
 			Click to Upload
 		</div>
-		<input type="file" accept="image/*" (change)="firebaseFileUploader.process($event.target.files, data('clues').push().child('image'), true)" />
+		<input type="file" accept="image/*" (change)="createClue($event.target.files)" />
 	</article>
 </main>
 <nav id="nav">
-	<a (click)="hash = 'participants'" [class.active]="hash === 'participants'"><i class="fa fa-user"></i></a>
+	<a (click)="hash('participants')" [class.active]="isHash('participants')"><i class="fa fa-user"></i></a>
 	<div>
-		<a *ngFor="#clue of data('clues') | value:true" (click)="hash = clue.$id" [class.active]="hash === clue.$id" [innerHTML]="clue.num"></a>
+		<a *ngFor="#clue of data('clues') | value:true" (click)="hash(clue.$id)" [class.active]="isHash(clue.$id)" [innerHTML]="clue.num"></a>
 	</div>
-	<a (click)="hash = 'comments'" [class.active]="hash === 'comments'"><i class="fa fa-comments"></i></a>
+	<a (click)="hash('comments')" [class.active]="isHash('comments')"><i class="fa fa-comments"></i></a>
 </nav>`,
 	host: {
 		'[class.loading]': `!(firebase.ref('hunts', huntId) | loaded | async)`,
@@ -419,21 +419,86 @@ export class HuntComponent {
 	@Input() me: Object;
 
 	private firebaseFileUploader = new FirebaseFileUploader();
-	private hash: string = location.hash.substr(1) || 'comments';
+	private $hash: string = location.hash.substr(1) || 'comments';
 
 	constructor() {
-		window.addEventListener('hashchange' e => {
-			this.hash = location.hash.substr(1);
-		});
+		window.addEventListener('hashchange', e => this.hash(location.hash.substr(1)));
 	}
 
 	// helpers
-	data(...args) {
-		return this.firebase.ref('hunts:data', this.huntId, ...args);
+	data(...paths: string[]) {
+		return this.firebase.ref('hunts:data', this.huntId, ...paths);
 	}
-	active(clue, active) {
-		if(active) clue.$active = clue.$active === active ? '' : active;
+	tab(clue, set) {
+		if (set) {
+			clue.$active = clue.$active === set ? '' : set;
+
+			// mark as seen, if applicable
+			if (clue.$active) {
+				this.see('clues', clue.$id, clue.$active);
+			}
+		}
 		return clue.$active || '';
+	}
+	hash(set) {
+		if (set) this.$hash = set;
+		return this.$hash;
+	}
+	isHash(hash) {
+		return hash === this.$hash;
+	}
+
+	unsee(...paths: string[]) {
+		this.data('users').once('value').then(usersSnap => {
+			usersSnap.forEach(userSnap => {
+				var userId = userSnap.key();
+				if (userId !== this.me.uid) {
+					this.firebase.ref('users:unseen', userId, 'hunts', this.huntId, ...paths).set(true);
+				}
+			});
+		});
+	}
+	unseen(...paths: string[]) {
+		return this.firebase.ref('users:unseen', this.me.uid, 'hunts', this.huntId, ...paths);
+	}
+	see(...paths: string[]) {
+		return this.firebase.ref('users:unseen', this.me.uid, 'hunts', this.huntId, ...paths).remove();
+	}
+
+	// clues
+	createClue(fileList) {
+		return this.firebaseFileUploader.process(fileList)
+			.then(attachments => {
+				return this.data('clues').push({
+					image: attachments[0],
+				});
+			})
+			.then(clueRef => {
+				return this.unsee('clues', clueRef.key(), 'information');
+			});
+	}
+	updateClue(clue) {
+		let clueRef = this.data('clues', clue.$id);
+		return clueRef.update(this.firebase.clean(clue))
+			.then(() => {
+				return this.unsee('clues', clueRef.key(), 'resolution');
+			});
+	}
+	deleteClue(clue, skipConfirm) {
+		return doConfirm(skipConfirm).then(() => this.data('clues', clue.$id).remove());
+	}
+	play(clue) {
+		if (clue.audio) {
+			clue.$audio = clue.$audio || new Audio(clue.audio.src);
+			clue.$audio.loop = true;
+			clue.$audio.play();
+		}
+	}
+	stop(clue) {
+		if (clue.$audio) {
+			clue.$audio.pause();
+			clue.$audio.currentTime = 0;
+		}
 	}
 
 	// hunt
@@ -463,27 +528,6 @@ export class HuntComponent {
 				}
 			});
 		});
-	}
-
-	// clues
-	updateClue(clue) {
-		this.data('clues', clue.$id).update(this.firebase.clean(clue));
-	}
-	deleteClue(clue, skipConfirm) {
-		return doConfirm(skipConfirm).then(() => this.data('clues', clue.$id).remove());
-	}
-	play(clue) {
-		if (clue.audio) {
-			clue.$audio = clue.$audio || new Audio(clue.audio.src);
-			clue.$audio.loop = true;
-			clue.$audio.play();
-		}
-	}
-	stop(clue) {
-		if (clue.$audio) {
-			clue.$audio.pause();
-			clue.$audio.currentTime = 0;
-		}
 	}
 }
 
@@ -622,7 +666,7 @@ export class App {
 		});
 	}
 
-	// CRUD
+	// hunts
 	createHunt() {
 		return new Hunt(this.firebase.ref(), this.me).create(this.newHuntName).then(huntId => {
 			this.newHuntName = '';

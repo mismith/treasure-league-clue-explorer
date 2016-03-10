@@ -1,9 +1,11 @@
 :root {
 	--bg: #202327;
 	--primary: #51535F;
+	--accent: rgb(59, 153, 252);
+	--highlight: #F90;
+
 	--neutral: #333439;
 	--lighter: #EEE;
-	--accent: rgb(59, 153, 252);
 	--facebook: #3b5999;
 }
 @custom-media --mobile (width <= 800px);
@@ -99,7 +101,7 @@ a {
 
 	& > i,
 	& > .avatar {
-		& + * {
+		& + :not(input) {
 			margin-left: 10px;
 
 			&:empty {
@@ -113,6 +115,9 @@ a {
 	&:hover,
 	&.active {
 		color: var(--accent);
+	}
+	&.highlight {
+		color: var(--highlight);
 	}
 	&.btn-facebook {
 		background-color: var(--facebook);
@@ -282,17 +287,17 @@ a {
 			opacity: .5;
 		}
 	}
-	&.editing {
+	&.information {
 		& .information {
 			transform: scale(1, 1);
 		}
 	}
-	&.conversing {
+	&.conversation {
 		& .conversation {
 			transform: scale(1, 1);
 		}
 	}
-	&.resolving {
+	&.resolution {
 		& .resolution {
 			transform: scale(1, 1);
 		}
