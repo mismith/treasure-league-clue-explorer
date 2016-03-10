@@ -30,6 +30,24 @@ class AvatarComponent {
 }
 
 @Directive({
+	selector: 'textarea,input',
+	host: {
+		'(keypress)': 'onKeypress($event)',
+	},
+})
+class EnterpressDirective {
+	@Output() enterpress: EventEmitter = new EventEmitter();
+
+	onKeypress(e) {
+		if (e.keyCode === 13 /* enter */ && !e.shiftKey) {
+			e.preventDefault();
+			this.enterpress.next(e);
+		}
+	}
+}
+
+
+@Directive({
 	selector: '[markdown]',
 	host: {
 		'[innerHTML]': 'convertToHTML()',
@@ -69,42 +87,7 @@ class SortPipe implements PipeTransform {
 	transform(sortable: Array, args: string[]) {
 		let key = args[0] || '$id',
 			flip = args[1] || false;
-		return sortable && sortable.sort ? sortable.sort((a, b) => (a[key] < b[key] ? -1 : 1) * (flip ? -1 : 1)) : sortable;
-	}
-}
-
-
-class Hunt {
-	constructor(ref, me) {
-		this.ref = ref;
-		this.me = me;
-	}
-	create(name) {
-		if (!name) throw new Error('Hunt name is required');
-		if (!this.me) throw new Error('You must be logged in');
-
-		var huntId = this.ref.child('hunts').push().key(),
-			hunt = {
-				name: name,
-				created: new Date().toISOString(),
-				creator: this.me.uid,
-			};
-
-		return this.ref.update({
-			[`hunts/${huntId}`]: hunt,
-			[`users:data/${this.me.uid}/hunts/${huntId}`]: true,
-			[`hunts:data/${huntId}/users/${this.me.uid}`]: true,
-		}).then(nil => huntId);
-	}
-	delete(huntId) {
-		if (!huntId) throw new Error('Hunt ID is required');
-		if (!this.me) throw new Error('You must be logged in');
-
-		return this.ref.update({
-			[`hunts/${huntId}`]: null,
-			[`users:data/${this.me.uid}/hunts/${huntId}`]: null,
-			[`hunts:data/${huntId}/users/${this.me.uid}`]: null,
-		});
+		return sortable && sortable.sort ? sortable.sort((a, b) => (a && b && a[key] < b[key] ? -1 : 1) * (flip ? -1 : 1)) : sortable;
 	}
 }
 
@@ -190,7 +173,7 @@ class ReactionsComponent {
 			<div (click)="!message.$editing ? (message.$active = ! message.$active) : null" [class.editing]="message.$editing">
 				<a *ngFor="#attachment of message.attachments" [href]="attachment.src" target="_blank" class="attachment"><img [src]="attachment.src" /></a>
 				<div *ngIf="!message.$editing" [markdown]="message.content"></div>
-				<textarea *ngIf="message.$editing" [(ngModel)]="message.content"></textarea>
+				<textarea *ngIf="message.$editing" [(ngModel)]="message.content" (enterpress)="update.next({message: message, event: $event})"></textarea>
 			</div>
 			<aside class="extra" [reactionsRef]="reactionsRef | child:message.$id" [users]="users" [me]="me"></aside>
 		</div>
@@ -214,6 +197,7 @@ class ReactionsComponent {
 		AvatarComponent,
 		MarkdownDirective,
 		ReactionsComponent,
+		EnterpressDirective,
 	],
 })
 class MessagesComponent {
@@ -237,7 +221,7 @@ class MessagesComponent {
 </div>
 <footer>
 	<div>
-		<textarea [(ngModel)]="typing" (keypress)="isEnter($event) ? create() : null" (paste)="firebaseFileUploader.process($event.clipboardData.items, attachments)"></textarea>
+		<textarea [(ngModel)]="typing" (enterpress)="create()" (paste)="firebaseFileUploader.process($event.clipboardData.items, attachments)"></textarea>
 	</div>
 	<button title="Attach Photo(s)" class="btn file-upload" [class.active]="attachments.length"><i class="fa fa-photo"></i><input type="file" (change)="attachments = []; firebaseFileUploader.process($event.target.files, attachments);" accept="image/*" multiple /></button>
 	<button (click)="create()" title="Send" class="btn"><i class="fa fa-send"></i></button>
@@ -252,6 +236,7 @@ class MessagesComponent {
 	],
 	directives: [
 		MessagesComponent,
+		EnterpressDirective,
 	],
 })
 class MessengerComponent {
@@ -276,13 +261,6 @@ class MessengerComponent {
 		this.el.nativeElement.firstElementChild.scrollTop = this.el.nativeElement.firstElementChild.scrollHeight;
 	}
 
-	isEnter(e) {
-		if (e.keyCode === 13 /* enter */ && !e.shiftKey) {
-			e.preventDefault();
-			return true;
-		}
-		return false;
-	}
 	create() {
 		if (this.typing || this.attachments.length) {
 			this.messagesRef.push({
@@ -539,33 +517,35 @@ export class HuntComponent {
 	<header>
 		<h1><a href="http://treasureleague.com/" target="_blank">Treasure League</a> <span style="white-space: nowrap;">Clue Explorer</span></h1>
 	</header>
-	<label *ngIf="me">
-		<small>Hunt:</small>
-		<select [(ngModel)]="huntId">
-			<option *ngFor="#hunt of firebase.ref('users:data', me.uid, 'hunts') | value:firebase.ref('hunts') | sort:'$id':true" [value]="hunt.$id" [innerHTML]="hunt.name"></option>
-		</select>
-	</label>
-	<!--<div *ngIf="me" class="huntList">
-		<header>
-			<h2>My Hunts</h2>
-		</header>
-		<ul>
-			<li *ngFor="#hunt of firebase.ref('users:data', me.uid, 'hunts') | value:firebase.ref('hunts')">
-				<header>
-					<a (click)="huntId = hunt.$id" [innerHTML]="hunt.name" class="btn" [class.active]="hunt.$id === huntId"></a>
-					<button (click)="deleteHunt(hunt.$id, $event.shiftKey)" title="Delete" class="btn"><i class="fa fa-trash-o"></i></button>
-				</header>
-			</li>
-			<li>
-				<header>
-					<span class="btn">
-						<input [(ngModel)]="newHuntName" placeholder="New hunt name" />
-					</span>
-					<button (click)="createHunt()" title="Create" class="btn"><i class="fa fa-plus"></i></button>
-				</header>
-			</li>
-		</ul>
-	</div>-->
+	<div *ngIf="me" (click)="$event.stopPropagation()" class="dropdown">
+		<button (click)="dropdown = dropdown === 'hunts' ? '' : 'hunts'" class="btn">
+			<span [innerHTML]="(firebase.ref('hunts', huntId) | value)?.name || 'My Hunts'"></span>
+			<i class="fa fa-caret-down"></i>
+		</button>
+		<div class="dropdown-menu" [class.active]="dropdown === 'hunts'">
+			<ul id="huntList">
+				<li *ngFor="#hunt of firebase.ref('users:data', me.uid, 'hunts') | value:firebase.ref('hunts') | sort:'$id':true">
+					<header>
+						<a *ngIf="!hunt.$editing" (click)="huntId = hunt.$id" [innerHTML]="hunt.name" class="btn" [class.active]="hunt.$id === huntId"></a>
+						<label *ngIf="hunt.$editing" class="btn">
+							<input [(ngModel)]="hunt.name" (enterpress)="updateHunt(hunt)" placeholder="Hunt name" />
+						</label>
+						<button *ngIf="hunt.$editing" (click)="updateHunt(hunt)" title="Save" class="btn"><i class="fa fa-save"></i></button>
+						<button *ngIf="hunt.$editing" (click)="deleteHunt(hunt, $event.shiftKey)" title="Delete" class="btn"><i class="fa fa-trash-o"></i></button>
+						<button (click)="hunt.$editing = ! hunt.$editing" title="Edit" class="btn" [class.active]="hunt.$editing"><i class="fa fa-edit"></i></button>
+					</header>
+				</li>
+				<li>
+					<header>
+						<label class="btn">
+							<input [(ngModel)]="newHuntName" (enterpress)="createHunt()" placeholder="New hunt name" />
+						</label>
+						<button (click)="createHunt()" title="Create" class="btn"><i class="fa fa-plus"></i></button>
+					</header>
+				</li>
+			</ul>
+		</div>
+	</div>
 	<footer>
 		<button *ngIf="me" (click)="firebase.ref().unauth()" class="btn">
 			<figure [avatar]="me"></figure>
@@ -574,7 +554,10 @@ export class HuntComponent {
 	</footer>
 </header>
 <div id="body">
-	<section *ngIf="me" id="hunt" [huntId]="huntId" [firebase]="firebase" [me]="me" class="loading"></section>
+	<section *ngIf="me && huntId" id="hunt" [huntId]="huntId" [firebase]="firebase" [me]="me" class="loading"></section>
+	<section *ngIf="me && !huntId" id="hunt" class="fill">
+		<p>Pick or create a hunt using the <strong>My Hunts</strong> menu above.</p>
+	</section>
 	<section *ngIf="!me" class="fill">
 		<button *ngIf="!me" (click)="login()" class="btn btn-facebook">
 			<i class="fa fa-facebook"></i>
@@ -584,6 +567,7 @@ export class HuntComponent {
 </div>`,
 	host: {
 		'[class.loading]': 'false',
+		'(click)': `dropdown = ''`,
 	},
 	pipes: [
 		FirebaseValuePipe,
@@ -593,6 +577,7 @@ export class HuntComponent {
 	directives: [
 		AvatarComponent,
 		HuntComponent,
+		EnterpressDirective,
 	],
 })
 export class App {
@@ -668,12 +653,43 @@ export class App {
 
 	// hunts
 	createHunt() {
-		return new Hunt(this.firebase.ref(), this.me).create(this.newHuntName).then(huntId => {
+		if (!this.newHuntName) return;
+
+		let huntId = this.firebase.ref('hunts').push().key(),
+			hunt = {
+				name: this.newHuntName,
+				created: new Date().toISOString(),
+				creator: this.me.uid,
+			};
+
+		return this.firebase.ref().update({
+			[`hunts/${huntId}`]: hunt,
+			[`users:data/${this.me.uid}/hunts/${huntId}`]: true,
+			[`hunts:data/${huntId}/users/${this.me.uid}`]: true,
+		}).then(() => {
 			this.newHuntName = '';
 			this.huntId = huntId;
-		}
+		});
 	}
-	deleteHunt(huntId, skipConfirm) {
-		return doConfirm(skipConfirm).then(() => new Hunt(this.firebase.ref(), this.me).delete(huntId));
+	updateHunt(hunt) {
+		if (!hunt.name) return;
+
+		let updatedHunt = this.firebase.clean(hunt);
+		updatedHunt.updated = new Date().toISOString();
+		updatedHunt.updator = this.me.uid;
+
+		return this.firebase.ref('hunts', hunt.$id).update(updatedHunt);
+	}
+	deleteHunt(hunt, skipConfirm) {
+		let huntId = hunt.$id;
+		return doConfirm(skipConfirm).then(() => {
+			return this.firebase.ref().update({
+				[`users:data/${this.me.uid}/hunts/${huntId}`]: null,
+				[`hunts:data/${huntId}/users/${this.me.uid}`]: null,
+				[`hunts/${huntId}`]: null,
+			}).then(nil => {
+				this.huntId = '';
+			});
+		});
 	}
 }

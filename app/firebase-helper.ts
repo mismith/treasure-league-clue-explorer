@@ -66,7 +66,7 @@ export class FirebaseValuePipe implements PipeTransform {
 
 	onNearChildAdded(nearSnap) {
 		let child = nearSnap.val();
-		if (typeof child === 'object') child.$id = nearSnap.key();
+		if (child instanceof Object) child.$id = nearSnap.key();
 
 		this.lastValue = this.lastValue || [];
 		this.lastValue.push(child);
@@ -77,7 +77,7 @@ export class FirebaseValuePipe implements PipeTransform {
 		let key = nearSnap.key(),
 			index = this.indexOf(key),
 			child = nearSnap.val();
-		if (typeof child === 'object') child.$id = key;
+		if (child instanceof Object) child.$id = key;
 
 		this.lastValue.splice(index, 1, child);
 
@@ -95,8 +95,8 @@ export class FirebaseValuePipe implements PipeTransform {
 	onFarValue(farSnap) {
 		let key   = farSnap.key(),
 			index = this.indexOf(key),
-			child = farSnap.val();
-		if (typeof child === 'object') child.$id = key;
+			child = farSnap.val() || {};
+		if (child instanceof Object) child.$id = key;
 
 		// sync locally
 		if (index >= 0) {

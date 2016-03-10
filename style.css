@@ -137,6 +137,19 @@ a:hover {
 		.btn.btn-facebook.active {
 	color: #FFF
 }
+.dropdown {
+	position: relative;
+	z-index: 2
+}
+.dropdown .dropdown-menu {
+	position: absolute;
+	top: 100%;
+	right: 0;
+	background-color: #51535F
+}
+.dropdown .dropdown-menu:not(.active) {
+	display: none
+}
 
 .file-upload {
 	position: relative;
@@ -805,10 +818,6 @@ a:hover {
 	-webkit-justify-content: center;
 	    -ms-flex-pack: center;
 	        justify-content: center;
-	-webkit-box-align: center;
-	-webkit-align-items: center;
-	    -ms-flex-align: center;
-	        align-items: center;
 	-webkit-flex-wrap: wrap;
 	    -ms-flex-wrap: wrap;
 	        flex-wrap: wrap;
@@ -820,30 +829,82 @@ a:hover {
 	text-align: center;
 	margin-bottom: 1px
 }
-#header > header,
-	#header > label {
+#header > * {
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex
+}
+#header > header {
+	-webkit-box-align: center;
+	-webkit-align-items: center;
+	    -ms-flex-align: center;
+	            -ms-grid-row-align: center;
+	        align-items: center;
 	padding: 0 10px
 }
-#header > label {
+#header > div {
+	margin-left: auto
+}
+#header > footer {
+	margin-left: 1px
+}
+#huntList {
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	-webkit-flex-direction: column;
+	    -ms-flex-direction: column;
+	        flex-direction: column;
+	padding: 0;
+	margin: 0
+}
+#huntList > li {
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	-webkit-flex-direction: column;
+	    -ms-flex-direction: column;
+	        flex-direction: column;
+	padding: 0;
+	margin: 1px 0 0 0
+}
+#huntList > li > header {
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex
+}
+#huntList > li > header > *:first-child {
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-align: center;
+	-webkit-align-items: center;
+	    -ms-flex-align: center;
+	        align-items: center;
 	-webkit-box-flex: 1;
 	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
-	        flex-grow: 1;
-	text-align: right
+	        flex-grow: 1
 }
-@media (max-width: 800px) {
-
-	#header {
+#huntList > li > header > *:first-child input {
+	-webkit-box-flex: 1;
+	-webkit-flex-grow: 1;
+	    -ms-flex-positive: 1;
+	        flex-grow: 1
 }
-
-	#header > header {
-		width: 100%
-	}
-
-	#header > label {
-		text-align: left
-	}
-	}
+#huntList > li > header .btn {
+	min-width: 48px;
+	min-height: 48px
+}
 #body {
 	display: -webkit-box;
 	display: -webkit-flex;
