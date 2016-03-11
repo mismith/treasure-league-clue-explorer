@@ -410,11 +410,7 @@ export class HuntComponent {
 	@Input() me: Object;
 
 	private firebaseFileUploader = new FirebaseFileUploader();
-	private $hash: string = location.hash.substr(1) || 'comments';
 
-	constructor() {
-		window.addEventListener('hashchange', e => this.hash(location.hash.substr(1)));
-	}
 
 	// helpers
 	data(...paths: string[]) {
@@ -431,6 +427,11 @@ export class HuntComponent {
 		}
 		return clue.$active || '';
 	}
+	// hash
+	private $hash: string = location.hash.substr(1) || 'comments';
+	constructor() {
+		window.addEventListener('hashchange', e => this.hash(location.hash.substr(1)));
+	}
 	hash(set) {
 		if (set) this.$hash = set;
 		return this.$hash;
@@ -438,7 +439,7 @@ export class HuntComponent {
 	isHash(hash) {
 		return hash === this.$hash;
 	}
-
+	// un/seen
 	unsee(...paths: string[]) {
 		this.data('users').once('value').then(usersSnap => {
 			usersSnap.forEach(userSnap => {
@@ -567,7 +568,7 @@ export class HuntComponent {
 </header>
 <div id="body">
 	<section *ngIf="me && huntId" id="hunt" [huntId]="huntId" [firebase]="firebase" [me]="me" class="loading"></section>
-	<section *ngIf="me && !huntId" id="hunt" class="fill">
+	<section *ngIf="me && !huntId" id="hunt" class="fill" style="text-align:center; padding: 20px;">
 		<p>Pick or create a hunt using the <strong>My Hunts</strong> menu above.</p>
 	</section>
 	<section *ngIf="!me" class="fill">

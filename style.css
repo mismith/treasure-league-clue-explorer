@@ -142,6 +142,7 @@ a:hover {
 	position: absolute;
 	top: 100%;
 	right: 0;
+	max-width: 100%;
 	background-color: #51535F
 }
 .dropdown .dropdown-menu:not(.active) {
@@ -846,6 +847,34 @@ a:hover {
 #header > footer {
 	margin-left: 1px
 }
+@media (max-width: 480px) {
+
+	#header {
+}
+
+	#header > header {
+		width: 100%;
+		-webkit-box-pack: center;
+		-webkit-justify-content: center;
+		    -ms-flex-pack: center;
+		        justify-content: center
+	}
+
+	#header > div {
+		-webkit-box-flex: 1;
+		-webkit-flex-grow: 1;
+		    -ms-flex-positive: 1;
+		        flex-grow: 1;
+		margin-left: 0
+	}
+
+	#header > div > .btn {
+		-webkit-box-flex: 1;
+		-webkit-flex-grow: 1;
+		    -ms-flex-positive: 1;
+		        flex-grow: 1
+	}
+	}
 #huntList {
 	display: -webkit-box;
 	display: -webkit-flex;
