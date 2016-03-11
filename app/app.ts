@@ -608,7 +608,16 @@ export class App {
 				};
 
 				// update user data
-				this.firebase.ref('users', this.me.uid).set(this.me);
+				let meRef = this.firebase.ref('users', this.me.uid);
+				meRef.set(this.me);
+
+				// online presence
+				this.firebase.ref('.info/connected').on('value', snap => {
+					if (snap.val()) {
+						meRef.child('online').onDisconnect().set(new Date().toISOString());
+						meRef.child('online').set(true);
+					}
+				});
 
 				// auto-pick huntId
 				this.firebase.ref('users:data', this.me.uid).once('value').then(snap => {
