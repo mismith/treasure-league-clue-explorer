@@ -1208,6 +1208,16 @@ a:hover {
 	#sidebar > section {
 }
 
+	#sidebar > section.huntDetail {
+}
+
+	#sidebar > section.huntDetail > header {
+}
+
+	#sidebar > section.huntDetail > header .btn {
+		display: none
+	}
+
 	#sidebar > section:not(.active) {
 		display: none
 	}
