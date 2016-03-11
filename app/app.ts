@@ -173,17 +173,17 @@ class ReactionsComponent {
 			<div (click)="!message.$editing ? (message.$active = ! message.$active) : null" [class.editing]="message.$editing">
 				<a *ngFor="#attachment of message.attachments" [href]="attachment.src" target="_blank" class="attachment"><img [src]="attachment.src" /></a>
 				<div *ngIf="!message.$editing" [markdown]="message.content"></div>
-				<textarea *ngIf="message.$editing" [(ngModel)]="message.content" (enterpress)="update.next({message: message, event: $event})"></textarea>
+				<textarea *ngIf="message.$editing" [(ngModel)]="message.content" (enterpress)="updated.next({message: message, event: $event})"></textarea>
 			</div>
 			<aside class="extra" [reactionsRef]="reactionsRef | child:message.$id" [users]="users" [me]="me"></aside>
 		</div>
 		<footer *ngIf="message.creator === me.uid && !message.$editing">
 			<button (click)="message.$editing = true; message.$content = message.content">Edit</button>
-			<button (click)="delete.next({message: message, event: $event})">Delete</button>
+			<button (click)="deleted.next({message: message, event: $event})">Delete</button>
 		</footer>
 		<footer *ngIf="message.$editing">
 			<button (click)="message.$editing = false; message.content = message.$content">Cancel</button>
-			<button (click)="update.next({message: message, event: $event})">Save</button>
+			<button (click)="updated.next({message: message, event: $event})">Save</button>
 		</footer>
 	</li>
 	<li *ngIf="!(messages | length)" class="message empty">No comments yet.</li>
@@ -206,8 +206,8 @@ class MessagesComponent {
 	@Input() me: Object;
 	@Input() reactionsRef: Firebase;
 
-	@Output() update: EventEmitter = new EventEmitter();
-	@Output() delete: EventEmitter = new EventEmitter();
+	@Output() updated: EventEmitter = new EventEmitter();
+	@Output() deleted: EventEmitter = new EventEmitter();
 
 	getUser(userId) {
 		return this.users && this.users.find(user => user.$id === userId);
@@ -217,14 +217,14 @@ class MessagesComponent {
 @Component({
 	selector '[messagesRef]',
 	template: `
-<div [messages]="messagesRef | value:true" [users]="users" [me]="me" [reactionsRef]="reactionsRef" (update)="update($event.message.$id, $event.message.content)" (delete)="delete($event.message.$id, $event.event.shiftKey)">
+<div [messages]="messagesRef | value:true" [users]="users" [me]="me" [reactionsRef]="reactionsRef" (updated)="update($event.message)" (deleted)="delete($event.message, $event.event.shiftKey)">
 </div>
 <footer>
 	<div>
-		<textarea [(ngModel)]="typing" (enterpress)="create()" (paste)="firebaseFileUploader.process($event.clipboardData.items, attachments)"></textarea>
+		<textarea [(ngModel)]="newMessageContent" (enterpress)="create()" (paste)="firebaseFileUploader.process($event.clipboardData.items, attachments)"></textarea>
 	</div>
-	<button title="Attach Photo(s)" class="btn file-upload" [class.active]="attachments.length"><i class="fa fa-photo"></i><input type="file" (change)="attachments = []; firebaseFileUploader.process($event.target.files, attachments);" accept="image/*" multiple /></button>
-	<button (click)="create()" title="Send" class="btn"><i class="fa fa-send"></i></button>
+	<button (contextmenu)="attachments.length = 0" title="Attach Photo(s)" class="btn no-grow file-upload" [class.active]="attachments.length"><i class="fa fa-photo"></i><input type="file" (change)="attachments = []; firebaseFileUploader.process($event.target.files, attachments);" accept="image/*" multiple /></button>
+	<button (click)="create()" title="Send" class="btn no-grow"><i class="fa fa-arrow-circle-right"></i></button>
 </footer>`,
 	host: {
 		'[class.messenger]': 'true',
@@ -245,10 +245,15 @@ class MessengerComponent {
 	@Input() me: Object;
 	@Input() reactionsRef: Firebase;
 
-	private typing: string = '';
+	@Output() created: EventEmitter = new EventEmitter();
+	@Output() updated: EventEmitter = new EventEmitter();
+	@Output() deleted: EventEmitter = new EventEmitter();
+
+	private newMessageContent: string = '';
 	private firebaseFileUploader = new FirebaseFileUploader();
 	private attachments: Array = [];
 
+	// scrolling
 	constructor(private el: ElementRef) {}
 	ngOnInit() {
 		this.messagesRef.once('value', snap => {
@@ -261,30 +266,38 @@ class MessengerComponent {
 		this.el.nativeElement.firstElementChild.scrollTop = this.el.nativeElement.firstElementChild.scrollHeight;
 	}
 
+	// messages
 	create() {
-		if (this.typing || this.attachments.length) {
-			this.messagesRef.push({
+		if (this.newMessageContent || this.attachments.length) {
+			var message = {
 				created: new Date().toISOString(),
 				creator: this.me.uid,
-				content: this.typing,
+				content: this.newMessageContent,
 				attachments: this.attachments,
-			});
+			};
+			return this.messagesRef.push(message)
+				.then(ref => {
+					this.newMessageContent = '';
+					this.attachments = [];
 
-			this.typing = '';
-			this.attachments = [];
+					this.created.next(message);
+				});
 		}
 	}
-	update(messageId, content) {
-		if (content !== undefined) {
-			this.messagesRef.child(messageId).update({
-				updated: new Date().toISOString(),
-				updator: this.me.uid,
-				content: content,
-			});
+	update(message) {
+		if (message.$id && message.content) {
+			message.updated = new Date().toISOString();
+			message.updator = this.me.uid;
+			return this.messagesRef.child(message.$id).update(new FirebaseHelper().clean(message))
+				.then(() => this.updated.next(message));
 		}
 	}
-	delete(messageId, skipConfirm) {
-		return doConfirm(skipConfirm).then(() => this.messagesRef.child(messageId).remove());
+	delete(message, skipConfirm) {
+		if (message.$id) {
+			return doConfirm(skipConfirm)
+				.then(() => this.messagesRef.child(message.$id).remove())
+				.then(() => this.deleted.next(message));
+		}
 	}
 }
 
@@ -307,11 +320,11 @@ class MessengerComponent {
 			</li>
 		</ul>
 	</section>
-	<section class="huntComments" [class.active]="isHash('comments')">
+	<section (click)="see('conversation')" class="huntComments" [class.active]="isHash('comments')">
 		<header>
-			<h3>Comments</h3>
+			<h3 [class.highlight]="unseen('conversation') | value">Comments</h3>
 		</header>
-		<div [messagesRef]="data('messages', huntId)" [users]="data('users') | value:firebase.ref('users')" [me]="me" [reactionsRef]="data('reactions', huntId)"></div>
+		<div [messagesRef]="data('messages', huntId)" [users]="data('users') | value:firebase.ref('users')" [me]="me" [reactionsRef]="data('reactions', huntId)" (created)="unsee('conversation')"></div>
 	</section>
 </aside>
 <main id="main" [class.loading]="!(data('clues') | loaded | async)">
@@ -348,7 +361,7 @@ class MessengerComponent {
 					<button (click)="updateClue(clue)" title="Save" class="btn"><i class="fa fa-save"></i></button>
 				</footer>
 			</div>
-			<div class="conversation" [messagesRef]="data('messages', clue.$id)" [users]="data('users') | value:firebase.ref('users')" [me]="me" [reactionsRef]="data('reactions')"></div>
+			<div class="conversation" [messagesRef]="data('messages', clue.$id)" [users]="data('users') | value:firebase.ref('users')" [me]="me" [reactionsRef]="data('reactions')" (created)="unsee('clues', clue.$id, 'conversation')"></div>
 			<div class="resolution">
 				<div>
 					<h3 *ngIf="clue.notes">Explanation</h3>
@@ -456,10 +469,9 @@ export class HuntComponent {
 			});
 	}
 	updateClue(clue) {
-		let clueRef = this.data('clues', clue.$id);
-		return clueRef.update(this.firebase.clean(clue))
+		return this.data('clues', clue.$id).update(this.firebase.clean(clue))
 			.then(() => {
-				return this.unsee('clues', clueRef.key(), 'resolution');
+				return this.unsee('clues', clue.$id, 'resolution');
 			});
 	}
 	deleteClue(clue, skipConfirm) {

@@ -126,9 +126,6 @@ a:hover {
 	.btn.active {
 	color: rgb(59, 153, 252)
 }
-.btn.highlight {
-	color: #F90
-}
 .btn.btn-facebook {
 	background-color: #3b5999;
 	opacity: 1
@@ -149,6 +146,9 @@ a:hover {
 }
 .dropdown .dropdown-menu:not(.active) {
 	display: none
+}
+.highlight {
+	color: #F90;
 }
 
 .file-upload {
@@ -188,10 +188,6 @@ a:hover {
 	opacity: 1;
 	-webkit-transition: all 300ms;
 	transition: all 300ms
-}
-
-.clue .btn {
-	font-size: 24px
 }
 
 .clue > aside {
@@ -368,7 +364,8 @@ a:hover {
 
 .clue header .btn, .clue footer .btn {
 	min-width: 48px;
-	min-height: 48px
+	min-height: 48px;
+	font-size: 24px
 }
 
 .clue header .btn:not(.no-grow), .clue footer .btn:not(.no-grow) {
@@ -667,7 +664,7 @@ a:hover {
 .messages .message .content > div:before {
 	content: "";
 	position: absolute;
-	top: 7px;
+	top: 6px;
 	right: 100%;
 	width: 0;
 	height: 0;
@@ -738,7 +735,7 @@ a:hover {
 .messages .message.mine .content > div:before {
 	right: auto;
 	top: auto;
-	bottom: 7px;
+	bottom: 6px;
 	left: 100%;
 	border-right-color: transparent;
 	border-left-color: rgb(59, 153, 252)
@@ -1084,36 +1081,6 @@ a:hover {
 	background-color: #51535F;
 	overflow: auto;
 	margin-bottom: 1px
-	/*		&.huntList {
-			display: flex;
-			flex-direction: column;
-
-			& > ul {
-				display: flex;
-				flex-direction: column;
-				padding: 0;
-				margin: 0;
-
-				& > * {
-					display: flex;
-					flex-direction: column;
-					flex-shrink: 0;
-					margin-top: 1px;
-
-					& > header {
-						display: flex;
-						flex-wrap: nowrap;
-
-						& a,
-						& span,
-						& input {
-							flex-shrink: 1;
-							flex-grow: 1;
-						}
-					}
-				}
-			}
-		}*/
 }
 #sidebar > section > header {
 	display: -webkit-box;

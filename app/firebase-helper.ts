@@ -8,8 +8,8 @@ export class FirebaseHelper {
 	private cache: Object = {};
 	private snaps: Object = {};
 
-	constructor(public url: string) {
-		if (this.url) this.root = new Firebase(this.url);
+	constructor(url: string) {
+		if (url) this.root = new Firebase(url);
 	}
 	ref(...paths: string[]) {
 		let path = paths.join('/');
