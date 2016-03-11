@@ -590,7 +590,9 @@ a {
 	}
 	@media (width <= 520px) {
 		& > header {
-			display: none;
+			&.app {
+				display: none;
+			}
 		}
 		& > div {
 			flex-grow: 1;

@@ -531,7 +531,7 @@ export class HuntComponent {
 	selector: '[app]',
 	template: `
 <header id="header">
-	<header>
+	<header [class.app]="me && huntId">
 		<h1><a href="http://treasureleague.com/" target="_blank">Treasure League</a> <span style="white-space: nowrap;">Clue Explorer</span></h1>
 	</header>
 	<div *ngIf="me" (click)="$event.stopPropagation()" class="dropdown">

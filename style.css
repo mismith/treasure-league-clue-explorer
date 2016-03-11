@@ -853,6 +853,9 @@ a:hover {
 }
 
 	#header > header {
+}
+
+	#header > header.app {
 		display: none
 	}
 
