@@ -847,17 +847,13 @@ a:hover {
 #header > footer {
 	margin-left: 1px
 }
-@media (max-width: 480px) {
+@media (max-width: 520px) {
 
 	#header {
 }
 
 	#header > header {
-		width: 100%;
-		-webkit-box-pack: center;
-		-webkit-justify-content: center;
-		    -ms-flex-pack: center;
-		        justify-content: center
+		display: none
 	}
 
 	#header > div {
@@ -1012,6 +1008,7 @@ a:hover {
 	-webkit-order: 3;
 	    -ms-flex-order: 3;
 	        order: 3;
+	background-color: #51535F;
 	margin-top: 1px
 }
 #nav a {
@@ -1032,11 +1029,11 @@ a:hover {
 	        flex-shrink: 0;
 	min-width: 48px;
 	min-height: 48px;
-	color: inherit;
 	text-decoration: none
 }
 #nav a.active {
-	background-color: rgb(59, 153, 252)
+	background-color: rgb(59, 153, 252);
+	color: #EEE
 }
 #nav > div {
 	display: -webkit-box;
@@ -1153,6 +1150,9 @@ a:hover {
 	    -ms-flex-pack: end;
 	        justify-content: flex-end
 }
+#sidebar > section .messenger .btn {
+	font-size: 24px
+}
 #sidebar > section .users {
 	display: -webkit-box;
 	display: -webkit-flex;
@@ -1204,16 +1204,6 @@ a:hover {
 
 	#sidebar > section {
 }
-
-	#sidebar > section.huntDetail {
-}
-
-	#sidebar > section.huntDetail > header {
-}
-
-	#sidebar > section.huntDetail > header .btn {
-		display: none
-	}
 
 	#sidebar > section:not(.active) {
 		display: none

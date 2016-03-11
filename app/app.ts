@@ -384,11 +384,15 @@ class MessengerComponent {
 	</article>
 </main>
 <nav id="nav">
-	<a (click)="hash('participants')" [class.active]="isHash('participants')"><i class="fa fa-user"></i></a>
+	<a (click)="hash('participants')" class="btn" [class.active]="isHash('participants')"><i class="fa fa-user"></i></a>
 	<div>
-		<a *ngFor="#clue of data('clues') | value:true" (click)="hash(clue.$id)" [class.active]="isHash(clue.$id)" [innerHTML]="clue.num"></a>
+		<a *ngFor="#clue of data('clues') | value:true" (click)="hash(clue.$id)" class="btn" [class.active]="isHash(clue.$id)" [innerHTML]="clue.num || '#'"></a>
+		<a class="btn file-upload">
+			<i class="fa fa-plus"></i>
+			<input type="file" accept="image/*" (change)="createClue($event.target.files)" />
+		</a>
 	</div>
-	<a (click)="hash('comments')" [class.active]="isHash('comments')"><i class="fa fa-comments"></i></a>
+	<a (click)="hash('comments')" class="btn" [class.active]="isHash('comments')"><i class="fa fa-comments"></i></a>
 </nav>`,
 	host: {
 		'[class.loading]': `!(firebase.ref('hunts', huntId) | loaded | async)`,
