@@ -301,6 +301,45 @@ class MessengerComponent {
 	}
 }
 
+@Pipe({
+	name: 'filter',
+})
+class FilterPipe implements PipeTransform {
+	transform(values: any[], args: any[]) {
+		if (!args[0] || !values) return values;
+		return values.filter(value => {
+			if (value instanceof Object) {
+				if (args[0] instanceof Object) {
+					let match = true;
+					for (var key in args[0]) {
+						if (args[0][key] === '!!') {
+							match = match && (value[key] !== undefined);
+						} else {
+							match = match && (value[key] === args[0][key]);
+						}
+					}
+					return match;
+				}
+			}
+			return false;
+		});
+	}
+}
+
+
+@Pipe({
+	name: 'mentions',
+})
+class MentionsPipe implements PipeTransform {
+	transform(text: string, args: any[]) {
+		return text && args[0] && args[0].find ? text.replace(/(^|\s)@#([\d\w\?]+)(?:\.(\d+))?/g, (match, prefix, num, word) => {
+			let clue = args[0].find(clue => clue.num == num) || {};
+			let soln = (word ? (clue.solution || '').split(' ')[word] : clue.solution);
+			return `${prefix}[${soln || '```______```'}](#${clue.$id || num})`;
+		}) : text;
+	}
+}
+
 
 @Component({
 	selector: '[huntId]',
@@ -320,6 +359,14 @@ class MessengerComponent {
 			</li>
 		</ul>
 	</section>
+	<!--<section class="huntSolutons">
+		<header>
+			<h3>Solutions</h3>
+		</header>
+		<ul>
+			<li *ngFor="#clue of data('clues') | value:true | filter:{solution:'!!'}" [innerHTML]="clue.solution"></li>
+		</ul>
+	</section>-->
 	<section (click)="see('conversation')" class="huntComments" [class.active]="isHash('comments')">
 		<header>
 			<h3 [class.highlight]="unseen('conversation') | value">Comments</h3>
@@ -369,7 +416,7 @@ class MessengerComponent {
 				</div>
 				<footer *ngIf="clue.solution" (mouseenter)="clue.$solution = true" (touchstart)="clue.$solution = true" (mouseleave)="clue.$solution = false" (touchend)="clue.$solution = false" [class.hover]="clue.$solution">
 					<h3>Solution</h3>
-					<div [markdown]="clue.solution"></div>
+					<div [markdown]="clue.solution | mentions:(data('clues') | value:true)"></div>
 				</footer>
 			</div>
 		</aside>
@@ -401,6 +448,7 @@ class MessengerComponent {
 		FirebaseLoadedPipe,
 		FirebaseValuePipe,
 		LengthPipe,
+		MentionsPipe,
 	],
 	directives: [
 		AvatarComponent,

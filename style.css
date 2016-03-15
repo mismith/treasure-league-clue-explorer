@@ -142,11 +142,16 @@ a:hover {
 	position: absolute;
 	top: 100%;
 	right: 0;
-	max-width: 100%;
 	background-color: #51535F
 }
 .dropdown .dropdown-menu:not(.active) {
 	display: none
+}
+@media (max-width: 800px) {
+
+	.dropdown .dropdown-menu {
+		max-width: 100%
+	}
 }
 .highlight {
 	color: #F90;
@@ -291,20 +296,12 @@ a:hover {
 	overflow: auto
 }
 
-.clue > aside > *:not(figure).resolution > * div {
-	white-space: pre-wrap
-}
-
 .clue > aside > *:not(figure).resolution > div {
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
 	-webkit-flex-direction: column;
 	    -ms-flex-direction: column;
 	        flex-direction: column;
-	-webkit-box-pack: center;
-	-webkit-justify-content: center;
-	    -ms-flex-pack: center;
-	        justify-content: center;
 	-webkit-box-flex: 1;
 	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
@@ -313,11 +310,13 @@ a:hover {
 }
 
 .clue > aside > *:not(figure).resolution > div h3 {
-	margin: 0 auto 20px
+	padding-top: 10px;
+	margin: auto auto 20px
 }
 
 .clue > aside > *:not(figure).resolution > div div {
-	font-size: 24px
+	font-size: 24px;
+	margin-bottom: auto
 }
 
 .clue > aside > *:not(figure).resolution > footer {
@@ -326,7 +325,9 @@ a:hover {
 	-webkit-flex-direction: column;
 	    -ms-flex-direction: column;
 	        flex-direction: column;
-	max-height: 50%;
+	-webkit-flex-shrink: 1;
+	    -ms-flex-negative: 1;
+	        flex-shrink: 1;
 	background-color: #FFF;
 	color: #000;
 	padding: 32px 10px
