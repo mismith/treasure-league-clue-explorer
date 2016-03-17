@@ -716,10 +716,7 @@ a {
 	& > section {
 		display: flex;
 		flex-direction: column;
-		flex-grow: 1;
-		flex-shrink: 1;
 		background-color: var(--primary);
-		overflow: auto;
 		margin-bottom: 1px;
 
 		& > header {
@@ -732,31 +729,22 @@ a {
 			& h3 {
 				margin: 10px;
 			}
-			& > *:first-child {
+			& > h3 {
 				flex-grow: 1;
 			}
-		}
-		& .messenger {
-			display: flex;
-			flex-direction: column;
-			flex-grow: 1;
-
-			& .messages {
-				justify-content: flex-end;
-			}
-			& .btn {
-				font-size: 24px;
+			& + * {
+				display: flex;
+				flex-direction: column;
+				flex-grow: 1;
+				overflow: auto;
 			}
 		}
 		& .users {
-			display: flex;
-			flex-direction: column;
-			flex-grow: 1;
-			flex-shrink: 0;
 			padding: 10px;
 			margin: 0;
 
 			& > li {
+				flex-shrink: 0;
 				padding: 3px 0;
 
 				& > header {
@@ -768,10 +756,47 @@ a {
 				}
 			}
 		}
+		& .messenger {
+			& .messages {
+				justify-content: flex-end;
+			}
+			& .btn {
+				font-size: 24px;
+			}
+		}
+		& .disclosure-arrow {
+			appearance: none;
+			display: inline-flex;
+			background: none;
+			padding: 0;
+			margin: 0 0 2px 10px;
+			border: solid 4px transparent;
+			border-left: solid 8px var(--bg);
+			border-right-width: 0;
+			transition: transform 150ms;
+		}
+		&:not(.active) {
+			flex-shrink: 0;
+			
+			& > header {
+				border-bottom-width: 0;
+			}
+			& .users,
+			& .messenger {
+				display: none !important;
+			}
+		}
+		&.active {
+			flex-grow: 1;
+			flex-shrink: 1;
+
+			& .disclosure-arrow {
+				transform: rotate(90deg);
+			}
+		}
 	}
 	@media (--mobile) {
 		flex-basis: auto;
-		flex-shrink: 0;
 		order: 2;
 		max-width: none;
 
@@ -782,6 +807,9 @@ a {
 						display: none;
 					}
 				}
+			}
+			& .disclosure-arrow {
+				display: none;
 			}
 			&:not(.active) {
 				display: none;

@@ -360,9 +360,10 @@ class MentionsPipe implements PipeTransform {
 	template: `
 <aside *ngIf="huntId" id="sidebar" [class.active]="isHash('participants') || isHash('comments')">
 	<section class="huntDetail" [class.active]="isHash('participants')">
-		<header>
+		<header (click)="hash('participants')">
+			<span class="disclosure-arrow"></span>
 			<h3>Participants</h3>
-			<button (click)="invite()" title="Invite Friends" class="btn"><i class="fa fa-user-plus"></i></button>
+			<button (click)="invite(); $event.stopPropagation();" title="Invite Friends" class="btn"><i class="fa fa-user-plus"></i></button>
 		</header>
 		<ul class="users" [class.loading]="!(data('users') | value:firebase.ref('users') | length)">
 			<li *ngFor="#user of data('users') | value:firebase.ref('users')" class="user">
@@ -382,7 +383,8 @@ class MentionsPipe implements PipeTransform {
 		</ul>
 	</section>-->
 	<section (click)="see('conversation')" class="huntComments" [class.active]="isHash('comments')">
-		<header>
+		<header (click)="hash('comments')">
+			<span class="disclosure-arrow"></span>
 			<h3 [class.highlight]="unseen('conversation') | value">Comments</h3>
 		</header>
 		<div [messagesRef]="data('messages', huntId)" [users]="data('users') | value:firebase.ref('users')" [me]="me" [reactionsRef]="data('reactions', huntId)" (created)="unsee('conversation')"></div>
@@ -475,8 +477,11 @@ export class HuntComponent {
 	@Input() firebase: FirebaseHelper;
 	@Input() me: Object;
 
-	private firebaseFileUploader = new FirebaseFileUploader();
-
+	private firebaseFileUploader: FirebaseFileUploader = new FirebaseFileUploader();
+	private $hash: string = location.hash.substr(1) || 'comments';
+	constructor() {
+		window.addEventListener('hashchange', e => this.hash(location.hash.substr(1)));
+	}
 
 	// helpers
 	data(...paths: string[]) {
@@ -494,10 +499,6 @@ export class HuntComponent {
 		return clue.$active || '';
 	}
 	// hash
-	private $hash: string = location.hash.substr(1) || 'comments';
-	constructor() {
-		window.addEventListener('hashchange', e => this.hash(location.hash.substr(1)));
-	}
 	hash(set) {
 		if (set) this.$hash = set;
 		return this.$hash;

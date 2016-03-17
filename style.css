@@ -1101,15 +1101,7 @@ a:hover {
 	-webkit-flex-direction: column;
 	    -ms-flex-direction: column;
 	        flex-direction: column;
-	-webkit-box-flex: 1;
-	-webkit-flex-grow: 1;
-	    -ms-flex-positive: 1;
-	        flex-grow: 1;
-	-webkit-flex-shrink: 1;
-	    -ms-flex-negative: 1;
-	        flex-shrink: 1;
 	background-color: #51535F;
-	overflow: auto;
 	margin-bottom: 1px
 }
 #sidebar > section > header {
@@ -1130,37 +1122,13 @@ a:hover {
 			#sidebar > section > header h3 {
 	margin: 10px
 }
-#sidebar > section > header > *:first-child {
+#sidebar > section > header > h3 {
 	-webkit-box-flex: 1;
 	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
 	        flex-grow: 1
 }
-#sidebar > section .messenger {
-	display: -webkit-box;
-	display: -webkit-flex;
-	display: -ms-flexbox;
-	display: flex;
-	-webkit-box-orient: vertical;
-	-webkit-box-direction: normal;
-	-webkit-flex-direction: column;
-	    -ms-flex-direction: column;
-	        flex-direction: column;
-	-webkit-box-flex: 1;
-	-webkit-flex-grow: 1;
-	    -ms-flex-positive: 1;
-	        flex-grow: 1
-}
-#sidebar > section .messenger .messages {
-	-webkit-box-pack: end;
-	-webkit-justify-content: flex-end;
-	    -ms-flex-pack: end;
-	        justify-content: flex-end
-}
-#sidebar > section .messenger .btn {
-	font-size: 24px
-}
-#sidebar > section .users {
+#sidebar > section > header + * {
 	display: -webkit-box;
 	display: -webkit-flex;
 	display: -ms-flexbox;
@@ -1174,13 +1142,16 @@ a:hover {
 	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
 	        flex-grow: 1;
-	-webkit-flex-shrink: 0;
-	    -ms-flex-negative: 0;
-	        flex-shrink: 0;
+	overflow: auto
+}
+#sidebar > section .users {
 	padding: 10px;
 	margin: 0
 }
 #sidebar > section .users > li {
+	-webkit-flex-shrink: 0;
+	    -ms-flex-negative: 0;
+	        flex-shrink: 0;
 	padding: 3px 0
 }
 #sidebar > section .users > li > header {
@@ -1193,15 +1164,67 @@ a:hover {
 #sidebar > section .users > li > header .avatar {
 	margin-right: 10px
 }
+#sidebar > section .messenger {
+}
+#sidebar > section .messenger .messages {
+	-webkit-box-pack: end;
+	-webkit-justify-content: flex-end;
+	    -ms-flex-pack: end;
+	        justify-content: flex-end
+}
+#sidebar > section .messenger .btn {
+	font-size: 24px
+}
+#sidebar > section .disclosure-arrow {
+	-webkit-appearance: none;
+	   -moz-appearance: none;
+	        appearance: none;
+	display: -webkit-inline-box;
+	display: -webkit-inline-flex;
+	display: -ms-inline-flexbox;
+	display: inline-flex;
+	background: none;
+	padding: 0;
+	margin: 0 0 2px 10px;
+	border: solid 4px transparent;
+	border-left: solid 8px #202327;
+	border-right-width: 0;
+	-webkit-transition: -webkit-transform 150ms;
+	transition: -webkit-transform 150ms;
+	transition: transform 150ms;
+	transition: transform 150ms, -webkit-transform 150ms
+}
+#sidebar > section:not(.active) {
+	-webkit-flex-shrink: 0;
+	    -ms-flex-negative: 0;
+	        flex-shrink: 0
+}
+#sidebar > section:not(.active) > header {
+	border-bottom-width: 0
+}
+#sidebar > section:not(.active) .users,
+			#sidebar > section:not(.active) .messenger {
+	display: none !important
+}
+#sidebar > section.active {
+	-webkit-box-flex: 1;
+	-webkit-flex-grow: 1;
+	    -ms-flex-positive: 1;
+	        flex-grow: 1;
+	-webkit-flex-shrink: 1;
+	    -ms-flex-negative: 1;
+	        flex-shrink: 1
+}
+#sidebar > section.active .disclosure-arrow {
+	-webkit-transform: rotate(90deg);
+	        transform: rotate(90deg)
+}
 @media (max-width: 800px) {
 
 	#sidebar {
 		-webkit-flex-basis: auto;
 		    -ms-flex-preferred-size: auto;
 		        flex-basis: auto;
-		-webkit-flex-shrink: 0;
-		    -ms-flex-negative: 0;
-		        flex-shrink: 0;
 		-webkit-box-ordinal-group: 3;
 		-webkit-order: 2;
 		    -ms-flex-order: 2;
@@ -1219,6 +1242,10 @@ a:hover {
 }
 
 	#sidebar > section.huntDetail > header .btn {
+		display: none
+	}
+
+	#sidebar > section .disclosure-arrow {
 		display: none
 	}
 
