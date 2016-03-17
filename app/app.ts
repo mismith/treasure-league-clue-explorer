@@ -348,7 +348,7 @@ class MentionsPipe implements PipeTransform {
 	transform(text: string, args: any[]) {
 		return text && args[0] && args[0].find ? text.replace(/(^|\s)@#([\d\w\?]+)(?:\.(\d+))?/g, (match, prefix, num, word) => {
 			let clue = args[0].find(clue => clue.num == num) || {};
-			let soln = (word ? (clue.solution || '').split(' ')[word] : clue.solution);
+			let soln = (word ? (clue.solution || '').replace('\n', ' ').split(' ')[word] : clue.solution);
 			return `${prefix}[${soln || '```______```'}](#${clue.$id || num})`;
 		}) : text;
 	}
