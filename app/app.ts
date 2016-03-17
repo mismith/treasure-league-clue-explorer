@@ -10,6 +10,14 @@ function doConfirm(skip) {
 		return reject();
 	});
 }
+function matchesSelfOrParentElement(el, check) {
+	let found = false;
+	while (!found && el instanceof HTMLElement) {
+		found = found || check(el);
+		el = el.parentNode;
+	}
+	return found;
+}
 
 
 @Component({
@@ -170,7 +178,7 @@ class ReactionsComponent {
 		</header>
 		<div class="content">
 			<figure [avatar]="getUser(message.creator)"></figure>
-			<div (click)="!message.$editing ? (message.$active = ! message.$active) : null" [class.editing]="message.$editing">
+			<div (click)="activate(message, $event)" [class.editing]="message.$editing">
 				<a *ngFor="#attachment of message.attachments" [href]="attachment.src" target="_blank" class="attachment"><img [src]="attachment.src" /></a>
 				<div *ngIf="!message.$editing" [markdown]="message.content"></div>
 				<textarea *ngIf="message.$editing" [(ngModel)]="message.content" (enterpress)="updated.next({message: message, event: $event})"></textarea>
@@ -211,6 +219,12 @@ class MessagesComponent {
 
 	getUser(userId) {
 		return this.users && this.users.find(user => user.$id === userId);
+	}
+
+	activate(message, e) {
+		if (!message.$editing && (e ? !matchesSelfOrParentElement(e.target, el => el.tagName.toLowerCase() === 'a') : true)) {
+			message.$active = !message.$active;
+		}
 	}
 }
 
