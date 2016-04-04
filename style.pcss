@@ -186,13 +186,19 @@ a {
 		position: relative;
 
 		& > figure {
+			display: flex;
+			justify-content: center;
 			overflow: auto;
 			-webkit-overflow-scrolling: touch;
 
-			& img {
-				width: 100%;
-				max-width: 500px;
-				vertical-align: middle;
+			& a {
+				cursor: zoom-in;
+
+				& img {
+					width: 100%;
+					max-width: 400px;
+					vertical-align: middle;
+				}
 			}
 		}
 		& > *:not(figure) {
@@ -205,13 +211,14 @@ a {
 			bottom: -1px;
 			background-color: var(--primary);
 			transition: transform 300ms;
+			transform-origin: center top;
+			transform: scale(0, 0);
 			backface-visibility: hidden;
 			overflow: auto;
 			-webkit-overflow-scrolling: touch;
 
 			&.information {
-				transform-origin: center top;
-				transform: scale(1, 0);
+				transform-origin: right top;
 
 				& .fieldset {
 					display: flex;
@@ -220,12 +227,10 @@ a {
 				}
 			}
 			&.conversation {
-				transform-origin: left center;
-				transform: scale(0, 1);
+				transform-origin: left top;
 			}
 			&.resolution {
-				transform-origin: right center;
-				transform: scale(0, 1);
+				transform-origin: center top;
 				text-align: center;
 
 				& > * {

@@ -371,7 +371,9 @@ class MentionsPipe implements PipeTransform {
 		</header>
 		<aside>
 			<figure>
-				<img [src]="clue.image.src" />
+				<a [href]="clue.image.src" target="_blank">
+					<img [src]="clue.image.thumb || clue.image.src" />
+				</a>
 			</figure>
 			<div class="information">
 				<div class="fieldset">
