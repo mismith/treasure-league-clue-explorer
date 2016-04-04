@@ -358,38 +358,6 @@ class MentionsPipe implements PipeTransform {
 @Component({
 	selector: '[huntId]',
 	template: `
-<aside *ngIf="huntId" id="sidebar" [class.active]="isHash('participants') || isHash('comments')">
-	<section class="huntDetail" [class.active]="isHash('participants')">
-		<header (click)="hash('participants')">
-			<span class="disclosure-arrow"></span>
-			<h3>Participants</h3>
-			<button (click)="invite(); $event.stopPropagation();" title="Invite Friends" class="btn"><i class="fa fa-user-plus"></i></button>
-		</header>
-		<ul class="users" [class.loading]="!(data('users') | value:firebase.ref('users') | length)">
-			<li *ngFor="#user of data('users') | value:firebase.ref('users')" class="user">
-				<header>
-					<figure [avatar]="user"></figure>
-					<span [innerHTML]="user.name"></span>
-				</header>
-			</li>
-		</ul>
-	</section>
-	<!--<section class="huntSolutons">
-		<header>
-			<h3>Solutions</h3>
-		</header>
-		<ul>
-			<li *ngFor="#clue of data('clues') | value:true | filter:{solution:'!!'}" [innerHTML]="clue.solution"></li>
-		</ul>
-	</section>-->
-	<section (click)="see('conversation')" class="huntComments" [class.active]="isHash('comments')">
-		<header (click)="hash('comments')">
-			<span class="disclosure-arrow"></span>
-			<h3 [class.highlight]="unseen('conversation') | value">Comments</h3>
-		</header>
-		<div [messagesRef]="data('messages', huntId)" [users]="data('users') | value:firebase.ref('users')" [me]="me" [reactionsRef]="data('reactions', huntId)" (created)="unsee('conversation')"></div>
-	</section>
-</aside>
 <main id="main" [class.loading]="!(data('clues') | loaded | async)">
 	<article *ngFor="#clue of data('clues') | value:true" (mouseenter)="play(clue)" (mouseleave)="stop(clue)" (touchstart)="play(clue)" (touchend)="stop(clue)" (click)="see('clues', clue.$id, 'information')" [id]="clue.$id" class="clue {{ tab(clue) }} {{ isHash(clue.$id) ? 'active' : '' }}">
 		<header>
@@ -446,6 +414,38 @@ class MentionsPipe implements PipeTransform {
 		<input type="file" accept="image/*" (change)="createClue($event.target.files)" />
 	</article>
 </main>
+<aside *ngIf="huntId" id="sidebar" [class.active]="isHash('participants') || isHash('comments')">
+	<section class="huntDetail" [class.active]="isHash('participants')">
+		<header (click)="hash('participants')">
+			<span class="disclosure-arrow"></span>
+			<h3>Participants</h3>
+			<button (click)="invite(); $event.stopPropagation();" title="Invite Friends" class="btn"><i class="fa fa-user-plus"></i></button>
+		</header>
+		<ul class="users" [class.loading]="!(data('users') | value:firebase.ref('users') | length)">
+			<li *ngFor="#user of data('users') | value:firebase.ref('users')" class="user">
+				<header>
+					<figure [avatar]="user"></figure>
+					<span [innerHTML]="user.name"></span>
+				</header>
+			</li>
+		</ul>
+	</section>
+	<!--<section class="huntSolutons">
+		<header>
+			<h3>Solutions</h3>
+		</header>
+		<ul>
+			<li *ngFor="#clue of data('clues') | value:true | filter:{solution:'!!'}" [innerHTML]="clue.solution"></li>
+		</ul>
+	</section>-->
+	<section (click)="see('conversation')" class="huntComments" [class.active]="isHash('comments')">
+		<header (click)="hash('comments')">
+			<span class="disclosure-arrow"></span>
+			<h3 [class.highlight]="unseen('conversation') | value">Comments</h3>
+		</header>
+		<div [messagesRef]="data('messages', huntId)" [users]="data('users') | value:firebase.ref('users')" [me]="me" [reactionsRef]="data('reactions', huntId)" (created)="unsee('conversation')"></div>
+	</section>
+</aside>
 <nav id="nav">
 	<a (click)="hash('participants')" class="btn" [class.active]="isHash('participants')"><i class="fa fa-user"></i></a>
 	<div>
