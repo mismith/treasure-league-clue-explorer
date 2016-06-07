@@ -371,13 +371,15 @@ class MentionsPipe implements PipeTransform {
 		</header>
 		<aside>
 			<figure>
-				<a [href]="clue.image.src" target="_blank">
+				<div *ngIf="clue.prompt" class="prompt" [innerHTML]="clue.prompt"></div>
+				<a *ngIf="clue.thumb || clue.image" [href]="clue.image.src" target="_blank">
 					<img [src]="clue.image.thumb || clue.image.src" />
 				</a>
 			</figure>
 			<div class="information">
 				<div class="fieldset">
 					<input [(ngModel)]="clue.num" placeholder="Number" />
+					<textarea [(ngModel)]="clue.prompt" placeholder="Prompt"></textarea>
 					<textarea [(ngModel)]="clue.notes" placeholder="Explanation"></textarea>
 					<textarea [(ngModel)]="clue.solution" placeholder="Solution"></textarea>
 				</div>

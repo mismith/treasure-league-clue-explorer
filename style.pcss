@@ -187,10 +187,16 @@ a {
 
 		& > figure {
 			display: flex;
-			justify-content: center;
+			flex-direction: column;
+			align-content: center;
 			overflow: auto;
 			-webkit-overflow-scrolling: touch;
 
+			& .prompt {
+				padding: 10px;
+				white-space: pre-wrap;
+				text-align: center;
+			}
 			& a {
 				cursor: zoom-in;
 
