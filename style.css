@@ -214,13 +214,36 @@ a:hover {
 }
 
 .clue > aside > figure {
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	-webkit-flex-direction: column;
+	    -ms-flex-direction: column;
+	        flex-direction: column;
+	-webkit-align-content: center;
+	    -ms-flex-line-pack: center;
+	        align-content: center;
 	overflow: auto;
 	-webkit-overflow-scrolling: touch
 }
 
-.clue > aside > figure img {
+.clue > aside > figure .prompt {
+	padding: 10px;
+	white-space: pre-wrap;
+	text-align: center
+}
+
+.clue > aside > figure a {
+	cursor: -webkit-zoom-in;
+	cursor: zoom-in
+}
+
+.clue > aside > figure a img {
 	width: 100%;
-	max-width: 500px;
+	max-width: 400px;
 	vertical-align: middle
 }
 
@@ -244,6 +267,10 @@ a:hover {
 	transition: -webkit-transform 300ms;
 	transition: transform 300ms;
 	transition: transform 300ms, -webkit-transform 300ms;
+	-webkit-transform-origin: center top;
+	        transform-origin: center top;
+	-webkit-transform: scale(0, 0);
+	        transform: scale(0, 0);
 	-webkit-backface-visibility: hidden;
 	        backface-visibility: hidden;
 	overflow: auto;
@@ -251,10 +278,8 @@ a:hover {
 }
 
 .clue > aside > *:not(figure).information {
-	-webkit-transform-origin: center top;
-	        transform-origin: center top;
-	-webkit-transform: scale(1, 0);
-	        transform: scale(1, 0)
+	-webkit-transform-origin: right top;
+	        transform-origin: right top
 }
 
 .clue > aside > *:not(figure).information .fieldset {
@@ -274,17 +299,13 @@ a:hover {
 }
 
 .clue > aside > *:not(figure).conversation {
-	-webkit-transform-origin: left center;
-	        transform-origin: left center;
-	-webkit-transform: scale(0, 1);
-	        transform: scale(0, 1)
+	-webkit-transform-origin: left top;
+	        transform-origin: left top
 }
 
 .clue > aside > *:not(figure).resolution {
-	-webkit-transform-origin: right center;
-	        transform-origin: right center;
-	-webkit-transform: scale(0, 1);
-	        transform: scale(0, 1);
+	-webkit-transform-origin: center top;
+	        transform-origin: center top;
 	text-align: center
 }
 
