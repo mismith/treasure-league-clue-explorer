@@ -7,7 +7,7 @@
 }
 
 .loading > * {
-	opacity: 0 !important
+	visibility: hidden !important
 }
 
 * {
@@ -362,7 +362,8 @@ a:hover {
 	-webkit-transition: -webkit-filter 300ms;
 	transition: -webkit-filter 300ms;
 	transition: filter 300ms;
-	transition: filter 300ms, -webkit-filter 300ms
+	transition: filter 300ms, -webkit-filter 300ms;
+	white-space: pre-wrap
 }
 
 .clue > aside > *:not(figure).resolution > footer.hover {
@@ -1196,6 +1197,11 @@ a:hover {
 #sidebar > section .messenger .btn {
 	font-size: 24px
 }
+#sidebar > section .solutions {
+}
+#sidebar > section .solutions li {
+	white-space: pre-wrap
+}
 #sidebar > section .disclosure-arrow {
 	-webkit-appearance: none;
 	   -moz-appearance: none;
@@ -1223,8 +1229,7 @@ a:hover {
 #sidebar > section:not(.active) > header {
 	border-bottom-width: 0
 }
-#sidebar > section:not(.active) .users,
-			#sidebar > section:not(.active) .messenger {
+#sidebar > section:not(.active) > header + * {
 	display: none !important
 }
 #sidebar > section.active {

@@ -404,7 +404,7 @@ class MentionsPipe implements PipeTransform {
 				</div>
 				<footer *ngIf="clue.solution" (mouseenter)="clue.$solution = true" (touchstart)="clue.$solution = true" (mouseleave)="clue.$solution = false" (touchend)="clue.$solution = false" [class.hover]="clue.$solution">
 					<h3>Solution</h3>
-					<div [markdown]="clue.solution | mentions:(data('clues') | value:true)"></div>
+					<div [innerHTML]="clue.solution"></div>
 				</footer>
 			</div>
 		</aside>
@@ -434,20 +434,23 @@ class MentionsPipe implements PipeTransform {
 			</li>
 		</ul>
 	</section>
-	<!--<section class="huntSolutons">
-		<header>
-			<h3>Solutions</h3>
-		</header>
-		<ul>
-			<li *ngFor="#clue of data('clues') | value:true | filter:{solution:'!!'}" [innerHTML]="clue.solution"></li>
-		</ul>
-	</section>-->
 	<section (click)="see('conversation')" class="huntComments" [class.active]="isHash('comments')">
 		<header (click)="hash('comments')">
 			<span class="disclosure-arrow"></span>
 			<h3 [class.highlight]="unseen('conversation') | value">Comments</h3>
 		</header>
 		<div [messagesRef]="data('messages', huntId)" [users]="data('users') | value:firebase.ref('users')" [me]="me" [reactionsRef]="data('reactions', huntId)" (created)="unsee('conversation')"></div>
+	</section>
+	<section class="huntSolutions" [class.active]="isHash('solutions')">
+		<header (click)="hash('solutions')">
+			<span class="disclosure-arrow"></span>
+			<h3>Solutions</h3>
+		</header>
+		<div class="solutions" [class.loading]="!(data('clues') | value:true | length)">
+			<ul>
+				<li *ngFor="#clue of data('clues') | value:true | filter:{solution:'!!'}" [innerHTML]="clue.solution"></li>
+			</ul>
+		</div>
 	</section>
 </aside>
 <nav id="nav">
@@ -460,11 +463,13 @@ class MentionsPipe implements PipeTransform {
 		</a>
 	</div>
 	<a (click)="hash('comments')" class="btn" [class.active]="isHash('comments')"><i class="fa fa-comments"></i></a>
+	<a (click)="hash('solutions')" class="btn" [class.active]="isHash('solutions')"><i class="fa fa-question-circle"></i></a>
 </nav>`,
 	host: {
 		'[class.loading]': `!(firebase.ref('hunts', huntId) | loaded | async)`,
 	},
 	pipes: [
+		FilterPipe,
 		FirebaseLoadedPipe,
 		FirebaseValuePipe,
 		LengthPipe,
@@ -610,7 +615,7 @@ export class HuntComponent {
 			<ul id="huntList">
 				<li *ngFor="#hunt of firebase.ref('users:data', me.uid, 'hunts') | value:firebase.ref('hunts') | sort:'$id':true">
 					<header>
-						<a *ngIf="!hunt.$editing" (click)="huntId = hunt.$id" [innerHTML]="hunt.name" class="btn" [class.active]="hunt.$id === huntId"></a>
+						<a *ngIf="!hunt.$editing" (click)="huntId = hunt.$id; dropdown = '';" [innerHTML]="hunt.name" class="btn" [class.active]="hunt.$id === huntId"></a>
 						<label *ngIf="hunt.$editing" class="btn">
 							<input [(ngModel)]="hunt.name" (enterpress)="updateHunt(hunt)" placeholder="Hunt name" />
 						</label>
