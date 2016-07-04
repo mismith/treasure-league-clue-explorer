@@ -59,6 +59,9 @@ a:hover {
 	text-decoration: underline
 }
 
+.hidden {
+	display: none !important;
+}
 .passthru {
 	-webkit-appearance: none;
 	   -moz-appearance: none;

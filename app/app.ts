@@ -448,7 +448,7 @@ class MentionsPipe implements PipeTransform {
 		</header>
 		<div class="solutions" [class.loading]="!(data('clues') | value:true | length)">
 			<ul>
-				<li *ngFor="#clue of data('clues') | value:true | filter:{solution:'!!'}" [innerHTML]="clue.solution"></li>
+				<li *ngFor="#clue of data('clues') | value:true" [innerHTML]="clue.solution" [class.hidden]="!clue.solution"></li>
 			</ul>
 		</div>
 	</section>
