@@ -537,8 +537,27 @@ export class HuntComponent {
 	createClue(fileList) {
 		return this.firebaseFileUploader.process(fileList)
 			.then(attachments => {
-				return this.data('clues').push({
-					image: attachments[0],
+				return this.data('clues').once('value').then(cluesRef => {
+					// auto-increment num
+					let clues = cluesRef.val(),
+						num   = null;
+					
+					if (clues) {
+						Object.keys(clues).map(clueId => {
+							const thisNum = parseInt(clues[clueId].num);
+							if (thisNum > num) {
+								num = thisNum;
+							}
+						});
+						if (num) {
+							num++;
+						}
+					}
+
+					return this.data('clues').push({
+						num,
+						image: attachments[0],
+					});
 				});
 			})
 			.then(clueRef => {
