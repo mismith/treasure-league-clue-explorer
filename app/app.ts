@@ -358,7 +358,7 @@ class MentionsPipe implements PipeTransform {
 @Component({
 	selector: '[huntId]',
 	template: `
-<main id="main" [class.loading]="!(data('clues') | loaded | async)">
+<main id="main" [class.loading]="!(data('clues') | loaded | async)" [class.active]="!(isHash('participants') || isHash('comments'))">
 	<article *ngFor="#clue of data('clues') | value:true" (mouseenter)="play(clue)" (mouseleave)="stop(clue)" (touchstart)="play(clue)" (touchend)="stop(clue)" (click)="see('clues', clue.$id, 'information')" [id]="clue.$id" class="clue {{ tab(clue) }} {{ isHash(clue.$id) ? 'active' : '' }}">
 		<header>
 			<a [href]="'#' + clue.$id" [innerHTML]="clue.num || '#'" class="btn no-grow" [class.highlight]="unseen('clues', clue.$id, 'information') | value"></a>
@@ -614,7 +614,7 @@ export class HuntComponent {
 		<h1><a href="http://treasureleague.com/" target="_blank">Treasure League</a> <span style="white-space: nowrap;">Clue Explorer</span></h1>
 	</header>
 	<div *ngIf="me && huntId">
-		<button (click)="overview(!overview())" class="btn" title="Toggle Overview Mode"><i class="fa" [class.fa-eye]="overview()" [class.fa-eye-slash]="!overview()"></i></button>
+		<button (click)="overview(!overview())" class="btn overview" [class.active]="overview()" title="Toggle Overview Mode"><i class="fa" [class.fa-eye]="overview()" [class.fa-eye-slash]="!overview()"></i></button>
 	</div>
 	<div *ngIf="me" (click)="$event.stopPropagation()" class="dropdown">
 		<button (click)="dropdown = dropdown === 'hunts' ? '' : 'hunts'" class="btn">

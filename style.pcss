@@ -204,6 +204,7 @@ a {
 				font-style: italic;
 			}
 			& a {
+				text-align: center;
 				cursor: zoom-in;
 
 				& img {
@@ -632,6 +633,10 @@ a {
 	text-align: center;
 	margin-bottom: 1px;
 
+	& .btn.overview.active {
+		background-color: var(--accent);
+		color: var(--bg);
+	}
 	& > * {
 		display: flex;
 	}
@@ -642,6 +647,11 @@ a {
 	}
 	& > div {
 		margin-right: 1px;
+	}
+	@media (--mobile) {
+		& .btn.overview {
+			display: none;
+		}
 	}
 	@media (width <= 520px) {
 		& > header {
@@ -708,7 +718,6 @@ a {
 	display: flex;
 	justify-content: center;
 	flex-wrap: wrap;
-	flex-grow: 1;
 	padding: 10px;
 	overflow: auto;
 
@@ -717,6 +726,10 @@ a {
 		flex-wrap: nowrap;
 		padding: 0;
 		overflow: hidden;
+
+		&.active {
+			flex-grow: 1;
+		}
 	}
 }
 #nav {
