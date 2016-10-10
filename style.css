@@ -229,6 +229,8 @@ a:hover {
 	-webkit-align-content: center;
 	    -ms-flex-line-pack: center;
 	        align-content: center;
+	background-color: #FFF;
+	color: #000;
 	overflow: auto;
 	-webkit-overflow-scrolling: touch
 }
