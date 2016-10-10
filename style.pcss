@@ -347,6 +347,45 @@ a {
 		}
 	}
 }
+.overview {
+	& .clue {
+		min-width: 200px;
+		max-width: 200px;
+		min-height: 0;
+		align-self: center;
+
+		&.new,
+		& > header {
+			display: none;
+		}
+		& > aside {
+			& > .information,
+			& > .conversation {
+				display: none;
+			}
+			& > figure,
+			& > .resolution {
+				position: relative;
+				transform: scale(1, 1);
+			}
+			& > .resolution {
+				& > div,
+				& > footer > h3 {
+					display: none;
+				}
+				& > footer {
+					background-color: var(--accent);
+					padding: 15px;
+
+					& div {
+						filter: blur(0);
+						font-size: 20px;
+					}
+				}
+			}
+		}
+	}
+}
 
 .avatar {
 	display: inline-flex;
@@ -598,12 +637,10 @@ a {
 	& > header {
 		align-items: center;
 		padding: 0 10px;
+		margin-right: auto;
 	}
 	& > div {
-		margin-left: auto;
-	}
-	& > footer {
-		margin-left: 1px;
+		margin-right: 1px;
 	}
 	@media (width <= 520px) {
 		& > header {
@@ -779,11 +816,6 @@ a {
 			}
 			& .btn {
 				font-size: 24px;
-			}
-		}
-		& .solutions {
-			& li {
-				white-space: pre-wrap;
 			}
 		}
 		& .disclosure-arrow {

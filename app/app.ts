@@ -441,17 +441,6 @@ class MentionsPipe implements PipeTransform {
 		</header>
 		<div [messagesRef]="data('messages', huntId)" [users]="data('users') | value:firebase.ref('users')" [me]="me" [reactionsRef]="data('reactions', huntId)" (created)="unsee('conversation')"></div>
 	</section>
-	<section class="huntSolutions" [class.active]="isHash('solutions')">
-		<header (click)="hash('solutions')">
-			<span class="disclosure-arrow"></span>
-			<h3>Solutions</h3>
-		</header>
-		<div class="solutions" [class.loading]="!(data('clues') | value:true | length)">
-			<ul>
-				<li *ngFor="#clue of data('clues') | value:true" [innerHTML]="clue.solution" [class.hidden]="!clue.solution"></li>
-			</ul>
-		</div>
-	</section>
 </aside>
 <nav id="nav">
 	<a (click)="hash('participants')" class="btn" [class.active]="isHash('participants')"><i class="fa fa-user"></i></a>
@@ -463,7 +452,6 @@ class MentionsPipe implements PipeTransform {
 		</a>
 	</div>
 	<a (click)="hash('comments')" class="btn" [class.active]="isHash('comments')"><i class="fa fa-comments"></i></a>
-	<a (click)="hash('solutions')" class="btn" [class.active]="isHash('solutions')"><i class="fa fa-question-circle"></i></a>
 </nav>`,
 	host: {
 		'[class.loading]': `!(firebase.ref('hunts', huntId) | loaded | async)`,
@@ -487,10 +475,7 @@ export class HuntComponent {
 	@Input() me: Object;
 
 	private firebaseFileUploader: FirebaseFileUploader = new FirebaseFileUploader();
-	private $hash: string = location.hash.substr(1) || 'comments';
-	constructor() {
-		window.addEventListener('hashchange', e => this.hash(location.hash.substr(1)));
-	}
+	private $hash: string = 'comments';
 
 	// helpers
 	data(...paths: string[]) {
@@ -509,7 +494,10 @@ export class HuntComponent {
 	}
 	// hash
 	hash(set) {
-		if (set) this.$hash = set;
+		if (set) {
+			if (this.$hash === set) this.$hash = null;
+			else this.$hash = set;
+		}
 		return this.$hash;
 	}
 	isHash(hash) {
@@ -625,6 +613,9 @@ export class HuntComponent {
 	<header [class.app]="me && huntId">
 		<h1><a href="http://treasureleague.com/" target="_blank">Treasure League</a> <span style="white-space: nowrap;">Clue Explorer</span></h1>
 	</header>
+	<div *ngIf="me && huntId">
+		<button (click)="overview(!overview())" class="btn" title="Toggle Overview Mode"><i class="fa" [class.fa-eye]="overview()" [class.fa-eye-slash]="!overview()"></i></button>
+	</div>
 	<div *ngIf="me" (click)="$event.stopPropagation()" class="dropdown">
 		<button (click)="dropdown = dropdown === 'hunts' ? '' : 'hunts'" class="btn">
 			<span [innerHTML]="(firebase.ref('hunts', huntId) | value)?.name || 'My Hunts'"></span>
@@ -662,7 +653,7 @@ export class HuntComponent {
 	</footer>
 </header>
 <div id="body">
-	<section *ngIf="me && huntId" id="hunt" [huntId]="huntId" [firebase]="firebase" [me]="me" class="loading"></section>
+	<section *ngIf="me && huntId" id="hunt" [huntId]="huntId" [firebase]="firebase" [me]="me" class="loading" [class.overview]="overview()"></section>
 	<section *ngIf="me && !huntId" id="hunt" class="fill" style="text-align:center; padding: 20px;">
 		<p>Pick or create a hunt using the <strong>My Hunts</strong> menu above.</p>
 	</section>
@@ -689,6 +680,7 @@ export class HuntComponent {
 	],
 })
 export class App {
+	private isOverview = false;
 	private me: Object;
 	private huntId: string;
 	private firebase: Firebase = new FirebaseHelper('https://treasure-league.firebaseio.com');
@@ -808,5 +800,13 @@ export class App {
 				this.huntId = '';
 			});
 		});
+	}
+
+	// overview
+	overview(set) {
+		if (set !== undefined) {
+			this.isOverview = !!set;
+		}
+		return this.isOverview;
 	}
 }

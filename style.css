@@ -484,6 +484,48 @@ a:hover {
 		display: none
 	}
 	}
+.overview {
+}
+.overview .clue {
+	min-width: 200px;
+	max-width: 200px;
+	min-height: 0;
+	-webkit-align-self: center;
+	    -ms-flex-item-align: center;
+	        align-self: center
+}
+.overview .clue.new,
+		.overview .clue > header {
+	display: none
+}
+.overview .clue > aside {
+}
+.overview .clue > aside > .information,
+			.overview .clue > aside > .conversation {
+	display: none
+}
+.overview .clue > aside > figure,
+			.overview .clue > aside > .resolution {
+	position: relative;
+	-webkit-transform: scale(1, 1);
+	        transform: scale(1, 1)
+}
+.overview .clue > aside > .resolution {
+}
+.overview .clue > aside > .resolution > div,
+				.overview .clue > aside > .resolution > footer > h3 {
+	display: none
+}
+.overview .clue > aside > .resolution > footer {
+	background-color: rgb(59, 153, 252);
+	padding: 15px
+}
+.overview .clue > aside > .resolution > footer div {
+	filter: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg"><filter id="filter"><feGaussianBlur stdDeviation="0" /></filter></svg>#filter');
+	-webkit-filter: blur(0);
+	        filter: blur(0);
+	font-size: 20px
+}
 
 .avatar {
 	display: -webkit-inline-box;
@@ -867,13 +909,11 @@ a:hover {
 	    -ms-flex-align: center;
 	            -ms-grid-row-align: center;
 	        align-items: center;
-	padding: 0 10px
+	padding: 0 10px;
+	margin-right: auto
 }
 #header > div {
-	margin-left: auto
-}
-#header > footer {
-	margin-left: 1px
+	margin-right: 1px
 }
 @media (max-width: 520px) {
 
@@ -1201,11 +1241,6 @@ a:hover {
 }
 #sidebar > section .messenger .btn {
 	font-size: 24px
-}
-#sidebar > section .solutions {
-}
-#sidebar > section .solutions li {
-	white-space: pre-wrap
 }
 #sidebar > section .disclosure-arrow {
 	-webkit-appearance: none;
