@@ -230,15 +230,16 @@ a:hover {
 	    -ms-flex-line-pack: center;
 	        align-content: center;
 	background-color: #FFF;
-	color: #000;
+	color: #51535F;
 	overflow: auto;
 	-webkit-overflow-scrolling: touch
 }
 
 .clue > aside > figure .prompt {
-	padding: 10px;
+	padding: 20px;
 	white-space: pre-wrap;
-	text-align: center
+	text-align: center;
+	font-style: italic
 }
 
 .clue > aside > figure a {
