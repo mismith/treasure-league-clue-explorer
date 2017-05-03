@@ -372,8 +372,8 @@ class MentionsPipe implements PipeTransform {
 		<aside>
 			<figure>
 				<div *ngIf="clue.prompt" class="prompt" [innerHTML]="clue.prompt"></div>
-				<a *ngIf="clue.thumb || clue.image" [href]="clue.image.src" target="_blank">
-					<img [src]="clue.image.thumb || clue.image.src" />
+				<a *ngFor="#image of getImages(clue)" [href]="image.src" target="_blank">
+					<img [src]="image.thumb || image.src" />
 				</a>
 			</figure>
 			<div class="information">
@@ -387,7 +387,7 @@ class MentionsPipe implements PipeTransform {
 					<button (click)="deleteClue(clue, $event.shiftKey)" title="Delete" class="btn"><i class="fa fa-trash-o"></i></button>
 					<button title="Upload Photo" class="btn file-upload" [class.active]="clue.image">
 						<i class="fa fa-photo"></i>
-						<input type="file" accept="image/*" (change)="firebaseFileUploader.process($event.target.files, clue.image, true)" />
+						<input type="file" accept="image/*" (change)="firebaseFileUploader.process($event.target.files, clue.image, true)" multiple />
 					</button>
 					<button title="Upload Audio" class="btn file-upload" [class.active]="clue.audio" (contextmenu)="clue.audio = null">
 						<i class="fa fa-volume-up"></i>
@@ -411,11 +411,12 @@ class MentionsPipe implements PipeTransform {
 	</article>
 	<article class="clue new file-upload">
 		<div>
-			Drop Image Here<br /><br />
+			Drop image here<br /><br />
 			<small>or</small><br />
-			Click to Upload
+			Click to upload image
 		</div>
-		<input type="file" accept="image/*" (change)="createClue($event.target.files)" />
+		<input type="file" accept="image/*" (change)="createClue($event.target.files)" multiple />
+		<button (click)="createClue()"><small>or</small> Create a clue with no image</button>
 	</article>
 </main>
 <aside *ngIf="huntId" id="sidebar" [class.active]="isHash('participants') || isHash('comments')">
@@ -445,11 +446,7 @@ class MentionsPipe implements PipeTransform {
 <nav id="nav">
 	<a (click)="hash('participants')" class="btn" [class.active]="isHash('participants')"><i class="fa fa-user"></i></a>
 	<div>
-		<a *ngFor="#clue of data('clues') | value:true" (click)="hash(clue.$id)" class="btn" [class.active]="isHash(clue.$id)" [innerHTML]="clue.num || '#'"></a>
-		<a class="btn file-upload">
-			<i class="fa fa-plus"></i>
-			<input type="file" accept="image/*" (change)="createClue($event.target.files)" />
-		</a>
+		<!--<a *ngFor="#clue of data('clues') | value:true" (click)="hash(clue.$id)" class="btn" [class.active]="isHash(clue.$id)" [innerHTML]="clue.num || '#'"></a>-->
 	</div>
 	<a (click)="hash('comments')" class="btn" [class.active]="isHash('comments')"><i class="fa fa-comments"></i></a>
 </nav>`,
@@ -475,7 +472,7 @@ export class HuntComponent {
 	@Input() me: Object;
 
 	private firebaseFileUploader: FirebaseFileUploader = new FirebaseFileUploader();
-	private $hash: string = 'comments';
+	private $hash: string = '';
 
 	// helpers
 	data(...paths: string[]) {
@@ -501,6 +498,7 @@ export class HuntComponent {
 		return this.$hash;
 	}
 	isHash(hash) {
+		if (hash === 'comments' && this.$hash === '') return true;
 		return hash === this.$hash;
 	}
 	// un/seen
@@ -523,12 +521,16 @@ export class HuntComponent {
 
 	// clues
 	createClue(fileList) {
-		return this.firebaseFileUploader.process(fileList)
+		let promise = Promise.resolve([null]);
+		if (fileList) {
+			promise = this.firebaseFileUploader.process(fileList);
+		}
+		return promise
 			.then(attachments => {
 				return this.data('clues').once('value').then(cluesRef => {
 					// auto-increment num
 					let clues = cluesRef.val(),
-						num   = null;
+						num   = 1;
 					
 					if (clues) {
 						Object.keys(clues).map(clueId => {
@@ -544,7 +546,7 @@ export class HuntComponent {
 
 					return this.data('clues').push({
 						num,
-						image: attachments[0],
+						images: attachments,
 					});
 				});
 			})
@@ -573,6 +575,15 @@ export class HuntComponent {
 			clue.$audio.pause();
 			clue.$audio.currentTime = 0;
 		}
+	}
+	getImages(clue) {
+		if (clue) {
+			if (clue.image) {
+				return [clue.image];
+			}
+			return clue.images;
+		}
+		return [];
 	}
 
 	// hunt

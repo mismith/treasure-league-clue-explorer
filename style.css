@@ -45,7 +45,6 @@ textarea {
 textarea {
 	min-height: 5em;
 	-webkit-box-flex: 1;
-	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
 	        flex-grow: 1;
 	resize: vertical;
@@ -75,24 +74,19 @@ a:hover {
 }
 .fill {
 	display: -webkit-box;
-	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
-	-webkit-flex-direction: column;
 	    -ms-flex-direction: column;
 	        flex-direction: column;
 	-webkit-box-pack: center;
-	-webkit-justify-content: center;
 	    -ms-flex-pack: center;
 	        justify-content: center;
 	-webkit-box-align: center;
-	-webkit-align-items: center;
 	    -ms-flex-align: center;
 	        align-items: center;
 	-webkit-box-flex: 1;
-	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
 	        flex-grow: 1;
 }
@@ -101,8 +95,7 @@ a:hover {
 	   -moz-appearance: none;
 	        appearance: none;
 	display: inline-block;
-	background-color: #000000;
-	background-color: rgba(0,0,0,.5);
+	background-color: rgba(0, 0, 0, .5);
 	color: inherit;
 	font: inherit;
 	text-decoration: none;
@@ -179,38 +172,54 @@ a:hover {
 	z-index: 1
 }
 
+.file-upload button {
+	-webkit-appearance: none;
+	   -moz-appearance: none;
+	        appearance: none;
+	position: relative;
+	background: none;
+	font: inherit;
+	padding: 10px;
+	border: 0;
+	margin: 0;
+	cursor: pointer;
+	z-index: 2
+}
+
+.file-upload button:hover {
+	background-color: rgba(0, 0, 0, .25)
+}
+
 .clue {
 	position: relative;
 	display: -webkit-inline-box;
-	display: -webkit-inline-flex;
 	display: -ms-inline-flexbox;
 	display: inline-flex;
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
-	-webkit-flex-direction: column;
 	    -ms-flex-direction: column;
 	        flex-direction: column;
+	-webkit-box-flex: 0;
+	    -ms-flex-positive: 0;
+	        flex-grow: 0;
 	min-height: 300px;
 	min-width: 300px;
+	max-width: 20%;
 	background-color: #51535F;
 	margin: 10px;
 	opacity: 1;
-	-webkit-transition: all 300ms;
 	transition: all 300ms
 }
 
 .clue > aside {
 	display: -webkit-box;
-	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
-	-webkit-flex-direction: column;
 	    -ms-flex-direction: column;
 	        flex-direction: column;
 	-webkit-box-flex: 1;
-	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
 	        flex-grow: 1;
 	position: relative
@@ -218,17 +227,14 @@ a:hover {
 
 .clue > aside > figure {
 	display: -webkit-box;
-	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
-	-webkit-flex-direction: column;
 	    -ms-flex-direction: column;
 	        flex-direction: column;
-	-webkit-align-content: center;
-	    -ms-flex-line-pack: center;
-	        align-content: center;
+	-ms-flex-line-pack: center;
+	    align-content: center;
 	background-color: #FFF;
 	color: #51535F;
 	overflow: auto;
@@ -238,13 +244,11 @@ a:hover {
 .clue > aside > figure .prompt {
 	padding: 20px;
 	white-space: pre-wrap;
-	text-align: center;
-	font-style: italic
+	text-align: center
 }
 
 .clue > aside > figure a {
 	text-align: center;
-	cursor: -webkit-zoom-in;
 	cursor: zoom-in
 }
 
@@ -256,12 +260,10 @@ a:hover {
 
 .clue > aside > *:not(figure) {
 	display: -webkit-box;
-	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
-	-webkit-flex-direction: column;
 	    -ms-flex-direction: column;
 	        flex-direction: column;
 	position: absolute;
@@ -270,7 +272,6 @@ a:hover {
 	right: 0;
 	bottom: -1px;
 	background-color: #51535F;
-	-webkit-transition: -webkit-transform 300ms;
 	transition: -webkit-transform 300ms;
 	transition: transform 300ms;
 	transition: transform 300ms, -webkit-transform 300ms;
@@ -291,16 +292,13 @@ a:hover {
 
 .clue > aside > *:not(figure).information .fieldset {
 	display: -webkit-box;
-	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
-	-webkit-flex-direction: column;
 	    -ms-flex-direction: column;
 	        flex-direction: column;
 	-webkit-box-flex: 1;
-	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
 	        flex-grow: 1
 }
@@ -318,7 +316,6 @@ a:hover {
 
 .clue > aside > *:not(figure).resolution > * {
 	display: -webkit-box;
-	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
 	overflow: auto
@@ -327,11 +324,9 @@ a:hover {
 .clue > aside > *:not(figure).resolution > div {
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
-	-webkit-flex-direction: column;
 	    -ms-flex-direction: column;
 	        flex-direction: column;
 	-webkit-box-flex: 1;
-	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
 	        flex-grow: 1;
 	padding: 10px
@@ -350,12 +345,10 @@ a:hover {
 .clue > aside > *:not(figure).resolution > footer {
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
-	-webkit-flex-direction: column;
 	    -ms-flex-direction: column;
 	        flex-direction: column;
-	-webkit-flex-shrink: 1;
-	    -ms-flex-negative: 1;
-	        flex-shrink: 1;
+	-ms-flex-negative: 1;
+	    flex-shrink: 1;
 	background-color: #FFF;
 	color: #000;
 	padding: 32px 10px
@@ -366,7 +359,6 @@ a:hover {
 	filter: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg"><filter id="filter"><feGaussianBlur stdDeviation="10" /></filter></svg>#filter');
 	-webkit-filter: blur(10px);
 	        filter: blur(10px);
-	-webkit-transition: -webkit-filter 300ms;
 	transition: -webkit-filter 300ms;
 	transition: filter 300ms;
 	transition: filter 300ms, -webkit-filter 300ms;
@@ -385,12 +377,10 @@ a:hover {
 .clue header,
 	.clue footer {
 	display: -webkit-box;
-	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
-	-webkit-flex-shrink: 0;
-	    -ms-flex-negative: 0;
-	        flex-shrink: 0
+	-ms-flex-negative: 0;
+	    flex-shrink: 0
 }
 
 .clue header .btn, .clue footer .btn {
@@ -401,7 +391,6 @@ a:hover {
 
 .clue header .btn:not(.no-grow), .clue footer .btn:not(.no-grow) {
 	-webkit-box-flex: 1;
-	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
 	        flex-grow: 1
 }
@@ -416,20 +405,16 @@ a:hover {
 
 .clue.new > div {
 	display: -webkit-box;
-	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
-	-webkit-flex-direction: column;
 	    -ms-flex-direction: column;
 	        flex-direction: column;
 	-webkit-box-pack: center;
-	-webkit-justify-content: center;
 	    -ms-flex-pack: center;
 	        justify-content: center;
 	-webkit-box-flex: 1;
-	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
 	        flex-grow: 1;
 	text-align: center;
@@ -468,9 +453,7 @@ a:hover {
 @media (max-width: 800px) {
 
 	.clue {
-		min-width: 100%;
-		margin: 0
-	}
+}
 
 	.clue .resolution {
 }
@@ -482,23 +465,34 @@ a:hover {
 		        user-select: none
 	}
 
-	.clue:not(.active) {
+	.clue.new {
 		display: none
 	}
 	}
 .overview {
 }
+.overview #main {
+	overflow: auto
+}
 .overview .clue {
 	min-width: 200px;
 	max-width: 200px;
 	min-height: 0;
-	-webkit-align-self: center;
-	    -ms-flex-item-align: center;
-	        align-self: center
+	-ms-flex-item-align: center;
+	    -ms-grid-row-align: center;
+	    align-self: center
 }
 .overview .clue.new,
-		.overview .clue > header {
+		.overview .clue > header > *:not(:first-child) {
 	display: none
+}
+.overview .clue > header > *:first-child {
+	-webkit-box-flex: 1;
+	    -ms-flex-positive: 1;
+	        flex-grow: 1;
+	min-height: 0;
+	font-size: 1em;
+	padding: 3px
 }
 .overview .clue > aside {
 }
@@ -531,7 +525,6 @@ a:hover {
 
 .avatar {
 	display: -webkit-inline-box;
-	display: -webkit-inline-flex;
 	display: -ms-inline-flexbox;
 	display: inline-flex;
 	border-radius: 50%;
@@ -544,49 +537,39 @@ a:hover {
 }
 .messenger > div {
 	display: -webkit-box;
-	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
-	-webkit-flex-direction: column;
 	    -ms-flex-direction: column;
 	        flex-direction: column;
 	-webkit-box-flex: 1;
-	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
 	        flex-grow: 1;
-	-webkit-flex-shrink: 1;
-	    -ms-flex-negative: 1;
-	        flex-shrink: 1;
+	-ms-flex-negative: 1;
+	    flex-shrink: 1;
 	padding: 10px;
 	overflow: auto;
 	-webkit-overflow-scrolling: touch
 }
 .messenger > footer {
 	display: -webkit-box;
-	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
-	-webkit-flex-shrink: 0;
-	    -ms-flex-negative: 0;
-	        flex-shrink: 0
+	-ms-flex-negative: 0;
+	    flex-shrink: 0
 }
 .messenger > footer > div {
 	display: -webkit-box;
-	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-flex: 1;
-	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
 	        flex-grow: 1;
-	background-color: #000000;
-	background-color: rgba(0,0,0,.5)
+	background-color: rgba(0, 0, 0, .5)
 }
 .messenger > footer > div textarea {
 	-webkit-box-flex: 1;
-	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
 	        flex-grow: 1;
 	border: 0;
@@ -596,51 +579,43 @@ a:hover {
 .messenger > footer .btn {
 	position: relative;
 	-webkit-box-flex: 0;
-	-webkit-flex-grow: 0;
 	    -ms-flex-positive: 0;
 	        flex-grow: 0;
 	overflow: hidden
 }
 .messages {
 	display: -webkit-box;
-	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
-	-webkit-flex-direction: column;
 	    -ms-flex-direction: column;
 	        flex-direction: column;
 	-webkit-box-flex: 1;
-	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
 	        flex-grow: 1;
-	-webkit-flex-shrink: 0;
-	    -ms-flex-negative: 0;
-	        flex-shrink: 0;
+	-ms-flex-negative: 0;
+	    flex-shrink: 0;
 	padding: 0;
 	margin: 0
 }
 .messages .message {
 	display: -webkit-box;
-	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-align: start;
-	-webkit-align-items: flex-start;
 	    -ms-flex-align: start;
 	        align-items: flex-start;
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
-	-webkit-flex-direction: column;
 	    -ms-flex-direction: column;
 	        flex-direction: column;
 	margin: 2px 0
 }
 .messages .message header {
-	-webkit-align-self: center;
-	    -ms-flex-item-align: center;
-	        align-self: center;
+	-ms-flex-item-align: center;
+	    -ms-grid-row-align: center;
+	    align-self: center;
 	color: #EEE;
 	opacity: .666;
 	font-size: 12px;
@@ -667,24 +642,20 @@ a:hover {
 	color: rgb(59, 153, 252)
 }
 .messages .message footer {
-	-webkit-align-self: flex-end;
-	    -ms-flex-item-align: end;
-	        align-self: flex-end;
+	-ms-flex-item-align: end;
+	    align-self: flex-end;
 	margin-left: 36px;
 	margin-right: 36px
 }
 .messages .message .avatar {
-	-webkit-align-self: flex-start;
-	    -ms-flex-item-align: start;
-	        align-self: flex-start;
-	-webkit-flex-shrink: 0;
-	    -ms-flex-negative: 0;
-	        flex-shrink: 0;
+	-ms-flex-item-align: start;
+	    align-self: flex-start;
+	-ms-flex-negative: 0;
+	    flex-shrink: 0;
 	margin-right: 10px
 }
 .messages .message .content {
 	display: -webkit-box;
-	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
 	width: 100%;
@@ -692,12 +663,10 @@ a:hover {
 }
 .messages .message .content > div {
 	display: -webkit-box;
-	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
-	-webkit-flex-direction: column;
 	    -ms-flex-direction: column;
 	        flex-direction: column;
 	min-width: 0;
@@ -722,15 +691,13 @@ a:hover {
 	margin: 0
 }
 .messages .message .content > div .attachment {
-	-webkit-align-self: flex-start;
-	    -ms-flex-item-align: start;
-	        align-self: flex-start;
+	-ms-flex-item-align: start;
+	    align-self: flex-start;
 	display: inline-block;
 	margin-bottom: 3px
 }
 .messages .message .content > div.editing {
 	-webkit-box-flex: 1;
-	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
 	        flex-grow: 1
 }
@@ -745,12 +712,11 @@ a:hover {
 	border-right-color: #EEE
 }
 .messages .message .extra {
-	-webkit-align-self: center;
-	    -ms-flex-item-align: center;
-	        align-self: center;
-	-webkit-flex-shrink: 0;
-	    -ms-flex-negative: 0;
-	        flex-shrink: 0;
+	-ms-flex-item-align: center;
+	    -ms-grid-row-align: center;
+	    align-self: center;
+	-ms-flex-negative: 0;
+	    flex-shrink: 0;
 	padding: 0 5px
 }
 .messages .message .extra button {
@@ -775,28 +741,22 @@ a:hover {
 }
 .messages .message.mine {
 	-webkit-box-align: end;
-	-webkit-align-items: flex-end;
 	    -ms-flex-align: end;
-	            -ms-grid-row-align: flex-end;
 	        align-items: flex-end
 }
 .messages .message.mine .avatar {
-	-webkit-align-self: flex-end;
-	    -ms-flex-item-align: end;
-	        align-self: flex-end;
+	-ms-flex-item-align: end;
+	    align-self: flex-end;
 	margin-right: 0;
 	margin-left: 10px
 }
 .messages .message.mine .content {
 	-webkit-box-orient: horizontal;
 	-webkit-box-direction: reverse;
-	-webkit-flex-direction: row-reverse;
 	    -ms-flex-direction: row-reverse;
 	        flex-direction: row-reverse;
 	-webkit-box-align: end;
-	-webkit-align-items: flex-end;
 	    -ms-flex-align: end;
-	            -ms-grid-row-align: flex-end;
 	        align-items: flex-end
 }
 .messages .message.mine .content a {
@@ -828,27 +788,21 @@ a:hover {
 .messages .message.empty {
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
-	-webkit-flex-direction: column;
 	    -ms-flex-direction: column;
 	        flex-direction: column;
 	-webkit-box-flex: 1;
-	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
 	        flex-grow: 1;
 	-webkit-box-pack: center;
-	-webkit-justify-content: center;
 	    -ms-flex-pack: center;
 	        justify-content: center;
 	-webkit-box-align: center;
-	-webkit-align-items: center;
 	    -ms-flex-align: center;
-	            -ms-grid-row-align: center;
 	        align-items: center;
 	opacity: .666
 }
 .reactions {
 	display: -webkit-box;
-	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
 	padding: 0;
@@ -856,11 +810,9 @@ a:hover {
 }
 .reactions .reaction {
 	display: -webkit-inline-box;
-	display: -webkit-inline-flex;
 	display: -ms-inline-flexbox;
 	display: inline-flex;
 	-webkit-box-align: center;
-	-webkit-align-items: center;
 	    -ms-flex-align: center;
 	        align-items: center
 }
@@ -868,12 +820,10 @@ a:hover {
 
 #app {
 	display: -webkit-box;
-	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
-	-webkit-flex-direction: column;
 	    -ms-flex-direction: column;
 	        flex-direction: column;
 	width: 100%;
@@ -881,19 +831,15 @@ a:hover {
 }
 #header {
 	display: -webkit-box;
-	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-pack: center;
-	-webkit-justify-content: center;
 	    -ms-flex-pack: center;
 	        justify-content: center;
-	-webkit-flex-wrap: wrap;
-	    -ms-flex-wrap: wrap;
-	        flex-wrap: wrap;
-	-webkit-flex-shrink: 0;
-	    -ms-flex-negative: 0;
-	        flex-shrink: 0;
+	-ms-flex-wrap: wrap;
+	    flex-wrap: wrap;
+	-ms-flex-negative: 0;
+	    flex-shrink: 0;
 	min-height: 44px;
 	background-color: #51535F;
 	text-align: center;
@@ -905,15 +851,12 @@ a:hover {
 }
 #header > * {
 	display: -webkit-box;
-	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex
 }
 #header > header {
 	-webkit-box-align: center;
-	-webkit-align-items: center;
 	    -ms-flex-align: center;
-	            -ms-grid-row-align: center;
 	        align-items: center;
 	padding: 0 10px;
 	margin-right: auto
@@ -921,15 +864,6 @@ a:hover {
 #header > div {
 	margin-right: 1px
 }
-@media (max-width: 800px) {
-
-	#header {
-}
-
-	#header .btn.overview {
-		display: none
-	}
-	}
 @media (max-width: 520px) {
 
 	#header {
@@ -944,7 +878,6 @@ a:hover {
 
 	#header > div {
 		-webkit-box-flex: 1;
-		-webkit-flex-grow: 1;
 		    -ms-flex-positive: 1;
 		        flex-grow: 1;
 		margin-left: 0
@@ -952,19 +885,16 @@ a:hover {
 
 	#header > div > .btn {
 		-webkit-box-flex: 1;
-		-webkit-flex-grow: 1;
 		    -ms-flex-positive: 1;
 		        flex-grow: 1
 	}
 	}
 #huntList {
 	display: -webkit-box;
-	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
-	-webkit-flex-direction: column;
 	    -ms-flex-direction: column;
 	        flex-direction: column;
 	padding: 0;
@@ -972,12 +902,10 @@ a:hover {
 }
 #huntList > li {
 	display: -webkit-box;
-	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
-	-webkit-flex-direction: column;
 	    -ms-flex-direction: column;
 	        flex-direction: column;
 	padding: 0;
@@ -985,27 +913,22 @@ a:hover {
 }
 #huntList > li > header {
 	display: -webkit-box;
-	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex
 }
 #huntList > li > header > *:first-child {
 	display: -webkit-box;
-	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-align: center;
-	-webkit-align-items: center;
 	    -ms-flex-align: center;
 	        align-items: center;
 	-webkit-box-flex: 1;
-	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
 	        flex-grow: 1
 }
 #huntList > li > header > *:first-child input {
 	-webkit-box-flex: 1;
-	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
 	        flex-grow: 1
 }
@@ -1015,24 +938,19 @@ a:hover {
 }
 #body {
 	display: -webkit-box;
-	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-flex: 1;
-	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
 	        flex-grow: 1;
 }
 #hunt {
 	display: -webkit-box;
-	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
-	-webkit-flex-wrap: nowrap;
-	    -ms-flex-wrap: nowrap;
-	        flex-wrap: nowrap;
+	-ms-flex-wrap: nowrap;
+	    flex-wrap: nowrap;
 	-webkit-box-flex: 1;
-	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
 	        flex-grow: 1
 }
@@ -1041,7 +959,6 @@ a:hover {
 	#hunt {
 		-webkit-box-orient: vertical;
 		-webkit-box-direction: normal;
-		-webkit-flex-direction: column;
 		    -ms-flex-direction: column;
 		        flex-direction: column;
 		max-width: 100%
@@ -1049,16 +966,16 @@ a:hover {
 	}
 #main {
 	display: -webkit-box;
-	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-pack: center;
-	-webkit-justify-content: center;
 	    -ms-flex-pack: center;
 	        justify-content: center;
-	-webkit-flex-wrap: wrap;
-	    -ms-flex-wrap: wrap;
-	        flex-wrap: wrap;
+	-ms-flex-wrap: wrap;
+	    flex-wrap: wrap;
+	-webkit-box-flex: 1;
+	    -ms-flex-positive: 1;
+	        flex-grow: 1;
 	padding: 10px;
 	overflow: auto
 }
@@ -1066,35 +983,33 @@ a:hover {
 
 	#main {
 		-webkit-box-pack: start;
-		-webkit-justify-content: flex-start;
 		    -ms-flex-pack: start;
 		        justify-content: flex-start;
-		-webkit-flex-wrap: nowrap;
-		    -ms-flex-wrap: nowrap;
-		        flex-wrap: nowrap;
+		-ms-flex-wrap: nowrap;
+		    flex-wrap: nowrap;
 		padding: 0;
-		overflow: hidden
+		overflow-y: hidden;
+		overflow-x: auto
 	}
 
 	#main.active {
 		-webkit-box-flex: 1;
-		-webkit-flex-grow: 1;
 		    -ms-flex-positive: 1;
 		        flex-grow: 1
+	}
+
+	#main:not(.active) {
+		display: none
 	}
 	}
 #nav {
 	display: none;
 	-webkit-box-align: center;
-	-webkit-align-items: center;
 	    -ms-flex-align: center;
-	            -ms-grid-row-align: center;
 	        align-items: center;
-	-webkit-flex-shrink: 0;
-	    -ms-flex-negative: 0;
-	        flex-shrink: 0;
+	-ms-flex-negative: 0;
+	    flex-shrink: 0;
 	-webkit-box-ordinal-group: 4;
-	-webkit-order: 3;
 	    -ms-flex-order: 3;
 	        order: 3;
 	background-color: #51535F;
@@ -1102,20 +1017,16 @@ a:hover {
 }
 #nav a {
 	display: -webkit-box;
-	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-pack: center;
-	-webkit-justify-content: center;
 	    -ms-flex-pack: center;
 	        justify-content: center;
 	-webkit-box-align: center;
-	-webkit-align-items: center;
 	    -ms-flex-align: center;
 	        align-items: center;
-	-webkit-flex-shrink: 0;
-	    -ms-flex-negative: 0;
-	        flex-shrink: 0;
+	-ms-flex-negative: 0;
+	    flex-shrink: 0;
 	min-width: 48px;
 	min-height: 48px;
 	text-decoration: none
@@ -1126,17 +1037,13 @@ a:hover {
 }
 #nav > div {
 	display: -webkit-box;
-	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
-	-webkit-flex-wrap: nowrap;
-	    -ms-flex-wrap: nowrap;
-	        flex-wrap: nowrap;
-	-webkit-flex-shrink: 1;
-	    -ms-flex-negative: 1;
-	        flex-shrink: 1;
+	-ms-flex-wrap: nowrap;
+	    flex-wrap: nowrap;
+	-ms-flex-negative: 1;
+	    flex-shrink: 1;
 	-webkit-box-flex: 1;
-	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
 	        flex-grow: 1;
 	border: solid 1px #51535F;
@@ -1146,44 +1053,37 @@ a:hover {
 }
 #nav > div a {
 	-webkit-box-flex: 1;
-	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
 	        flex-grow: 1;
-	border-right: solid 1px rgba(255,255,255,.08)
+	border-right: solid 1px rgba(255, 255, 255, .08)
 }
 @media (max-width: 800px) {
 
 	#nav {
 		display: -webkit-box;
-		display: -webkit-flex;
 		display: -ms-flexbox;
 		display: flex
 	}
 	}
 #sidebar {
 	display: -webkit-box;
-	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
-	-webkit-flex-direction: column;
 	    -ms-flex-direction: column;
 	        flex-direction: column;
-	-webkit-flex-basis: 33%;
-	    -ms-flex-preferred-size: 33%;
-	        flex-basis: 33%;
+	-ms-flex-preferred-size: 33%;
+	    flex-basis: 33%;
 	min-width: 300px;
 	max-width: 480px
 }
 #sidebar > section {
 	display: -webkit-box;
-	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
-	-webkit-flex-direction: column;
 	    -ms-flex-direction: column;
 	        flex-direction: column;
 	background-color: #51535F;
@@ -1191,14 +1091,11 @@ a:hover {
 }
 #sidebar > section > header {
 	display: -webkit-box;
-	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
-	-webkit-flex-shrink: 0;
-	    -ms-flex-negative: 0;
-	        flex-shrink: 0;
+	-ms-flex-negative: 0;
+	    flex-shrink: 0;
 	-webkit-box-align: center;
-	-webkit-align-items: center;
 	    -ms-flex-align: center;
 	        align-items: center;
 	border-bottom: solid 1px rgb(71, 71, 71)
@@ -1209,22 +1106,18 @@ a:hover {
 }
 #sidebar > section > header > h3 {
 	-webkit-box-flex: 1;
-	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
 	        flex-grow: 1
 }
 #sidebar > section > header + * {
 	display: -webkit-box;
-	display: -webkit-flex;
 	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
-	-webkit-flex-direction: column;
 	    -ms-flex-direction: column;
 	        flex-direction: column;
 	-webkit-box-flex: 1;
-	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
 	        flex-grow: 1;
 	overflow: auto
@@ -1234,16 +1127,13 @@ a:hover {
 	margin: 0
 }
 #sidebar > section .users > li {
-	-webkit-flex-shrink: 0;
-	    -ms-flex-negative: 0;
-	        flex-shrink: 0;
+	-ms-flex-negative: 0;
+	    flex-shrink: 0;
 	padding: 3px 0
 }
 #sidebar > section .users > li > header {
 	-webkit-box-align: center;
-	-webkit-align-items: center;
 	    -ms-flex-align: center;
-	            -ms-grid-row-align: center;
 	        align-items: center
 }
 #sidebar > section .users > li > header .avatar {
@@ -1253,7 +1143,6 @@ a:hover {
 }
 #sidebar > section .messenger .messages {
 	-webkit-box-pack: end;
-	-webkit-justify-content: flex-end;
 	    -ms-flex-pack: end;
 	        justify-content: flex-end
 }
@@ -1265,7 +1154,6 @@ a:hover {
 	   -moz-appearance: none;
 	        appearance: none;
 	display: -webkit-inline-box;
-	display: -webkit-inline-flex;
 	display: -ms-inline-flexbox;
 	display: inline-flex;
 	background: none;
@@ -1274,15 +1162,13 @@ a:hover {
 	border: solid 4px transparent;
 	border-left: solid 8px #202327;
 	border-right-width: 0;
-	-webkit-transition: -webkit-transform 150ms;
 	transition: -webkit-transform 150ms;
 	transition: transform 150ms;
 	transition: transform 150ms, -webkit-transform 150ms
 }
 #sidebar > section:not(.active) {
-	-webkit-flex-shrink: 0;
-	    -ms-flex-negative: 0;
-	        flex-shrink: 0
+	-ms-flex-negative: 0;
+	    flex-shrink: 0
 }
 #sidebar > section:not(.active) > header {
 	border-bottom-width: 0
@@ -1292,12 +1178,10 @@ a:hover {
 }
 #sidebar > section.active {
 	-webkit-box-flex: 1;
-	-webkit-flex-grow: 1;
 	    -ms-flex-positive: 1;
 	        flex-grow: 1;
-	-webkit-flex-shrink: 1;
-	    -ms-flex-negative: 1;
-	        flex-shrink: 1
+	-ms-flex-negative: 1;
+	    flex-shrink: 1
 }
 #sidebar > section.active .disclosure-arrow {
 	-webkit-transform: rotate(90deg);
@@ -1306,11 +1190,9 @@ a:hover {
 @media (max-width: 800px) {
 
 	#sidebar {
-		-webkit-flex-basis: auto;
-		    -ms-flex-preferred-size: auto;
-		        flex-basis: auto;
+		-ms-flex-preferred-size: auto;
+		    flex-basis: auto;
 		-webkit-box-ordinal-group: 3;
-		-webkit-order: 2;
 		    -ms-flex-order: 2;
 		        order: 2;
 		max-width: none
@@ -1339,7 +1221,6 @@ a:hover {
 
 	#sidebar.active {
 		-webkit-box-flex: 1;
-		-webkit-flex-grow: 1;
 		    -ms-flex-positive: 1;
 		        flex-grow: 1
 	}
